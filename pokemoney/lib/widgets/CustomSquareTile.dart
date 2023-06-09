@@ -13,11 +13,11 @@ class CustomSquareTile extends StatelessWidget {
   /// The [borderRadius] parameter controls the rounded corners of the tile and the image.
   /// The [imageHeight] parameter determines the height of the image.
   /// The [paddingImage] parameter determines the space or distance between the tile and the image
-  CustomSquareTile({
+  const CustomSquareTile({
     Key? key,
     required this.imagePath,
     this.borderRadius = 16.0,
-    this.imageHeight = 40.0,
+    this.imageHeight = 30.0,
     this.paddingImage = 20,
   }) : super(key: key);
 

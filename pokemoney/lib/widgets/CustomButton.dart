@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 /// A custom button widget with customizable width, height, and other properties.
 class CustomButton extends StatelessWidget {
-  final Function()? onTap;
+  final VoidCallback? onPressed;
   final double borderRadius;
   final Color textColor;
   final Color backGroundColor;
@@ -14,7 +14,7 @@ class CustomButton extends StatelessWidget {
 
   /// Creates a custom button widget.
   ///
-  /// The [onTap] parameter defines the callback when the button is pressed.
+  /// The [onPressed] parameter defines the callback when the button is pressed.
   /// The [borderRadius] parameter controls the rounded corners of the button.
   /// The [textColor] parameter defines the color of the button text.
   /// The [backGroundColor] parameter defines the background color of the button.
@@ -25,12 +25,12 @@ class CustomButton extends StatelessWidget {
   /// The [height] parameter sets the height of the button.
   const CustomButton({
     Key? key,
-    required this.onTap,
+    this.onPressed,
     this.borderRadius = 30.0,
     this.backGroundColor = const Color(0xFF347662),
     this.textColor = Colors.white,
     required this.textButton,
-    this.fontSize = 16.0,
+    this.fontSize = 20.0,
     this.fontWeight = FontWeight.bold,
     this.width = 312.0,
     this.height = 45.0,
@@ -38,23 +38,23 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        width: width,
-        height: height,
-        decoration: BoxDecoration(
-          color: backGroundColor,
-          borderRadius: BorderRadius.circular(borderRadius),
+    return SizedBox(
+      width: width,
+      height: height,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          primary: backGroundColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(borderRadius),
+          ),
         ),
-        child: Center(
-          child: Text(
-            textButton,
-            style: TextStyle(
-              color: textColor,
-              fontWeight: fontWeight,
-              fontSize: fontSize,
-            ),
+        child: Text(
+          textButton,
+          style: TextStyle(
+            color: textColor,
+            fontWeight: fontWeight,
+            fontSize: fontSize,
           ),
         ),
       ),
@@ -68,7 +68,7 @@ extension CustomButtonExtension on CustomButton {
   /// The [size] parameter sets the width and height of the button.
   CustomButton withSize(double size) {
     return CustomButton(
-      onTap: onTap,
+      onPressed: onPressed,
       borderRadius: borderRadius,
       backGroundColor: backGroundColor,
       textColor: textColor,

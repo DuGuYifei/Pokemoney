@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:pokemoney/widgets/CustomButton.dart';
 import 'package:pokemoney/widgets/CustomTextField.dart';
 import 'package:pokemoney/widgets/CustomSquareTile.dart';
-import 'package:pokemoney/widgets/CustomClickabeText.dart';
+import 'package:pokemoney/widgets/CustomClickableText.dart';
+import 'package:pokemoney/pages/SignUpPage.dart';
+import 'package:pokemoney/pages/ForgotPasswordPage.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
@@ -23,12 +25,36 @@ class LoginPage extends StatelessWidget {
           const SizedBox(height: 00),
 
           //logo
-          CustomSquareTile(
+          const CustomSquareTile(
             imagePath: 'assets/logo_login.png',
             borderRadius: 60,
             imageHeight: 275,
             paddingImage: 0.0,
           ),
+
+          const SizedBox(height: 10),
+
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: EdgeInsets.only(
+                  left: 48.0), // Adjust the left padding as needed
+              child: Column(
+                children: [
+                  Text(
+                    'Login',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 30.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 10),
 
           //username textfiled;
           CustomTextField(
@@ -48,9 +74,9 @@ class LoginPage extends StatelessWidget {
             obscureText: true,
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 15),
 
-          //Forgot password
+          //Forget password
           CustomClickableText(
             text: 'Forget password?',
             clickableText: 'Forget password?',
@@ -58,7 +84,7 @@ class LoginPage extends StatelessWidget {
               // Navigate to another page or perform desired action
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LoginPage()),
+                MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
               );
             },
             clickableStyle: const TextStyle(
@@ -68,11 +94,11 @@ class LoginPage extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 15),
 
           //sign in button
           CustomButton(
-            onTap: signUserIn,
+            onPressed: signUserIn,
             textButton: 'Login',
           ),
 
@@ -86,7 +112,7 @@ class LoginPage extends StatelessWidget {
               // Navigate to another page or perform desired action
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LoginPage()),
+                MaterialPageRoute(builder: (context) => SignUpPage()),
               );
             },
             textStyle: const TextStyle(
@@ -134,7 +160,7 @@ class LoginPage extends StatelessWidget {
           const SizedBox(height: 15),
 
           //login with google and apple
-          Row(
+          const Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // google button
