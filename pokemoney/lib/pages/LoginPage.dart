@@ -1,0 +1,151 @@
+import 'package:flutter/material.dart';
+import 'package:pokemoney/widgets/CustomButton.dart';
+import 'package:pokemoney/widgets/CustomTextField.dart';
+import 'package:pokemoney/widgets/CustomSquareTile.dart';
+import 'package:pokemoney/widgets/CustomClickabeText.dart';
+
+class LoginPage extends StatelessWidget {
+  LoginPage({super.key});
+
+  // text editing controllers
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  void signUserIn() {}
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        backgroundColor: const Color(0xFFF2FCF6),
+        body: SafeArea(
+            child: Center(
+                child: Column(children: [
+          const SizedBox(height: 00),
+
+          //logo
+          CustomSquareTile(
+            imagePath: 'assets/logo_login.png',
+            borderRadius: 60,
+            imageHeight: 275,
+            paddingImage: 0.0,
+          ),
+
+          //username textfiled;
+          CustomTextField(
+            headerText: 'Email',
+            controller: usernameController,
+            labelText: 'Your email',
+            obscureText: false,
+          ),
+
+          const SizedBox(height: 10),
+
+          //password textfield
+          CustomTextField(
+            headerText: 'Password',
+            controller: passwordController,
+            labelText: 'Password',
+            obscureText: true,
+          ),
+
+          const SizedBox(height: 20),
+
+          //Forgot password
+          CustomClickableText(
+            text: 'Forget password?',
+            clickableText: 'Forget password?',
+            onTap: () {
+              // Navigate to another page or perform desired action
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LoginPage()),
+              );
+            },
+            clickableStyle: const TextStyle(
+              decoration: TextDecoration.underline,
+              fontWeight: FontWeight.w500,
+              color: Colors.black,
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          //sign in button
+          CustomButton(
+            onTap: signUserIn,
+            textButton: 'Login',
+          ),
+
+          const SizedBox(height: 25),
+
+          //Link to sing up
+          CustomClickableText(
+            text: 'Don\'t have an account? Sign-up',
+            clickableText: 'Sign-up',
+            onTap: () {
+              // Navigate to another page or perform desired action
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LoginPage()),
+              );
+            },
+            textStyle: const TextStyle(
+              fontWeight: FontWeight.w500,
+              color: Colors.black,
+            ),
+            clickableStyle: const TextStyle(
+              decoration: TextDecoration.underline,
+              fontWeight: FontWeight.w500,
+              color: Colors.red,
+            ),
+          ),
+
+          const SizedBox(height: 25),
+
+          //or contine with
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 25.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Divider(
+                    thickness: 1,
+                    color: Color(0xFF347662),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Text(
+                    'Or continue with',
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.w500),
+                  ),
+                ),
+                Expanded(
+                  child: Divider(
+                    thickness: 1,
+                    color: Color(0xFF347662),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 15),
+
+          //login with google and apple
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // google button
+              CustomSquareTile(imagePath: 'assets/logo_google.png'),
+
+              const SizedBox(width: 25),
+
+              // apple button
+              CustomSquareTile(imagePath: 'assets/logo_apple.png')
+            ],
+          ),
+        ]))));
+  }
+}
