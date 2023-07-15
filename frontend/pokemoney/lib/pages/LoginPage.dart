@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pokemoney/pages/HomePage.dart';
 import 'package:pokemoney/widgets/CustomButton.dart';
 import 'package:pokemoney/widgets/CustomTextField.dart';
 import 'package:pokemoney/widgets/CustomSquareTile.dart';
@@ -98,7 +99,13 @@ class LoginPage extends StatelessWidget {
 
           //sign in button
           CustomButton(
-            onPressed: signUserIn,
+            onPressed: () {
+              // Navigate to another page or perform desired action
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => HomePage()),
+              );
+            },
             textButton: 'Login',
           ),
 
