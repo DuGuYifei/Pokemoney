@@ -3,6 +3,7 @@ import 'package:pokemoney/widgets/CustomButton.dart';
 import 'package:pokemoney/widgets/CustomTextField.dart';
 import 'package:pokemoney/widgets/CustomSquareTile.dart';
 import 'package:pokemoney/widgets/CustomClickableText.dart';
+import 'package:pokemoney/constants/AppColors.dart';
 
 class SignUpPage extends StatefulWidget {
   SignUpPage({super.key});
@@ -49,7 +50,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   Text(
                     'Sign-Up',
                     style: TextStyle(
-                      color: Colors.black,
+                      color: AppColors.textPrimary,
                       fontSize: 30.0,
                       fontWeight: FontWeight.bold,
                     ),

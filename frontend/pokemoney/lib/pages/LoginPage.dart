@@ -6,6 +6,7 @@ import 'package:pokemoney/widgets/CustomSquareTile.dart';
 import 'package:pokemoney/widgets/CustomClickableText.dart';
 import 'package:pokemoney/pages/SignUpPage.dart';
 import 'package:pokemoney/pages/ForgotPasswordPage.dart';
+import 'package:pokemoney/constants/AppColors.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
@@ -19,7 +20,7 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: const Color(0xFFF2FCF6),
+        backgroundColor: AppColors.surface,
         body: SafeArea(
             child: Center(
                 child: Column(children: [
@@ -45,7 +46,7 @@ class LoginPage extends StatelessWidget {
                   Text(
                     'Login',
                     style: TextStyle(
-                      color: Colors.black,
+                      color: AppColors.textPrimary,
                       fontSize: 30.0,
                       fontWeight: FontWeight.bold,
                     ),
@@ -91,7 +92,7 @@ class LoginPage extends StatelessWidget {
             clickableStyle: const TextStyle(
               decoration: TextDecoration.underline,
               fontWeight: FontWeight.w500,
-              color: Colors.black,
+              color: AppColors.textPrimary,
             ),
           ),
 
@@ -124,7 +125,7 @@ class LoginPage extends StatelessWidget {
             },
             textStyle: const TextStyle(
               fontWeight: FontWeight.w500,
-              color: Colors.black,
+              color: AppColors.textPrimary,
             ),
             clickableStyle: const TextStyle(
               decoration: TextDecoration.underline,
@@ -151,7 +152,7 @@ class LoginPage extends StatelessWidget {
                   child: Text(
                     'Or continue with',
                     style: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.w500),
+                        color: AppColors.textPrimary, fontWeight: FontWeight.w500),
                   ),
                 ),
                 Expanded(
