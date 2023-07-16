@@ -4,6 +4,7 @@ import 'package:pokemoney/widgets/CustomButton.dart';
 import 'package:pokemoney/widgets/CustomClickableText.dart';
 import 'package:pokemoney/widgets/CustomSquareTile.dart';
 import 'package:pokemoney/widgets/CustomTextField.dart';
+import 'package:pokemoney/constants/AppColors.dart';
 
 class ForgotPasswordPage extends StatelessWidget {
   ForgotPasswordPage({super.key});
@@ -41,7 +42,7 @@ class ForgotPasswordPage extends StatelessWidget {
                   Text(
                     'Forgot password',
                     style: TextStyle(
-                      color: Colors.black,
+                      color: AppColors.textPrimary,
                       fontSize: 30.0,
                       fontWeight: FontWeight.bold,
                     ),
