@@ -38,20 +38,20 @@ class HomePage extends StatelessWidget {
         },
         items: [
           BottomNavigationBarItem(
-            label: 'Favorites',
-            icon: Icon(Icons.favorite),
+            label: 'Home',
+            icon: Icon(Icons.home),
           ),
           BottomNavigationBarItem(
-            label: 'Music',
-            icon: Icon(Icons.music_note),
+            label: 'Funds',
+            icon: Icon(Icons.credit_card),
           ),
           BottomNavigationBarItem(
-            label: 'Places',
-            icon: Icon(Icons.location_on),
+            label: 'Bills',
+            icon: Icon(FontAwesomeIcons.fileInvoiceDollar),
           ),
           BottomNavigationBarItem(
-            label: 'News',
-            icon: Icon(Icons.library_books),
+            label: 'Accounts',
+            icon: Icon(Icons.person),
           ),
         ],
       ),
