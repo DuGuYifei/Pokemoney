@@ -34,7 +34,7 @@ class LoginPage extends StatelessWidget {
             paddingImage: 0.0,
           ),
 
-          const SizedBox(height: 10),
+          const SizedBox(height: 5),
 
           const Align(
             alignment: Alignment.centerLeft,
@@ -76,7 +76,7 @@ class LoginPage extends StatelessWidget {
             obscureText: true,
           ),
 
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
 
           //Forget password
           CustomClickableText(
@@ -110,7 +110,7 @@ class LoginPage extends StatelessWidget {
             textButton: 'Login',
           ),
 
-          const SizedBox(height: 25),
+          const SizedBox(height: 20),
 
           //Link to sing up
           CustomClickableText(
@@ -134,7 +134,7 @@ class LoginPage extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 25),
+          const SizedBox(height: 20),
 
           //or contine with
           const Padding(
@@ -152,7 +152,8 @@ class LoginPage extends StatelessWidget {
                   child: Text(
                     'Or continue with',
                     style: TextStyle(
-                        color: AppColors.textPrimary, fontWeight: FontWeight.w500),
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w500),
                   ),
                 ),
                 Expanded(
@@ -165,7 +166,7 @@ class LoginPage extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
 
           //login with google and apple
           const Row(

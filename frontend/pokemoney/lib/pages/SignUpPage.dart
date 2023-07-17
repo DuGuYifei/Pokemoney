@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pokemoney/widgets/CustomButton.dart';
-import 'package:pokemoney/widgets/CustomTextField.dart';
-import 'package:pokemoney/widgets/CustomSquareTile.dart';
-import 'package:pokemoney/widgets/CustomClickableText.dart';
+
 import 'package:pokemoney/constants/AppColors.dart';
+import 'package:pokemoney/pages/barrel.dart';
+import 'package:pokemoney/widgets/barrel.dart';
 
 class SignUpPage extends StatefulWidget {
   SignUpPage({super.key});
@@ -19,12 +18,17 @@ class _SignUpPageState extends State<SignUpPage> {
   final passwordController = TextEditingController();
   bool agree = false;
 
-  void signUserUp() {}
+  void signUserUp() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => HomePage()),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: const Color(0xFFF2FCF6),
+        backgroundColor:  AppColors.surface,
         body: SafeArea(
             child: Center(
                 child: Column(children: [
@@ -38,7 +42,7 @@ class _SignUpPageState extends State<SignUpPage> {
             paddingImage: 0.0,
           ),
 
-          const SizedBox(height: 10),
+          const SizedBox(height: 5),
 
           const Align(
             alignment: Alignment.centerLeft,
@@ -112,7 +116,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   width: 24.0,
                   child: Checkbox(
                     fillColor: MaterialStateProperty.all<Color>(
-                        const Color(0xFF347662)),
+                        AppColors.primaryColor),
                     value: agree,
                     onChanged: (value) {
                       setState(() {
@@ -124,7 +128,9 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               CustomClickableText(
                   text: 'I have read and accpet terms and conditions',
-                  onTap: () {},
+                  onTap: () {
+                    // Navigate to another page or perform desired action
+                  },
                   clickableText: 'terms and conditions')
             ],
           ),

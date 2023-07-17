@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pokemoney/constants/AppColors.dart';
 
 class CustomHoverableListTile extends StatefulWidget {
   final VoidCallback onTap;
@@ -13,7 +14,8 @@ class CustomHoverableListTile extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _CustomHoverableListTileState createState() => _CustomHoverableListTileState();
+  _CustomHoverableListTileState createState() =>
+      _CustomHoverableListTileState();
 }
 
 class _CustomHoverableListTileState extends State<CustomHoverableListTile> {
@@ -28,13 +30,13 @@ class _CustomHoverableListTileState extends State<CustomHoverableListTile> {
         tileColor: _isHovered ? Colors.transparent : null,
         leading: Icon(
           widget.icon,
-          color: _isHovered ? Colors.blue : Color.fromRGBO(111, 113, 128, 1),
+          color: _isHovered ? Colors.blue : AppColors.tileLists,
         ),
         title: Text(
           widget.title,
           style: TextStyle(
             fontWeight: FontWeight.normal,
-            color: _isHovered ? Colors.white : Color.fromRGBO(168, 169, 176, 1),
+            color: _isHovered ? Colors.white : AppColors.tileLists,
           ),
         ),
         onTap: widget.onTap,

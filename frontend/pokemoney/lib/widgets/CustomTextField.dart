@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pokemoney/constants/AppColors.dart';
 
-
 /// A custom text field widget with customizable borders and border radius.
 class CustomTextField extends StatelessWidget {
   final String? headerText;
@@ -35,7 +34,7 @@ class CustomTextField extends StatelessWidget {
               fontSize: 20.0,
             ),
           ),
-          const SizedBox(height: 15)
+          const SizedBox(height: 10)
         ],
         Container(
           decoration: BoxDecoration(
