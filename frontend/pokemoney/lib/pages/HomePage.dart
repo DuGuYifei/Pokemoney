@@ -1,14 +1,43 @@
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, prefer_final_fields
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:pokemoney/widgets/CustomNavBar.dart';
+import 'package:pokemoney/pages/NavBar.dart';
 import 'package:pokemoney/constants/AppColors.dart';
 
-class HomePage extends StatelessWidget {
+import 'package:pokemoney/pages/barrel.dart';
+
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  int _selectedIndex = 0;
+  static List<Widget> _widgetsOptions = <Widget>[
+    HomePage(),
+    FundsPage(),
+    LedgerBooksPage(),
+    AccountsPage(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => _widgetsOptions[_selectedIndex],
+          ));
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.surface,
       appBar: AppBar(
           iconTheme: IconThemeData(color: AppColors.textPrimary),
           backgroundColor: AppColors.surfaceContainer,
@@ -33,9 +62,8 @@ class HomePage extends StatelessWidget {
         unselectedItemColor: AppColors.textSecondary,
         selectedFontSize: 14,
         unselectedFontSize: 14,
-        onTap: (value) {
-          // Respond to item press.
-        },
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
         items: [
           BottomNavigationBarItem(
             label: 'Home',
