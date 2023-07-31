@@ -39,38 +39,26 @@ class CustomNavBar extends StatelessWidget {
         CustomHoverableListTile(
           icon: FontAwesomeIcons.book,
           title: 'Ledger books',
-          onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => LedgerBooksPage(),
-              )),
+          onTap: () =>
+              Navigator.of(context)?.pushNamed(RouteGenerator.ledgerBooksPage),
         ),
         CustomHoverableListTile(
           icon: FontAwesomeIcons.creditCard,
           title: 'Funds',
-          onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => FundsPage(),
-              )),
+          onTap: () =>
+              Navigator.of(context)?.pushNamed(RouteGenerator.fundsPage),
         ),
         CustomHoverableListTile(
           icon: Icons.person,
           title: 'Accoutnts',
-          onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AccountsPage(),
-              )),
+          onTap: () =>
+              Navigator.of(context)?.pushNamed(RouteGenerator.accountsPage),
         ),
         CustomHoverableListTile(
           icon: FontAwesomeIcons.pieChart,
           title: 'Stats',
-          onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => StatsPage(),
-              )),
+          onTap: () =>
+              Navigator.of(context)?.pushNamed(RouteGenerator.statsPage),
         ),
         Spacer(),
         Divider(
@@ -80,28 +68,26 @@ class CustomNavBar extends StatelessWidget {
           endIndent: 13.0,
         ),
         CustomHoverableListTile(
-          icon: Icons.brush_outlined,
-          title: 'Style',
-          onTap: () => Navigator.push(
-              context, MaterialPageRoute(builder: (context) => StylePage())),
-        ),
+            icon: Icons.brush_outlined,
+            title: 'Style',
+            onTap: () =>
+                Navigator.of(context)?.pushNamed(RouteGenerator.stylePage)),
         CustomHoverableListTile(
-          icon: Icons.privacy_tip_outlined,
-          title: 'Privacy and Security',
-          onTap: () => Navigator.push(context,
-              MaterialPageRoute(builder: (context) => PrivacySecurityPage())),
-        ),
+            icon: Icons.privacy_tip_outlined,
+            title: 'Privacy and Security',
+            onTap: () => Navigator.of(context)
+                ?.pushNamed(RouteGenerator.privacySecurityPage)),
         CustomHoverableListTile(
           icon: Icons.info,
           title: 'Help',
-          onTap: () => Navigator.push(
-              context, MaterialPageRoute(builder: (context) => HelpPage())),
+          onTap: () =>
+              Navigator.of(context)?.pushNamed(RouteGenerator.helpPage),
         ),
         CustomHoverableListTile(
           icon: Icons.settings_sharp,
           title: 'Settings',
-          onTap: () => Navigator.push(
-              context, MaterialPageRoute(builder: (context) => SettingsPage())),
+          onTap: () =>
+              Navigator.of(context)?.pushNamed(RouteGenerator.settingsPage),
         ),
       ]),
     );

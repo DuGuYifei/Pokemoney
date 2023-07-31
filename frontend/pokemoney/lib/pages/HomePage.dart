@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:pokemoney/pages/NavBar.dart';
 import 'package:pokemoney/constants/AppColors.dart';
 
 import 'package:pokemoney/pages/barrel.dart';
@@ -15,22 +14,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _selectedIndex = 0;
-  static List<Widget> _widgetsOptions = <Widget>[
-    HomePage(),
-    FundsPage(),
-    LedgerBooksPage(),
-    AccountsPage(),
+  int _currentIndex = 0;
+  static List<String> _routes = [
+    RouteGenerator.homePage,
+    RouteGenerator.fundsPage,
+    RouteGenerator.ledgerBooksPage,
+    RouteGenerator.accountsPage
   ];
 
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index;
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => _widgetsOptions[_selectedIndex],
-          ));
+      _currentIndex = index;
+      Navigator.of(context)?.pushNamed(_routes[_currentIndex]);
     });
   }
 
@@ -62,7 +57,7 @@ class _HomePageState extends State<HomePage> {
         unselectedItemColor: AppColors.textSecondary,
         selectedFontSize: 14,
         unselectedFontSize: 14,
-        currentIndex: _selectedIndex,
+        currentIndex: _currentIndex,
         onTap: _onItemTapped,
         items: [
           BottomNavigationBarItem(

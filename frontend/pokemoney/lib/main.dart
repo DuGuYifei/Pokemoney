@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'pages/LoginPage.dart';
+import 'package:pokemoney/pages/barrel.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,7 +16,9 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
-      home: LoginPage(),
+      //home: LoginPage(),
+      initialRoute: RouteGenerator.homePage,
+      onGenerateRoute: RouteGenerator.generateRoute,
     );
   }
 }
