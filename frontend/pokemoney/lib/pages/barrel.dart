@@ -10,3 +10,5 @@ export 'StatsPage.dart';
 export 'StylePage.dart';
 export 'SettingsPage.dart';
 export 'PrivacySecurityPage.dart';
+export 'HelpPage.dart';
+export 'RouteGenerator.dart';
