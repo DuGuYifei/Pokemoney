@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pokemoney/pages/HomePage.dart';
-import 'package:pokemoney/widgets/CustomButton.dart';
-import 'package:pokemoney/widgets/CustomTextField.dart';
-import 'package:pokemoney/widgets/CustomSquareTile.dart';
-import 'package:pokemoney/widgets/CustomClickableText.dart';
-import 'package:pokemoney/pages/SignUpPage.dart';
-import 'package:pokemoney/pages/ForgotPasswordPage.dart';
+import 'package:pokemoney/widgets/barrel.dart';
+import 'package:pokemoney/pages/barrel.dart';
 import 'package:pokemoney/constants/AppColors.dart';
 
 class LoginPage extends StatelessWidget {
@@ -84,10 +79,8 @@ class LoginPage extends StatelessWidget {
             clickableText: 'Forget password?',
             onTap: () {
               // Navigate to another page or perform desired action
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
-              );
+              Navigator.of(context)
+                  ?.pushNamed(RouteGenerator.forgotPasswordPage);
             },
             clickableStyle: const TextStyle(
               decoration: TextDecoration.underline,
@@ -102,10 +95,7 @@ class LoginPage extends StatelessWidget {
           CustomButton(
             onPressed: () {
               // Navigate to another page or perform desired action
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => HomePage()),
-              );
+              Navigator.of(context)?.pushNamed(RouteGenerator.homePage);
             },
             textButton: 'Login',
           ),
@@ -118,10 +108,7 @@ class LoginPage extends StatelessWidget {
             clickableText: 'Sign-up',
             onTap: () {
               // Navigate to another page or perform desired action
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SignUpPage()),
-              );
+              Navigator.of(context)?.pushNamed(RouteGenerator.signUpPage);
             },
             textStyle: const TextStyle(
               fontWeight: FontWeight.w500,
