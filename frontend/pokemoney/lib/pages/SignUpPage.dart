@@ -19,16 +19,13 @@ class _SignUpPageState extends State<SignUpPage> {
   bool agree = false;
 
   void signUserUp() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => HomePage()),
-    );
+    Navigator.of(context)?.pushNamed(RouteGenerator.homePage);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor:  AppColors.surface,
+        backgroundColor: AppColors.surface,
         body: SafeArea(
             child: Center(
                 child: Column(children: [
