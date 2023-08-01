@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pokemoney/pages/barrel.dart';
+import 'package:pokemoney/RouteGenerator.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
-      initialRoute: RouteGenerator.homePage,
+      initialRoute: RouteGenerator.app,
       onGenerateRoute: RouteGenerator.generateRoute,
     );
   }

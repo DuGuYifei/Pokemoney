@@ -6,12 +6,8 @@ class LedgerBooksPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text("Ledger Books"),
-        backgroundColor: AppColors.surfaceContainer,
-      ),
+    return Center(
+      child: Text('Ledger Books Page'),
     );
   }
 }

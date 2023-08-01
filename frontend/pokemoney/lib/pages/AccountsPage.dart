@@ -6,12 +6,6 @@ class AccountsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text("Accounts"),
-        backgroundColor: AppColors.surfaceContainer,
-      ),
-    );
+    return Scaffold();
   }
 }

@@ -40,7 +40,8 @@ class CustomNavBar extends StatelessWidget {
           icon: FontAwesomeIcons.book,
           title: 'Ledger books',
           onTap: () =>
-              Navigator.of(context)?.pushNamed(RouteGenerator.ledgerBooksPage),
+              //Navigator.of(context)?.pushNamed(RouteGenerator.ledgerBooksPage),
+              Navigator.pushNamed(context, RouteGenerator.ledgerBooksPage),
         ),
         CustomHoverableListTile(
           icon: FontAwesomeIcons.creditCard,
