@@ -1,15 +1,68 @@
 import 'package:flutter/material.dart';
-import 'package:pokemoney/constants/AppColors.dart';
 import 'package:pokemoney/model/barrel.dart';
 import 'package:pokemoney/widgets/barrel.dart';
 
 class AccountsPage extends StatelessWidget {
   AccountsPage({super.key});
 
-  List<Account> _accountsList = [
-    Account("Osamah Taresh", "Personal", "assets/default_account_picture.jpg"),
-    Account("Osamah Taresh", "Personal", "assets/lion.jpg"),
-    Account("Nasr Taresh", "Fmaily", "assets/logo_login.png"),
+  final List<Account> _accountsList = [
+    Account(
+      id: 1,
+      accountName: "John's Account",
+      type: "Savings",
+      pictureUrl: "assets/default_account_picture.jpg",
+      headerPicture: "path_to_header",
+      ledgerBooks: [
+        LedgerBook(
+            id: 1,
+            title: "January",
+            description: "January Expenses",
+            balance: 1500.0),
+        LedgerBook(
+            id: 2,
+            title: "February",
+            description: "February Expenses",
+            balance: 1200.0),
+      ],
+    ),
+    Account(
+      id: 2,
+      accountName: "Oso Lensra",
+      type: "Personal",
+      pictureUrl: "assets/lion.jpg",
+      headerPicture: "path_to_header",
+      ledgerBooks: [
+        LedgerBook(
+            id: 1,
+            title: "January",
+            description: "January Expenses",
+            balance: 1500.0),
+        LedgerBook(
+            id: 2,
+            title: "February",
+            description: "February Expenses",
+            balance: 1200.0),
+      ],
+    ),
+    Account(
+      id: 3,
+      accountName: "Nasr Taresh",
+      type: "Fmaily",
+      pictureUrl: "assets/logo_login.png",
+      headerPicture: "path_to_header",
+      ledgerBooks: [
+        LedgerBook(
+            id: 1,
+            title: "Work",
+            description: "work Expenses",
+            balance: 1146.0),
+        LedgerBook(
+            id: 2,
+            title: "Home",
+            description: "Home Expenses",
+            balance: 900.0),
+      ],
+    ),
   ];
   @override
   Widget build(BuildContext context) {
@@ -19,7 +72,7 @@ class AccountsPage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Padding(
-          padding: EdgeInsets.all(20.0),
+          padding: EdgeInsets.fromLTRB(43, 19, 10, 1),
           child: Text(
             "Accounts",
             style: TextStyle(

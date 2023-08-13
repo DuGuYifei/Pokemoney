@@ -2,3 +2,6 @@
 - Still need to checkout the routing in the app.dart, the routing to the other pages. And see how to make it name routing.
 - the drawer is not working on the name routing, I need to check that out, for now it only works on the basic Navigator page
 - I can add the google animation to the bottom navigation bar
+
+Functionalties to handle:
+- logout icon (popup menu) AccountPage, AccountCard
