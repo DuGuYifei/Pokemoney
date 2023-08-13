@@ -3,5 +3,7 @@
 - the drawer is not working on the name routing, I need to check that out, for now it only works on the basic Navigator page
 - I can add the google animation to the bottom navigation bar
 
-Functionalties to handle:
+Functionalties to handle in front-end:
 - logout icon (popup menu) AccountPage, AccountCard
+- the edit icon in the AccountDetailsPage, HeaderAccountCard
+- The View buttom in the AccountDetailsPage, LederOwnedCard

@@ -39,7 +39,8 @@ class CustomClickableText extends StatelessWidget {
     ),
     this.clickableStyle = const TextStyle(
       decoration: TextDecoration.underline,
-      color: Colors.blue,
+      color: AppColors.textClickable,
+      fontWeight: FontWeight.w600,
     ),
     required this.clickableText,
   }) : super(key: key);

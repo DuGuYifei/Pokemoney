@@ -11,7 +11,7 @@ class AccountsPage extends StatelessWidget {
       accountName: "John's Account",
       type: "Savings",
       pictureUrl: "assets/default_account_picture.jpg",
-      headerPicture: "path_to_header",
+      headerPicture: "assets/header_image_unsplash.jpg",
       ledgerBooks: [
         LedgerBook(
             id: 1,
@@ -30,7 +30,7 @@ class AccountsPage extends StatelessWidget {
       accountName: "Oso Lensra",
       type: "Personal",
       pictureUrl: "assets/lion.jpg",
-      headerPicture: "path_to_header",
+      headerPicture: "assets/header_image.png",
       ledgerBooks: [
         LedgerBook(
             id: 1,
@@ -49,7 +49,7 @@ class AccountsPage extends StatelessWidget {
       accountName: "Nasr Taresh",
       type: "Fmaily",
       pictureUrl: "assets/logo_login.png",
-      headerPicture: "path_to_header",
+      headerPicture: "assets/header_image.png",
       ledgerBooks: [
         LedgerBook(
             id: 1,
@@ -57,13 +57,11 @@ class AccountsPage extends StatelessWidget {
             description: "work Expenses",
             balance: 1146.0),
         LedgerBook(
-            id: 2,
-            title: "Home",
-            description: "Home Expenses",
-            balance: 900.0),
+            id: 2, title: "Home", description: "Home Expenses", balance: 900.0),
       ],
     ),
   ];
+  
   @override
   Widget build(BuildContext context) {
     List<Widget> accountsCards =
@@ -91,13 +89,3 @@ class AccountsPage extends StatelessWidget {
     );
   }
 }
-
-// @override
-// Widget build(BuildContext context) {
-// List<Widget> newsCards = _newsList.map((news) => NewsCard(news)).toList();
-// return new Scaffold(
-// appBar: new AppBar(
-// title: new Text("News Feed"),
-// ),
-// body: new ListView(padding: EdgeInsets.all(20.0), children:
-// newsCards));
