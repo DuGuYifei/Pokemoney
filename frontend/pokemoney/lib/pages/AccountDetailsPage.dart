@@ -21,10 +21,18 @@ class AccountDetailsPage extends StatelessWidget {
       backgroundColor: AppColors.surface,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            HeaderAccountCard(account),
-            LedgerOwnedCard(account),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              HeaderAccountCard(account),
+              LedgerOwnedCard(account),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
             // ListView(
             //   children: <Widget>[
             //     //Image.asset(account.headerPicture),
@@ -47,9 +55,3 @@ class AccountDetailsPage extends StatelessWidget {
             //     // Similarly, you can loop through `alerts` once you've defined it.
             //   ],
             // ),
-          ],
-        ),
-      ),
-    );
-  }
-}

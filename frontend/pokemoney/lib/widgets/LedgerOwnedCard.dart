@@ -4,14 +4,15 @@ import 'package:pokemoney/widgets/barrel.dart';
 import 'package:pokemoney/constants/AppColors.dart';
 
 class LedgerOwnedCard extends StatelessWidget {
-  Account account;
+  final Account account;
 
   LedgerOwnedCard(this.account, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      surfaceTintColor: AppColors.cardBackgorund,
+      // Assuming 'surfaceTintColor' is a valid property for Card, if not, you might have to adjust it.
+      color: AppColors.cardBackgorund,
       child: Column(children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
@@ -36,25 +37,48 @@ class LedgerOwnedCard extends StatelessWidget {
             )
           ]),
         ),
-        ListView(
-          children: <Widget>[
-            ...account.ledgerBooks.map((ledgerBook) => Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CircleAvatar(
-                        radius: 25,
-                        backgroundImage: AssetImage(account.pictureUrl),
-                      ),
-                      Text("Title: ${ledgerBook.title}"),
-                    ],
+        ListView.builder(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          itemCount: account.ledgerBooks.length,
+          itemBuilder: (context, index) {
+            final ledgerBook = account.ledgerBooks[index];
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    radius: 25,
+                    backgroundImage: AssetImage(account.pictureUrl),
                   ),
-                )),
-            // Similarly, you can loop through `alerts` once you've defined it.
-          ],
+                  Text("Title: ${ledgerBook.title}"),
+                ],
+              ),
+            );
+          },
         ),
       ]),
     );
   }
 }
+
+// ListView.builder(
+//   itemCount: account.ledgerBooks.length,
+//   itemBuilder: (context, index) {
+//     final ledgerBook = account.ledgerBooks[index];
+//     return Padding(
+//       padding: const EdgeInsets.symmetric(vertical: 8.0),
+//       child: Row(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           CircleAvatar(
+//             radius: 25,
+//             backgroundImage: AssetImage(account.pictureUrl),
+//           ),
+//           Text("Title: ${ledgerBook.title}"),
+//         ],
+//       ),
+//     );
+//   },
+// )
