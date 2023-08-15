@@ -1,4 +1,4 @@
-package entity;
+package com.pokemon.entity;
 
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
