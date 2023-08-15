@@ -1,4 +1,4 @@
 /**
  * This package supply entities of user-service.
  */
-package entity;
+package com.pokemon.entity;
