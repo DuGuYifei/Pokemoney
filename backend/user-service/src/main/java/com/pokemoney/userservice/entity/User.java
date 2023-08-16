@@ -1,4 +1,4 @@
-package com.pokemon.entity;
+package com.pokemoney.userservice.entity;
 
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.AccessLevel;
 import lombok.Setter;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -25,6 +26,7 @@ public class User implements Serializable {
     /**
      * Serial version UID.
      */
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
