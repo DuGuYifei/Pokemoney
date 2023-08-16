@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pokemoney/constants/AppColors.dart';
 
 /// A custom button widget with customizable width, height, and other properties.
 class CustomButton extends StatelessWidget {
@@ -27,7 +28,7 @@ class CustomButton extends StatelessWidget {
     Key? key,
     this.onPressed,
     this.borderRadius = 30.0,
-    this.backGroundColor = const Color(0xFF347662),
+    this.backGroundColor = AppColors.buttonPrimary,
     this.textColor = Colors.white,
     required this.textButton,
     this.fontSize = 20.0,

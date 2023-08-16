@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pokemoney/pages/LoginPage.dart';
-import 'package:pokemoney/widgets/CustomButton.dart';
-import 'package:pokemoney/widgets/CustomClickableText.dart';
-import 'package:pokemoney/widgets/CustomSquareTile.dart';
-import 'package:pokemoney/widgets/CustomTextField.dart';
+import 'package:pokemoney/pages/barrel.dart';
+import 'package:pokemoney/widgets/barrel.dart';
+import 'package:pokemoney/constants/AppColors.dart';
 
 class ForgotPasswordPage extends StatelessWidget {
   ForgotPasswordPage({super.key});
@@ -41,7 +39,7 @@ class ForgotPasswordPage extends StatelessWidget {
                   Text(
                     'Forgot password',
                     style: TextStyle(
-                      color: Colors.black,
+                      color: AppColors.textPrimary,
                       fontSize: 30.0,
                       fontWeight: FontWeight.bold,
                     ),
@@ -76,10 +74,7 @@ class ForgotPasswordPage extends StatelessWidget {
             clickableText: 'Back to login',
             onTap: () {
               // Navigate to another page or perform desired action
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => LoginPage()),
-              );
+              Navigator.of(context)?.pushNamed(RouteGenerator.loginPage);
             },
             clickableStyle: const TextStyle(
               decoration: TextDecoration.underline,

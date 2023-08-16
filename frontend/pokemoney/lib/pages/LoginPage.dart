@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:pokemoney/widgets/CustomButton.dart';
-import 'package:pokemoney/widgets/CustomTextField.dart';
-import 'package:pokemoney/widgets/CustomSquareTile.dart';
-import 'package:pokemoney/widgets/CustomClickableText.dart';
-import 'package:pokemoney/pages/SignUpPage.dart';
-import 'package:pokemoney/pages/ForgotPasswordPage.dart';
+import 'package:pokemoney/widgets/barrel.dart';
+import 'package:pokemoney/pages/barrel.dart';
+import 'package:pokemoney/constants/AppColors.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
@@ -18,7 +15,7 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: const Color(0xFFF2FCF6),
+        backgroundColor: AppColors.surface,
         body: SafeArea(
             child: Center(
                 child: Column(children: [
@@ -32,7 +29,7 @@ class LoginPage extends StatelessWidget {
             paddingImage: 0.0,
           ),
 
-          const SizedBox(height: 10),
+          const SizedBox(height: 5),
 
           const Align(
             alignment: Alignment.centerLeft,
@@ -44,7 +41,7 @@ class LoginPage extends StatelessWidget {
                   Text(
                     'Login',
                     style: TextStyle(
-                      color: Colors.black,
+                      color: AppColors.textPrimary,
                       fontSize: 30.0,
                       fontWeight: FontWeight.bold,
                     ),
@@ -74,7 +71,7 @@ class LoginPage extends StatelessWidget {
             obscureText: true,
           ),
 
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
 
           //Forget password
           CustomClickableText(
@@ -82,15 +79,13 @@ class LoginPage extends StatelessWidget {
             clickableText: 'Forget password?',
             onTap: () {
               // Navigate to another page or perform desired action
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ForgotPasswordPage()),
-              );
+              Navigator.of(context)
+                  ?.pushNamed(RouteGenerator.forgotPasswordPage);
             },
             clickableStyle: const TextStyle(
               decoration: TextDecoration.underline,
               fontWeight: FontWeight.w500,
-              color: Colors.black,
+              color: AppColors.textPrimary,
             ),
           ),
 
@@ -98,11 +93,14 @@ class LoginPage extends StatelessWidget {
 
           //sign in button
           CustomButton(
-            onPressed: signUserIn,
+            onPressed: () {
+              // Navigate to another page or perform desired action
+              Navigator.of(context)?.pushNamed(RouteGenerator.homePage);
+            },
             textButton: 'Login',
           ),
 
-          const SizedBox(height: 25),
+          const SizedBox(height: 20),
 
           //Link to sing up
           CustomClickableText(
@@ -110,14 +108,11 @@ class LoginPage extends StatelessWidget {
             clickableText: 'Sign-up',
             onTap: () {
               // Navigate to another page or perform desired action
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SignUpPage()),
-              );
+              Navigator.of(context)?.pushNamed(RouteGenerator.signUpPage);
             },
             textStyle: const TextStyle(
               fontWeight: FontWeight.w500,
-              color: Colors.black,
+              color: AppColors.textPrimary,
             ),
             clickableStyle: const TextStyle(
               decoration: TextDecoration.underline,
@@ -126,7 +121,7 @@ class LoginPage extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 25),
+          const SizedBox(height: 20),
 
           //or contine with
           const Padding(
@@ -144,7 +139,8 @@ class LoginPage extends StatelessWidget {
                   child: Text(
                     'Or continue with',
                     style: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.w500),
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w500),
                   ),
                 ),
                 Expanded(
@@ -157,7 +153,7 @@ class LoginPage extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
 
           //login with google and apple
           const Row(

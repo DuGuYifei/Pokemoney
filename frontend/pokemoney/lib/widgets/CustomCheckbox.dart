@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pokemoney/widgets/CustomClickableText.dart';
+import 'package:pokemoney/constants/AppColors.dart';
 
 class CheckboxExample extends StatefulWidget {
   final String? clickableText;
@@ -29,9 +29,9 @@ class _CheckboxExampleState extends State<CheckboxExample> {
         MaterialState.focused,
       };
       if (states.any(interactiveStates.contains)) {
-        return const Color(0xFF347662);
+        return AppColors.primaryColor;
       }
-      return Colors.black;
+      return AppColors.textPrimary;
     }
 
     final customClickableText = null; //= widget.clickableText != null

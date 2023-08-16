@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'pages/LoginPage.dart';
+import 'package:pokemoney/RouteGenerator.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,8 +12,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        useMaterial3: true,
+      ),
       debugShowCheckedModeBanner: false,
-      home: LoginPage(),
+      initialRoute: RouteGenerator.app,
+      onGenerateRoute: RouteGenerator.generateRoute,
     );
   }
 }

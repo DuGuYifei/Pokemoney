@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:pokemoney/constants/AppColors.dart';
 
 /// CustomClickableText is a widget that displays text with a clickable word or phrase.
 /// Tapping the clickable text triggers an action, such as navigating to another page.
@@ -34,7 +35,7 @@ class CustomClickableText extends StatelessWidget {
     required this.text,
     required this.onTap,
     this.textStyle = const TextStyle(
-      color: Colors.black,
+      color: AppColors.textPrimary,
     ),
     this.clickableStyle = const TextStyle(
       decoration: TextDecoration.underline,
