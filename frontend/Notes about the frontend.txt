@@ -1,2 +1,0 @@
-- There is a bug that checkbox and the text are speart so for that we need to fix it as it is not customzeble right now - class CustomCheckBox.dart
-- Still need to checkout the routing in the app.dart, the routing to the other pages. And see how to make it name routing.
