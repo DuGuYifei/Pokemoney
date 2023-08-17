@@ -1,5 +1,6 @@
 package com.pokemoney.userservice.entity;
 
+import com.pokemoney.userservice.dto.RegisterUserDto;
 import com.pokemoney.userservice.utils.enums.UserRole;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.AccessLevel;
 import lombok.Setter;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -81,4 +83,18 @@ public class User implements Serializable {
      */
     private UserRole userRole;
 
+    /**
+     * Create a user from RegisterUserDto
+     *
+     * @param registerUserDto RegisterUserDto contains user information from user.
+     * @return User object of user entity (NOT from persistent storage).
+     */
+    public static User fromRegisterUserDto(RegisterUserDto registerUserDto) {
+        String hashedPassword = BCrypt.hashpw(registerUserDto.getPassword(), BCrypt.gensalt());
+        return User.builder()
+                .username(registerUserDto.getUsername())
+                .password(registerUserDto.getPassword())
+                .email(registerUserDto.getEmail())
+                .build();
+    }
 }
