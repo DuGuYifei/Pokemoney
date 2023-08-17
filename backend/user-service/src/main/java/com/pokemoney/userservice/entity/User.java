@@ -54,27 +54,27 @@ public class User implements Serializable {
     /**
      * User confirmation key.
      */
-    private String confirmation_key;
+    private String confirmationKey;
 
     /**
      * Whether Confirmation key is confirmed.
      */
-    private Boolean is_confirm;
+    private Boolean isConfirm;
 
     /**
      * Whether user is banned.
      */
-    private Boolean is_ban;
+    private Boolean isBan;
 
     /**
      * User register date.
      */
-    private Timestamp register_date;
+    private Timestamp registerDate;
 
     /**
      * User last login date.
      */
-    private Timestamp lastLogin_date;
+    private Timestamp lastLoginDate;
 
     /**
      * User role.
