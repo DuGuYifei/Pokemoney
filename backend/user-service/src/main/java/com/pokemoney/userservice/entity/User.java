@@ -1,5 +1,6 @@
 package com.pokemoney.userservice.entity;
 
+import com.pokemoney.userservice.utils.enums.UserRole;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Entity;
@@ -73,6 +74,11 @@ public class User implements Serializable {
     /**
      * User last login date.
      */
-    private Timestamp last_login_date;
+    private Timestamp lastLogin_date;
+
+    /**
+     * User role.
+     */
+    private UserRole userRole;
 
 }
