@@ -1,5 +1,6 @@
 package com.pokemoney.userservice.entity;
 
+import com.pokemoney.userservice.utils.enums.UserRole;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Entity;
@@ -53,26 +54,31 @@ public class User implements Serializable {
     /**
      * User confirmation key.
      */
-    private String confirmation_key;
+    private String confirmationKey;
 
     /**
      * Whether Confirmation key is confirmed.
      */
-    private Boolean is_confirm;
+    private Boolean isConfirm;
 
     /**
      * Whether user is banned.
      */
-    private Boolean is_ban;
+    private Boolean isBan;
 
     /**
      * User register date.
      */
-    private Timestamp register_date;
+    private Timestamp registerDate;
 
     /**
      * User last login date.
      */
-    private Timestamp last_login_date;
+    private Timestamp lastLoginDate;
+
+    /**
+     * User role.
+     */
+    private UserRole userRole;
 
 }
