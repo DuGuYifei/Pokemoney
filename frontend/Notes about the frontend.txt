@@ -6,4 +6,5 @@
 Functionalties to handle in front-end:
 - logout icon (popup menu) AccountPage, AccountCard
 - the edit icon in the AccountDetailsPage, HeaderAccountCard
-- The View buttom in the AccountDetailsPage, LederOwnedCard
+- The View all buttom in the AccountDetailsPage, LederOwnedCard
+- clicking on the ListTile that will direct you to the ledger book that is pointing to in the AccountDetailsPage, LederOwnedCard
