@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/backend/eureka-server/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/backend/eureka-server/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/backend/hadoop-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/backend/hadoop-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/backend/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/backend/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/backend/user-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/backend/user-service/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/leaf-service/leaf-core/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/leaf-service/leaf-core/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/leaf-service/leaf-server/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/leaf-service/leaf-server/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/leaf-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/leaf-service/src/main/resources" charset="UTF-8" />
+  </component>
+</project>
