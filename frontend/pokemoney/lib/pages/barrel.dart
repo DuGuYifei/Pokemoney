@@ -12,4 +12,5 @@ export 'StylePage.dart';
 export 'SettingsPage.dart';
 export 'PrivacySecurityPage.dart';
 export 'HelpPage.dart';
+export 'AlertsPage.dart';
 export 'package:pokemoney/RouteGenerator.dart';

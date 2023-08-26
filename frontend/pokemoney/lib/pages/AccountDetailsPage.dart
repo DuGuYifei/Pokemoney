@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:pokemoney/model/barrel.dart';
 import 'package:pokemoney/constants/AppColors.dart';
+import 'package:pokemoney/model/barrel.dart';
 import 'package:pokemoney/widgets/barrel.dart';
 
+/// [AccountDetailsPage] displays details related to a given [Account].
+///
+/// This page showcases the account's name in the app bar and provides
+/// a detailed view with the `HeaderAccountCard`, `LedgerOwnedContainer`,
+/// and `AlertsContainer` related to the account.
 class AccountDetailsPage extends StatelessWidget {
   final Account account;
+
+  /// Creates an [AccountDetailsPage] with a given [account].
+  ///
+  /// [account]: The [Account] object whose details are to be displayed.
   const AccountDetailsPage(this.account, {Key? key}) : super(key: key);
 
   @override
@@ -21,37 +30,16 @@ class AccountDetailsPage extends StatelessWidget {
       backgroundColor: AppColors.surface,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              HeaderAccountCard(account),
-              LedgerOwnedCard(account),
-            ],
-          ),
+        child: ListView(
+          children: [
+            HeaderAccountCard(account),
+            const SizedBox(height: 10),
+            LedgerOwnedContainer(account),
+            const SizedBox(height: 10),
+            AlertsContainer(account),
+          ],
         ),
       ),
     );
   }
 }
-            // ListView(
-            //   children: <Widget>[
-            //     //Image.asset(account.headerPicture),
-            //     SizedBox(height: 20.0),
-            //     Text("Account Name: ${account.accountName}"),
-            //     SizedBox(height: 10.0),
-            //     Text("Type: ${account.type}"),
-            //     SizedBox(height: 10.0),
-            //     ...account.ledgerBooks.map((ledgerBook) => Padding(
-            //           padding: const EdgeInsets.symmetric(vertical: 8.0),
-            //           child: Column(
-            //             crossAxisAlignment: CrossAxisAlignment.start,
-            //             children: [
-            //               Text("Title: ${ledgerBook.title}"),
-            //               Text("Description: ${ledgerBook.description}"),
-            //               Text("Balance: \$${ledgerBook.balance}"),
-            //             ],
-            //           ),
-            //         )),
-            //     // Similarly, you can loop through `alerts` once you've defined it.
-            //   ],
-            // ),

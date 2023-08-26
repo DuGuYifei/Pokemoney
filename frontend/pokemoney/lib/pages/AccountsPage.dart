@@ -7,99 +7,153 @@ class AccountsPage extends StatelessWidget {
 
   final List<Account> _accountsList = [
     Account(
-      id: 1,
-      accountName: "John's Account",
-      type: "Savings",
-      pictureUrl: "assets/default_account_picture.jpg",
-      headerPicture: "assets/header_image_unsplash.jpg",
-      ledgerBooks: [
-        LedgerBook(
-            id: 1,
-            title: "January",
-            description: "January Expenses",
-            balance: 1500.0),
-        LedgerBook(
-            id: 2,
-            title: "February",
-            description: "February Expenses",
-            balance: 1200.0),
-      ],
-    ),
+        id: 1,
+        accountName: "John's Account",
+        type: "Savings",
+        pictureUrl: "assets/default_account_picture.jpg",
+        headerPicture: "assets/header_image_unsplash.jpg",
+        ledgerBooks: [
+          LedgerBook(id: 1, title: "January", description: "January Expenses", balance: 1500.0),
+          LedgerBook(id: 2, title: "February", description: "February Expenses", balance: 1200.0),
+        ],
+        alerts: []),
     Account(
-      id: 2,
-      accountName: "Oso Lensra",
-      type: "Personal",
-      pictureUrl: "assets/lion.jpg",
-      headerPicture: "assets/header_image.png",
-      ledgerBooks: [
-        LedgerBook(
-            id: 1,
-            title: "January",
-            description: "January Expenses",
-            balance: 1500.0),
-        LedgerBook(
-            id: 2,
-            title: "February",
-            description: "February Expenses",
-            balance: 1200.0),
-        LedgerBook(
-            id: 1,
-            title: "January",
-            description: "January Expenses",
-            balance: 1500.0),
-        LedgerBook(
-            id: 2,
-            title: "February",
-            description: "February Expenses",
-            balance: 1200.0),
-        LedgerBook(
-            id: 1,
-            title: "January",
-            description: "January Expenses",
-            balance: 1500.0),
-        LedgerBook(
-            id: 2,
-            title: "February",
-            description: "February Expenses",
-            balance: 1200.0),
-        LedgerBook(
-            id: 1,
-            title: "January",
-            description: "January Expenses",
-            balance: 1500.0),
-        LedgerBook(
-            id: 2,
-            title: "February",
-            description: "February Expenses",
-            balance: 1200.0),
-      ],
-    ),
+        id: 2,
+        accountName: "Oso Lensra",
+        type: "Personal",
+        pictureUrl: "assets/lion.jpg",
+        headerPicture: "assets/header_image.png",
+        ledgerBooks: [
+          LedgerBook(id: 1, title: "January", description: "January Expenses", balance: 1500.0),
+          LedgerBook(id: 2, title: "February", description: "February Expenses", balance: 1200.0),
+          LedgerBook(id: 1, title: "January", description: "January Expenses", balance: 1500.0),
+          LedgerBook(id: 2, title: "February", description: "February Expenses", balance: 1200.0),
+          LedgerBook(id: 1, title: "January", description: "January Expenses", balance: 1500.0),
+          LedgerBook(id: 2, title: "February", description: "February Expenses", balance: 1200.0),
+          LedgerBook(id: 1, title: "January", description: "January Expenses", balance: 1500.0),
+          LedgerBook(id: 2, title: "February", description: "February Expenses", balance: 1200.0),
+        ],
+        alerts: [
+          Alert(
+              id: 1,
+              timestamp: DateTime.now(),
+              type: 'notification',
+              content: 'This is a new notification alert!'),
+          Alert(id: 2, timestamp: DateTime.now(), type: 'notification', content: 'You passed the limit!'),
+          Alert(
+              id: 1,
+              timestamp: DateTime.now(),
+              type: 'notification',
+              content: 'This is a new notification alert!'),
+          Alert(id: 2, timestamp: DateTime.now(), type: 'notification', content: 'You passed the limit!'),
+          Alert(
+              id: 1,
+              timestamp: DateTime.now(),
+              type: 'notification',
+              content: 'This is a new notification alert!'),
+          Alert(id: 2, timestamp: DateTime.now(), type: 'notification', content: 'You passed the limit!'),
+          Alert(
+              id: 1,
+              timestamp: DateTime.now(),
+              type: 'notification',
+              content: 'This is a new notification alert!'),
+          Alert(id: 2, timestamp: DateTime.now(), type: 'notification', content: 'You passed the limit!'),
+          Alert(
+              id: 1,
+              timestamp: DateTime.now(),
+              type: 'notification',
+              content: 'This is a new notification alert!'),
+          Alert(id: 2, timestamp: DateTime.now(), type: 'notification', content: 'You passed the limit!'),
+          Alert(
+              id: 1,
+              timestamp: DateTime.now(),
+              type: 'notification',
+              content: 'This is a new notification alert!'),
+          Alert(id: 2, timestamp: DateTime.now(), type: 'notification', content: 'You passed the limit!'),
+        ]),
     Account(
-      id: 3,
-      accountName: "Nasr Taresh",
-      type: "Fmaily",
-      pictureUrl: "assets/logo_login.png",
-      headerPicture: "assets/header_image.png",
-      ledgerBooks: [
-        LedgerBook(
-            id: 1,
-            title: "Work",
-            description: "work Expenses",
-            balance: 1146.0),
-        LedgerBook(
-            id: 2, title: "Home", description: "Home Expenses", balance: 900.0),
-      ],
-    ),
+        id: 3,
+        accountName: "Nasr Taresh",
+        type: "Fmaily",
+        pictureUrl: "assets/logo_login.png",
+        headerPicture: "assets/header_image.png",
+        ledgerBooks: [
+          LedgerBook(id: 1, title: "Work", description: "work Expenses", balance: 1146.0),
+          LedgerBook(id: 2, title: "Home", description: "Home Expenses", balance: 900.0),
+          LedgerBook(id: 1, title: "Work", description: "work Expenses", balance: 1146.0),
+          LedgerBook(id: 2, title: "Home", description: "Home Expenses", balance: 900.0),
+        ],
+        alerts: [
+          Alert(
+              id: 1,
+              timestamp: DateTime.now(),
+              type: 'Saving',
+              content: 'You passed the limit!',
+              isRead: false),
+          Alert(
+              id: 2,
+              timestamp: DateTime.now(),
+              type: ' Fmaily',
+              content: 'People added an expense!',
+              isRead: true),
+          Alert(
+              id: 1,
+              timestamp: DateTime.now(),
+              type: 'Saving',
+              content: 'You passed the limit!',
+              isRead: false),
+          Alert(
+              id: 2,
+              timestamp: DateTime.now(),
+              type: ' Fmaily',
+              content: 'People added an expense!',
+              isRead: true),
+          Alert(
+              id: 1,
+              timestamp: DateTime.now(),
+              type: 'Saving',
+              content: 'You passed the limit!',
+              isRead: false),
+          Alert(
+              id: 2,
+              timestamp: DateTime.now(),
+              type: ' Fmaily',
+              content: 'People added an expense!',
+              isRead: true),
+          Alert(
+              id: 1,
+              timestamp: DateTime.now(),
+              type: 'Saving',
+              content: 'You passed the limit!',
+              isRead: false),
+          Alert(
+              id: 2,
+              timestamp: DateTime.now(),
+              type: ' Fmaily',
+              content: 'People added an expense!',
+              isRead: true),
+          Alert(
+              id: 1,
+              timestamp: DateTime.now(),
+              type: 'Saving',
+              content: 'You passed the limit!',
+              isRead: false),
+          Alert(
+              id: 2,
+              timestamp: DateTime.now(),
+              type: ' Fmaily',
+              content: 'People added an expense!',
+              isRead: true),
+        ]),
   ];
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> accountsCards =
-        _accountsList.map((accounts) => AccountCard(accounts)).toList();
+    List<Widget> accountsCards = _accountsList.map((accounts) => AccountCard(accounts)).toList();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Padding(
+        const Padding(
           padding: EdgeInsets.fromLTRB(43, 19, 10, 1),
           child: Text(
             "Accounts",
@@ -112,8 +166,7 @@ class AccountsPage extends StatelessWidget {
         ),
         Expanded(
           // Wrap ListView with Expanded
-          child:
-              ListView(padding: EdgeInsets.all(20.0), children: accountsCards),
+          child: ListView(padding: EdgeInsets.all(20.0), children: accountsCards),
         ),
       ],
     );
