@@ -6,6 +6,9 @@ import lombok.Getter;
  * User role enum. It can be used for checking user role of permission, such as vip or permission for specific service.
  */
 public enum UserRole {
+    /**
+     * Common user role.
+     */
     COMMON_USER(0, "COMMON USER");
 
     /**

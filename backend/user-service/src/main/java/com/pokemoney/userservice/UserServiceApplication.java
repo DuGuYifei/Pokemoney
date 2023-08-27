@@ -2,11 +2,13 @@ package com.pokemoney.userservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 /**
  * Application main class
  */
 @SpringBootApplication
+@EnableFeignClients
 public class UserServiceApplication {
     /**
      * Application main entry point.
