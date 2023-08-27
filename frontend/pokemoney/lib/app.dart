@@ -5,8 +5,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pokemoney/constants/AppColors.dart';
 
 import 'package:pokemoney/pages/barrel.dart';
+
 class App extends StatefulWidget {
-  const App({super.key});
+  final int initialIndex;
+  const App({Key? key, this.initialIndex = 0}) : super(key: key);
 
   @override
   State<App> createState() => _AppState();
@@ -15,11 +17,25 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   int _currentIndex = 0;
 
-final List<String> _titles = [
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+  }
+
+  final List<Widget> _routers = [
+    /// List of tab page widgets
+    HomePage(),
+    FundsPage(),
+    LedgerBooksPage(),
+    AccountsPage(),
+  ];
+
+  final List<String> _titles = [
     'Home',
-    'Accounts',
-    'Ledger Books',
     'Funds',
+    'Ledger Books',
+    'Accounts',
   ];
 
   void _onItemTapped(int index) {
@@ -36,7 +52,13 @@ final List<String> _titles = [
       appBar: AppBar(
           iconTheme: IconThemeData(color: AppColors.textPrimary),
           backgroundColor: AppColors.surfaceContainer,
-          title: Text(_titles[_currentIndex]),
+          centerTitle: true,
+          title: Text(
+            _titles[_currentIndex],
+            style: TextStyle(
+              fontWeight: FontWeight.bold, // Apply bold style here
+            ),
+          ),
           actions: [
             IconButton(
               icon: const Icon(
@@ -51,13 +73,7 @@ final List<String> _titles = [
             ),
           ]),
       drawer: CustomNavBar(),
-      body: [
-        /// List of tab page widgets
-        HomePage(),
-        const AccountsPage(),
-        const LedgerBooksPage(),
-        const FundsPage(),
-      ][_currentIndex],
+      body: _routers[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         backgroundColor: AppColors.surfaceContainer,
