@@ -12,7 +12,6 @@ import java.util.Date;
  */
 @Data
 @Builder
-@Validated
 public class MailDto {
 
     /**
