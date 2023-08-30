@@ -19,7 +19,8 @@
 		<module>hadoop-service</module>
 		<module>eureka-server</module>
 		<module>../leaf-service/leaf-server</module>
-	</modules>
+        <module>commons</module>
+    </modules>
 	<properties>
 		<java.version>17</java.version>
 	</properties>
