@@ -4,6 +4,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
+import jakarta.validation.Valid;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import java.io.IOException;
 /**
  * Send email using SMTP with SSL.
  */
+@Validated
 @Component
 public class SmtpEmail {
 
@@ -25,6 +27,7 @@ public class SmtpEmail {
 
     /**
      * The constructor of SmtpEmail
+     *
      * @param javaMailSender The java mail sender
      */
     public SmtpEmail(JavaMailSender javaMailSender) {
@@ -33,9 +36,10 @@ public class SmtpEmail {
 
     /**
      * Send email using SMTP with SSL.
+     *
      * @param mailDto The mail dto contains the information of the email which will be sent.
      */
-    public void sendMimeMessage(@Validated MailDto mailDto) {
+    public void sendMimeMessage(@Valid MailDto mailDto) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper messageHelper;
         try {
