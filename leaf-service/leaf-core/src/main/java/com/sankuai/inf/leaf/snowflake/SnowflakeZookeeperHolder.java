@@ -38,17 +38,19 @@ public class SnowflakeZookeeperHolder {
     private String port;
     private String connectionString;
     private long lastUpdateTime;
+    private int zkConnectTimeout;
 
-    public SnowflakeZookeeperHolder(String ip, String port, String connectionString) {
+    public SnowflakeZookeeperHolder(String ip, String port, String connectionString, int zkConnectTimeout) {
         this.ip = ip;
         this.port = port;
         this.listenAddress = ip + ":" + port;
         this.connectionString = connectionString;
+        this.zkConnectTimeout = zkConnectTimeout;
     }
 
     public boolean init() {
         try {
-            CuratorFramework curator = createWithOptions(connectionString, new RetryUntilElapsed(1000, 4), 10000, 6000);
+            CuratorFramework curator = createWithOptions(connectionString, new RetryUntilElapsed(1000, 4), this.zkConnectTimeout, 6000);
             curator.start();
             Stat stat = curator.checkExists().forPath(PATH_FOREVER);
             if (stat == null) {

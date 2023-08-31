@@ -12,3 +12,5 @@
 target/
 logs/
 log/
+
+leaf-dev.properties

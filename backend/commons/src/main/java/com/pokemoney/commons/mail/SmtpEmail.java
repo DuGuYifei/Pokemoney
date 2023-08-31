@@ -8,6 +8,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
+import org.springframework.validation.annotation.Validated;
 
 import java.io.IOException;
 
@@ -34,7 +35,7 @@ public class SmtpEmail {
      * Send email using SMTP with SSL.
      * @param mailDto The mail dto contains the information of the email which will be sent.
      */
-    public void sendMimeMessage(MailDto mailDto) {
+    public void sendMimeMessage(@Validated MailDto mailDto) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper messageHelper;
         try {
