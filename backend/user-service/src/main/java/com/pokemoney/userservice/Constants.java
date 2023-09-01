@@ -1,6 +1,7 @@
 package com.pokemoney.userservice;
 
 public class Constants {
+    // TODO: Change to @Value
     /**
      * The secret key for JWT.
      */

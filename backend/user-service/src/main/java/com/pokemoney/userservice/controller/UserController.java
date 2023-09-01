@@ -1,6 +1,6 @@
 package com.pokemoney.userservice.controller;
 
-import com.pokemoney.commons.mail.MailDto;
+import com.pokemoney.commons.mail.MailProperty;
 import com.pokemoney.commons.mail.SmtpEmail;
 import com.pokemoney.userservice.Constants;
 import com.pokemoney.userservice.dto.RequestRegisterUserDto;
@@ -52,12 +52,12 @@ public class UserController {
         int verificationCode = CodeGenerator.GenerateNumber(Constants.VERIFICATION_CODE_LENGTH);
         String verificationCodeStr = String.format("%0" + Constants.VERIFICATION_CODE_LENGTH + "d", verificationCode);
         // TODO: store the email and verification code in redis, ans set expiration
-        MailDto mailDto = MailDto.builder()
+        MailProperty mailProperty = MailProperty.builder()
                 .to(new String[]{requestRegisterUserDto.getEmail()})
-                .subject("Pokemoney Registration Verification")
                 .text("Your verification code is " + verificationCodeStr)
+                .subject("Pokemoney Registration Verification")
                 .build();
-        smtpEmail.sendMimeMessage(mailDto);
+        smtpEmail.sendMimeMessage(mailProperty);
         ResponseSuccessDto responseSuccessDto = ResponseSuccessDto.builder()
                 .message("Verification code has been sent to your email.")
                 .status(200)

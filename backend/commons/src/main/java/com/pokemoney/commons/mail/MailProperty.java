@@ -1,10 +1,8 @@
 package com.pokemoney.commons.mail;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.validation.annotation.Validated;
+import lombok.NonNull;
 
 import java.util.Date;
 
@@ -13,7 +11,7 @@ import java.util.Date;
  */
 @Data
 @Builder
-public class MailDto {
+public class MailProperty {
 
     /**
      * The email address of the reply to.
@@ -25,7 +23,7 @@ public class MailDto {
      * The email addresses of the receiver
      * This field is required.
      */
-    @NotNull
+    @NonNull
     private String[] to;
 
     /**
@@ -50,14 +48,14 @@ public class MailDto {
      * The subject of the email
      * This field is required.
      */
-    @NotNull
+    @NonNull
     private String subject;
 
     /**
      * The text of the email
      * This field is required.
      */
-    @NotNull
+    @NonNull
     private String text;
 
     /**

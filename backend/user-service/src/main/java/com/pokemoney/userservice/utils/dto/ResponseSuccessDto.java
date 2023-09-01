@@ -1,8 +1,6 @@
 package com.pokemoney.userservice.utils.dto;
 
-import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 /**
  * DTO for success result.
@@ -23,6 +21,6 @@ public class ResponseSuccessDto {
     /**
      * The HTTP status code of the response.
      */
-    @NotNull
-    private int status;
+    @NonNull
+    private Integer status;
 }

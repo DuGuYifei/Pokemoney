@@ -19,16 +19,16 @@ public class SmtpEmailTest {
     private SmtpEmail smtpEmail;
 
     /**
-     * The basic mailDto.
+     * The basic mailProperty.
      */
-    private MailDto mailDto;
+    private MailProperty mailProperty;
 
     /**
      * setUp method.
      */
     @BeforeEach
     public void setUp() {
-        mailDto = MailDto.builder()
+        mailProperty = MailProperty.builder()
                 .to(new String[]{"s188026@student.pg.edu.pl"})
                 .subject("Test")
                 .text("Test")
@@ -40,7 +40,7 @@ public class SmtpEmailTest {
      */
     @Test
     public void testSendSimpleEmail() {
-        smtpEmail.sendMimeMessage(mailDto);
+        smtpEmail.sendMimeMessage(mailProperty);
     }
 
     /**
@@ -49,7 +49,7 @@ public class SmtpEmailTest {
      */
     @Test
     public void testSendEmailWithoutRequiredContent() {
-        mailDto.setSubject(null);
-        Assertions.assertThrows(IllegalArgumentException.class, () -> smtpEmail.sendMimeMessage(mailDto));
+        mailProperty.setSubject(null);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> smtpEmail.sendMimeMessage(mailProperty));
     }
 }
