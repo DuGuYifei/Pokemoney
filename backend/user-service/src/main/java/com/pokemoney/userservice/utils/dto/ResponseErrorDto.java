@@ -1,16 +1,14 @@
 package com.pokemoney.userservice.utils.dto;
 
-import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
-import lombok.Data;
-import org.springframework.validation.annotation.Validated;
+import lombok.*;
 
 /**
  * DTO for error result.
  */
 @Data
 @Builder
-@Validated
+@NoArgsConstructor
+@AllArgsConstructor
 public class ResponseErrorDto {
     /**
      * The error message.
@@ -25,6 +23,6 @@ public class ResponseErrorDto {
     /**
      * The HTTP status code of the response.
      */
-    @NotNull
-    private int status;
+    @NonNull
+    private Integer status;
 }

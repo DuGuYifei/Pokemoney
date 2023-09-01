@@ -4,7 +4,6 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
-import jakarta.validation.Valid;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
@@ -37,41 +36,41 @@ public class SmtpEmail {
     /**
      * Send email using SMTP with SSL.
      *
-     * @param mailDto The mail dto contains the information of the email which will be sent.
+     * @param mailProperty The mail dto contains the information of the email which will be sent.
      */
-    public void sendMimeMessage(@Valid MailDto mailDto) {
+    public void sendMimeMessage(MailProperty mailProperty) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper messageHelper;
         try {
             messageHelper = new MimeMessageHelper(mimeMessage, true);
 
-            messageHelper.setTo(mailDto.getTo());
-            messageHelper.setSubject(mailDto.getSubject());
+            messageHelper.setTo(mailProperty.getTo());
+            messageHelper.setSubject(mailProperty.getSubject());
 
-            if (!ObjectUtils.isEmpty(mailDto.getReplyTo())) {
-                messageHelper.setReplyTo(mailDto.getReplyTo());
+            if (!ObjectUtils.isEmpty(mailProperty.getReplyTo())) {
+                messageHelper.setReplyTo(mailProperty.getReplyTo());
             }
-            if (!ObjectUtils.isEmpty(mailDto.getSentDate())) {
-                messageHelper.setSentDate(mailDto.getSentDate());
+            if (!ObjectUtils.isEmpty(mailProperty.getSentDate())) {
+                messageHelper.setSentDate(mailProperty.getSentDate());
             }
-            if (!ObjectUtils.isEmpty(mailDto.getCc())) {
-                messageHelper.setCc(mailDto.getCc());
+            if (!ObjectUtils.isEmpty(mailProperty.getCc())) {
+                messageHelper.setCc(mailProperty.getCc());
             }
-            if(!ObjectUtils.isEmpty(mailDto.getBcc())) {
-                messageHelper.setBcc(mailDto.getBcc());
+            if(!ObjectUtils.isEmpty(mailProperty.getBcc())) {
+                messageHelper.setBcc(mailProperty.getBcc());
             }
             mimeMessage = messageHelper.getMimeMessage();
             MimeBodyPart mimeBodyPart = new MimeBodyPart();
-            mimeBodyPart.setContent(mailDto.getText(), "text/html;charset=UTF-8");
+            mimeBodyPart.setContent(mailProperty.getText(), "text/html;charset=UTF-8");
 
-            if (!ObjectUtils.isEmpty(mailDto.getFilenames())) {
+            if (!ObjectUtils.isEmpty(mailProperty.getFilenames())) {
                 // Describe the relationship between the body and the attachment
                 MimeMultipart mm = new MimeMultipart();
                 mm.setSubType("related");
                 mm.addBodyPart(mimeBodyPart);
 
                 // Add attachments
-                for (String filename : mailDto.getFilenames()) {
+                for (String filename : mailProperty.getFilenames()) {
                     MimeBodyPart attachPart = new MimeBodyPart();
                     try {
                         attachPart.attachFile(filename);
@@ -82,7 +81,7 @@ public class SmtpEmail {
                 }
                 mimeMessage.setContent(mm);
             } else {
-                mimeMessage.setContent(mailDto.getText(), "text/html;charset=UTF-8");
+                mimeMessage.setContent(mailProperty.getText(), "text/html;charset=UTF-8");
             }
             mimeMessage.saveChanges();
 

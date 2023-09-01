@@ -16,6 +16,7 @@ public class LoadBalancerConfiguration {
 
     /**
      * Configure load balance as Round Robin in current version.
+     *
      * @param environment Environment.
      * @param loadBalancerClientFactory Load balancer client factory.
      * @return ReactorLoadBalancer instance.

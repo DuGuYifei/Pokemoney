@@ -62,8 +62,8 @@ public class RequestRegisterUserDto {
      * send to user's email and provided by user again.
      * It must be {@link Constants#VERIFICATION_CODE_LENGTH}. digits.
      */
-    @Null(groups = TryRegisterValidationGroup.class, message = "Verification number must be null.")
-    @NotBlank(groups = RegisterValidationGroup.class, message = "Verification number must be not blank.")
-    @Pattern(groups = RegisterValidationGroup.class, regexp = "^[0-9]{" + Constants.VERIFICATION_CODE_LENGTH + "}$", message = "Verification number must be " + Constants.VERIFICATION_CODE_LENGTH + " digits.")
+    @Null(groups = TryRegisterValidationGroup.class, message = "Verification code must be null.")
+    @NotBlank(groups = RegisterValidationGroup.class, message = "Verification code must be not blank.")
+    @Pattern(groups = RegisterValidationGroup.class, regexp = "^[0-9]{" + Constants.VERIFICATION_CODE_LENGTH + "}$", message = "Verification code must be " + Constants.VERIFICATION_CODE_LENGTH + " digits.")
     private String verificationCode;
 }
