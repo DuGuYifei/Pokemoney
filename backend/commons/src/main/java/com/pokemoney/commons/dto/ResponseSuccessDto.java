@@ -7,12 +7,7 @@ import lombok.*;
  */
 @Data
 @Builder
-public class ResponseSuccessDto {
-    /**
-     * The error message.
-     */
-    private String message;
-
+public class ResponseSuccessDto<T> {
     /**
      * The HTTP status code of the response.
      */
@@ -23,4 +18,14 @@ public class ResponseSuccessDto {
      */
     @NonNull
     private Integer status;
+
+    /**
+     * The error message.
+     */
+    private String message;
+
+    /**
+     * The data.
+     */
+    private T data;
 }

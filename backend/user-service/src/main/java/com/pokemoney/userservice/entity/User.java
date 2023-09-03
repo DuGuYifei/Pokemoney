@@ -32,7 +32,9 @@ import java.util.UUID;
 @Entity
 @Table(name = "t_users")
 public class User implements Serializable {
-
+    /**
+     * JWT algorithm.
+     */
     private static final Algorithm algorithm = Algorithm.HMAC256(Constants.JWT_SECRET);
 
     /**

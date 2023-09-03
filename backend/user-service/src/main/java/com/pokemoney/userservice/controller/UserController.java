@@ -51,7 +51,7 @@ public class UserController {
     public ResponseEntity<ResponseSuccessDto> tryRegister(@Validated(TryRegisterValidationGroup.class) RequestRegisterUserDto requestRegisterUserDto) {
         int verificationCode = CodeGenerator.GenerateNumber(Constants.VERIFICATION_CODE_LENGTH);
         String verificationCodeStr = String.format("%0" + Constants.VERIFICATION_CODE_LENGTH + "d", verificationCode);
-        // TODO: store the email and verification code in redis, ans set expiration
+        // TODO: store the email and verification code in redis, and set expiration
         MailProperty mailProperty = MailProperty.builder()
                 .to(new String[]{requestRegisterUserDto.getEmail()})
                 .text("Your verification code is " + verificationCodeStr)

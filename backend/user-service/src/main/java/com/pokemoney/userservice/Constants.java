@@ -1,5 +1,8 @@
 package com.pokemoney.userservice;
 
+/**
+ * This class is the constants of user-service.
+ */
 public class Constants {
     // TODO: Change to @Value
     /**

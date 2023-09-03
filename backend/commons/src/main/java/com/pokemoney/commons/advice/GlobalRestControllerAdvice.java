@@ -53,8 +53,8 @@ public class GlobalRestControllerAdvice {
         // TODO: Add log
         List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
         ResponseValidationErrorDto result = new ResponseValidationErrorDto(
-                "Validation failed",
                 400,
+                "Validation failed",
                 fieldErrors);
         return ResponseEntity.status(400).body(result);
     }

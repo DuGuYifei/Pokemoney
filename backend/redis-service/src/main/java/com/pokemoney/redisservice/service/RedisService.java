@@ -1,6 +1,7 @@
 package com.pokemoney.redisservice.service;
 
-import com.pokemoney.redisservice.dto.RegisterVerificationDto;
+import com.pokemoney.commons.dto.RedisKeyValueDto;
+import com.pokemoney.commons.errors.GenericNotFoundError;
 import lombok.Getter;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -26,28 +27,41 @@ public class RedisService {
     }
 
     /**
-     * Set the {@link RegisterVerificationDto} into Redis.
+     * Set the value into Redis.
      *
-     * @param registerVerificationDto The {@link RegisterVerificationDto} to be set.
+     * @param redisKeyValueDto<T> The {@link RedisKeyValueDto<T>} to be set.
      */
-    public Boolean setRegisterVerificationDto(RegisterVerificationDto registerVerificationDto) {
-        if (registerVerificationDto.getTimeout() == null) {
-            return redisTemplate.opsForValue().setIfAbsent(registerVerificationDto.getEmail(), registerVerificationDto.getVerificationCode());
+    public <T> void setByDto(RedisKeyValueDto<T> redisKeyValueDto) {
+        String key = redisKeyValueDto.getPrefix() + redisKeyValueDto.getKey();
+        if (redisKeyValueDto.getTimeout() == null) {
+            redisTemplate.opsForValue().set(key, redisKeyValueDto.getValue());
         }
-        return redisTemplate.opsForValue().setIfAbsent(registerVerificationDto.getEmail(), registerVerificationDto.getVerificationCode(), registerVerificationDto.getTimeout(), java.util.concurrent.TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(key, redisKeyValueDto.getValue(), redisKeyValueDto.getTimeout(), java.util.concurrent.TimeUnit.SECONDS);
     }
 
     /**
-     * Get the {@link RegisterVerificationDto} from Redis.
+     * Get the value from Redis.
      *
-     * @param registerVerificationDto The {@link RegisterVerificationDto} to get.
-     * @return The verification code of the {@link RegisterVerificationDto} to get.
+     * @param redisKeyValueDto<T> The {@link RedisKeyValueDto<T>} to get.
+     * @return The value of the {@link RedisKeyValueDto<T>} to get.
      */
-    public Boolean verifyRegisterVerificationDto(RegisterVerificationDto registerVerificationDto) {
-        Object value = redisTemplate.opsForValue().get(registerVerificationDto.getEmail());
-        if (value == null) {
-            return false;
+    public <T> RedisKeyValueDto<T> getByDto(RedisKeyValueDto<T> redisKeyValueDto) throws GenericNotFoundError {
+        String key = redisKeyValueDto.getPrefix() + redisKeyValueDto.getKey();
+        Long remainTime = redisTemplate.getExpire(key);
+        if (remainTime == -2) {
+            throw new GenericNotFoundError("Key not found.");
         }
-        return registerVerificationDto.getVerificationCode().equals(value);
+        redisKeyValueDto.setTimeout(remainTime);
+        Object value = redisTemplate.opsForValue().get(key);
+        if (value == null) {
+            throw new GenericNotFoundError("Value not found.");
+        }
+        try{
+            T t = (T) value;
+            redisKeyValueDto.setValue(t);
+        } catch (ClassCastException e) {
+            throw new GenericNotFoundError("Value of the key is not the type you wanted.");
+        }
+        return redisKeyValueDto;
     }
 }

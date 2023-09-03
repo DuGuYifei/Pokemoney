@@ -11,11 +11,6 @@ import lombok.*;
 @AllArgsConstructor
 public class ResponseErrorDto {
     /**
-     * The error message.
-     */
-    private String message;
-
-    /**
      * The HTTP status code of the response.
      */
     private final boolean success = false;
@@ -25,4 +20,11 @@ public class ResponseErrorDto {
      */
     @NonNull
     private Integer status;
+
+    /**
+     * The error message.
+     */
+    private String message;
+
+
 }

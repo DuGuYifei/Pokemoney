@@ -25,8 +25,8 @@ public class ResponseValidationErrorDto extends ResponseErrorDto{
      * @param message The error message.
      * @param status The HTTP status code of the response.
      */
-    public ResponseValidationErrorDto(String message, Integer status, List<FieldError> errors) {
-        super(message, status);
+    public ResponseValidationErrorDto(Integer status, String message, List<FieldError> errors) {
+        super(status, message);
         this.errors = errors.stream().map(ValidationErrorDto::new).toList();
     }
 }
