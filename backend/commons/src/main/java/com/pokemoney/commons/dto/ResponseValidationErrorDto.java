@@ -1,4 +1,4 @@
-package com.pokemoney.userservice.utils.dto;
+package com.pokemoney.commons.dto;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

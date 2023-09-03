@@ -1,5 +1,6 @@
 package com.pokemoney.userservice.controller;
 
+import com.pokemoney.commons.dto.ResponseSuccessDto;
 import com.pokemoney.commons.mail.MailProperty;
 import com.pokemoney.commons.mail.SmtpEmail;
 import com.pokemoney.userservice.Constants;
@@ -10,7 +11,6 @@ import com.pokemoney.userservice.dto.validation.TryRegisterValidationGroup;
 import com.pokemoney.userservice.entity.User;
 import com.pokemoney.userservice.service.UserService;
 import com.pokemoney.userservice.utils.CodeGenerator;
-import com.pokemoney.userservice.utils.dto.ResponseSuccessDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -1,4 +1,4 @@
 /**
  * This package contains all the advice classes.
  */
-package com.pokemoney.userservice.advice;
+package com.pokemoney.commons.advice;
