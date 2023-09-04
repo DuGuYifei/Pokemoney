@@ -1,18 +1,27 @@
 package com.pokemoney.userservice;
 
+import lombok.Getter;
+
+
 /**
  * This class is the constants of user-service.
  */
+@Getter
 public class Constants {
-    // TODO: Change to @Value
+    /**
+     * The name of current service.
+     */
+    public static final String SERVICE_NAME = "user-service";
+
     /**
      * The secret key for JWT.
      */
     public static final String JWT_SECRET = "pokemoney";
+
     /**
      * The subject for JWT.
      */
-    public static final String JWT_SUBJECT = "user-service";
+    public static final String JWT_SUBJECT = SERVICE_NAME;
 
     /**
      * The key of leaf-service in eureka-service.
@@ -27,7 +36,7 @@ public class Constants {
     /**
      * The key of user-service in leaf-service.
      */
-    public static final String USER_IN_LEAF_KEY = "user-service";
+    public static final String USER_IN_LEAF_KEY = SERVICE_NAME;
 
     /**
      * The length of verification code.
@@ -37,5 +46,5 @@ public class Constants {
     /**
      * The prefix of redis key for register.
      */
-    public static final String REDIS_REGISTER_PREFIX = "user-service:register:";
+    public static final String REDIS_REGISTER_PREFIX = SERVICE_NAME + ":register:";
 }
