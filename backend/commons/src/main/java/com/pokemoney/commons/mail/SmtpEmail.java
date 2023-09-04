@@ -4,6 +4,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeBodyPart;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,11 @@ import java.io.IOException;
 @Validated
 @Component
 public class SmtpEmail {
+    /**
+     * The email address of the sender
+     */
+    @Value("${spring.mail.username}")
+    private String from;
 
     /**
      * The java mail sender
@@ -43,7 +49,7 @@ public class SmtpEmail {
         MimeMessageHelper messageHelper;
         try {
             messageHelper = new MimeMessageHelper(mimeMessage, true);
-
+            messageHelper.setFrom(from);
             messageHelper.setTo(mailProperty.getTo());
             messageHelper.setSubject(mailProperty.getSubject());
 
