@@ -1,5 +1,7 @@
 package com.pokemoney.userservice.utils;
 
+import java.security.SecureRandom;
+
 /**
  * This class is used to generate various codes.
  */
@@ -9,7 +11,8 @@ public class CodeGenerator {
      * @param length Length of the number.
      * @return Random number.
      */
-    public static int GenerateNumber(int length) {
-        return (int) ((Math.random() * 9 + 1) * Math.pow(10, length - 1));
+    public static long GenerateNumber(int length) {
+        SecureRandom secureRandom = new SecureRandom();
+        return secureRandom.nextLong((long) Math.pow(10, length));
     }
 }

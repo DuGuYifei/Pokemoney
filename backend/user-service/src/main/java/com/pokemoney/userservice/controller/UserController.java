@@ -62,7 +62,7 @@ public class UserController {
      */
     @PostMapping("/register")
     public ResponseEntity<ResponseSuccessDto> tryRegister(@Validated(TryRegisterValidationGroup.class) RequestRegisterUserDto requestRegisterUserDto) throws GenericInternalServerError {
-        int verificationCode = CodeGenerator.GenerateNumber(Constants.VERIFICATION_CODE_LENGTH);
+        long verificationCode = CodeGenerator.GenerateNumber(Constants.VERIFICATION_CODE_LENGTH);
         String verificationCodeStr = String.format("%0" + Constants.VERIFICATION_CODE_LENGTH + "d", verificationCode);
         RedisKeyValueDto redisKeyValueDto = RedisKeyValueDto.builder()
                 .key(requestRegisterUserDto.getEmail())
