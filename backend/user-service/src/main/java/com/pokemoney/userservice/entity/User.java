@@ -4,7 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.pokemoney.userservice.Constants;
 import com.pokemoney.userservice.dto.RequestRegisterUserDto;
-import com.pokemoney.userservice.errors.GenericForbiddenError;
+import com.pokemoney.commons.errors.GenericForbiddenError;
 import com.pokemoney.userservice.utils.enums.UserRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
@@ -32,7 +32,9 @@ import java.util.UUID;
 @Entity
 @Table(name = "t_users")
 public class User implements Serializable {
-
+    /**
+     * JWT algorithm.
+     */
     private static final Algorithm algorithm = Algorithm.HMAC256(Constants.JWT_SECRET);
 
     /**

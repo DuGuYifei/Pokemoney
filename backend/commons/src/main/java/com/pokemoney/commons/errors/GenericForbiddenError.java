@@ -1,4 +1,4 @@
-package com.pokemoney.userservice.errors;
+package com.pokemoney.commons.errors;
 
 /**
  * An error indicating that the client does not have permission to access the

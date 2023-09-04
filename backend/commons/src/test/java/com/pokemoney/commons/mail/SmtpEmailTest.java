@@ -40,7 +40,7 @@ public class SmtpEmailTest {
      */
     @Test
     public void testSendSimpleEmail() {
-        smtpEmail.sendMimeMessage(mailProperty);
+        Assertions.assertDoesNotThrow(() -> smtpEmail.sendMimeMessage(mailProperty));
     }
 
     /**

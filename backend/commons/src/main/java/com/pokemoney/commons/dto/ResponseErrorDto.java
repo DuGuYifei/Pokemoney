@@ -1,4 +1,4 @@
-package com.pokemoney.userservice.utils.dto;
+package com.pokemoney.commons.dto;
 
 import lombok.*;
 
@@ -11,18 +11,19 @@ import lombok.*;
 @AllArgsConstructor
 public class ResponseErrorDto {
     /**
-     * The error message.
-     */
-    private String message;
-
-    /**
      * The HTTP status code of the response.
      */
-    private final boolean success = false;
+    @Builder.Default
+    private final Boolean success = false;
 
     /**
      * The HTTP status code of the response.
      */
     @NonNull
     private Integer status;
+
+    /**
+     * The error message.
+     */
+    private String message;
 }

@@ -1,4 +1,4 @@
-package com.pokemoney.userservice.errors;
+package com.pokemoney.commons.errors;
 
 /**
  * The error throws when verify fails.

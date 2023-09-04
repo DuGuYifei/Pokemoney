@@ -1,8 +1,8 @@
-package com.pokemoney.userservice.advice;
+package com.pokemoney.commons.advice;
 
-import com.pokemoney.userservice.errors.HttpBaseError;
-import com.pokemoney.userservice.utils.dto.ResponseErrorDto;
-import com.pokemoney.userservice.utils.dto.ResponseValidationErrorDto;
+import com.pokemoney.commons.errors.HttpBaseError;
+import com.pokemoney.commons.dto.ResponseErrorDto;
+import com.pokemoney.commons.dto.ResponseValidationErrorDto;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
@@ -53,8 +53,8 @@ public class GlobalRestControllerAdvice {
         // TODO: Add log
         List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
         ResponseValidationErrorDto result = new ResponseValidationErrorDto(
-                "Validation failed",
                 400,
+                "Validation failed",
                 fieldErrors);
         return ResponseEntity.status(400).body(result);
     }
