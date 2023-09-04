@@ -13,7 +13,8 @@ public class ResponseErrorDto {
     /**
      * The HTTP status code of the response.
      */
-    private final boolean success = false;
+    @Builder.Default
+    private final Boolean success = false;
 
     /**
      * The HTTP status code of the response.
@@ -25,6 +26,4 @@ public class ResponseErrorDto {
      * The error message.
      */
     private String message;
-
-
 }

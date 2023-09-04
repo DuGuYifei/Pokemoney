@@ -1,5 +1,6 @@
 package com.pokemoney.userservice.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.pokemoney.userservice.Constants;
 import com.pokemoney.userservice.dto.validation.RegisterValidationGroup;
 import com.pokemoney.userservice.dto.validation.TryRegisterValidationGroup;
@@ -12,6 +13,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 /**
  * DTO for registering user request.
  */
@@ -19,6 +21,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RequestRegisterUserDto {
 
     /**

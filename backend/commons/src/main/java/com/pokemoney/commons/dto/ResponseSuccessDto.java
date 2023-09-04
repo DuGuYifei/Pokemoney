@@ -7,11 +7,12 @@ import lombok.*;
  */
 @Data
 @Builder
-public class ResponseSuccessDto<T> {
+public class ResponseSuccessDto {
     /**
      * The HTTP status code of the response.
      */
-    private final boolean success = true;
+    @Builder.Default
+    private final Boolean success = true;
 
     /**
      * The HTTP status code of the response.
@@ -25,7 +26,7 @@ public class ResponseSuccessDto<T> {
     private String message;
 
     /**
-     * The data.
+     * The data in the format of json.
      */
-    private T data;
+    private Object data;
 }

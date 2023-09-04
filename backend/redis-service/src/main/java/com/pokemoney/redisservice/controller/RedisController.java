@@ -9,15 +9,16 @@ import com.pokemoney.redisservice.service.RedisService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * This class is the controller for register user.
+ * Redis controller
  */
 @RestController
-@RequestMapping("/api/v1/")
-public class RegisterUserController {
+@RequestMapping("/api/v1")
+public class RedisController {
     /**
      * Redis service.
      */
@@ -28,37 +29,40 @@ public class RegisterUserController {
      *
      * @param redisService Redis service.
      */
-    public RegisterUserController(RedisService redisService) {
+    public RedisController(RedisService redisService) {
         this.redisService = redisService;
     }
 
     /**
-     * Store email and verification code in redis.
+     * Store key and value code in redis.
      *
      * @param redisKeyValueDto The {@link RedisKeyValueDto} to be stored.
      * @return The {@link ResponseSuccessDto} of the result.
      */
     @PostMapping("/set")
-    public <T> ResponseEntity<ResponseSuccessDto> setKeyValue(@Validated(RedisSetValueGroup.class) RedisKeyValueDto<T> redisKeyValueDto) {
+    public ResponseEntity<ResponseSuccessDto> setKeyValue(@RequestBody @Validated(RedisSetValueGroup.class) RedisKeyValueDto redisKeyValueDto) {
         redisService.setByDto(redisKeyValueDto);
         ResponseSuccessDto responseSuccessDto = ResponseSuccessDto.builder()
                 .message("Store successfully.")
                 .status(200)
+                .data(redisKeyValueDto)
                 .build();
-        return ResponseEntity.ok(ResponseSuccessDto.builder().status(200).build());
+        return ResponseEntity.ok(responseSuccessDto);
     }
 
     /**
      * Get value from redis.
      *
      * @param redisKeyValueDto The {@link RedisKeyValueDto} to get.
-     * @return The {@link ResponseSuccessDto} with data of {@link RedisKeyValueDto<T>}.
+     * @return The {@link ResponseSuccessDto} with data of {@link RedisKeyValueDto}.
+     * @throws GenericNotFoundError If key or value not found or value is not expected type.
      */
     @PostMapping("/get")
-    public <T> ResponseEntity<ResponseSuccessDto<RedisKeyValueDto<T>>> getKeyValue(@Validated(RedisGetValueGroup.class) RedisKeyValueDto<T> redisKeyValueDto) throws GenericNotFoundError {
-        ResponseSuccessDto<RedisKeyValueDto<T>> responseSuccessDto = ResponseSuccessDto.<RedisKeyValueDto<T>>builder()
+    public ResponseEntity<ResponseSuccessDto> getKeyValue(@RequestBody @Validated(RedisGetValueGroup.class) RedisKeyValueDto redisKeyValueDto) throws GenericNotFoundError {
+        redisKeyValueDto = redisService.getByDto(redisKeyValueDto);
+        ResponseSuccessDto responseSuccessDto = ResponseSuccessDto.builder()
                 .message("Get successfully.")
-                .data(redisService.getByDto(redisKeyValueDto))
+                .data(redisKeyValueDto)
                 .status(200)
                 .build();
         return ResponseEntity.ok(responseSuccessDto);

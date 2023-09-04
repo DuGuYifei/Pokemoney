@@ -29,12 +29,13 @@ public class RedisService {
     /**
      * Set the value into Redis.
      *
-     * @param redisKeyValueDto<T> The {@link RedisKeyValueDto<T>} to be set.
+     * @param redisKeyValueDto The {@link RedisKeyValueDto} to be set.
      */
-    public <T> void setByDto(RedisKeyValueDto<T> redisKeyValueDto) {
+    public void setByDto(RedisKeyValueDto redisKeyValueDto) {
         String key = redisKeyValueDto.getPrefix() + redisKeyValueDto.getKey();
         if (redisKeyValueDto.getTimeout() == null) {
             redisTemplate.opsForValue().set(key, redisKeyValueDto.getValue());
+            return;
         }
         redisTemplate.opsForValue().set(key, redisKeyValueDto.getValue(), redisKeyValueDto.getTimeout(), java.util.concurrent.TimeUnit.SECONDS);
     }
@@ -42,13 +43,13 @@ public class RedisService {
     /**
      * Get the value from Redis.
      *
-     * @param redisKeyValueDto<T> The {@link RedisKeyValueDto<T>} to get.
-     * @return The value of the {@link RedisKeyValueDto<T>} to get.
+     * @param redisKeyValueDto The {@link RedisKeyValueDto} to get.
+     * @return The value of the {@link RedisKeyValueDto} to get.
      */
-    public <T> RedisKeyValueDto<T> getByDto(RedisKeyValueDto<T> redisKeyValueDto) throws GenericNotFoundError {
+    public RedisKeyValueDto getByDto(RedisKeyValueDto redisKeyValueDto) throws GenericNotFoundError {
         String key = redisKeyValueDto.getPrefix() + redisKeyValueDto.getKey();
         Long remainTime = redisTemplate.getExpire(key);
-        if (remainTime == -2) {
+        if (remainTime == -2L) {
             throw new GenericNotFoundError("Key not found.");
         }
         redisKeyValueDto.setTimeout(remainTime);
@@ -57,7 +58,7 @@ public class RedisService {
             throw new GenericNotFoundError("Value not found.");
         }
         try{
-            T t = (T) value;
+            String t = (String) value;
             redisKeyValueDto.setValue(t);
         } catch (ClassCastException e) {
             throw new GenericNotFoundError("Value of the key is not the type you wanted.");

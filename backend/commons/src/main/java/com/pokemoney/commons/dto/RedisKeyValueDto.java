@@ -1,10 +1,9 @@
 package com.pokemoney.commons.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.pokemoney.commons.dto.validation.RedisGetValueGroup;
 import com.pokemoney.commons.dto.validation.RedisSetValueGroup;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Null;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
 
@@ -13,7 +12,7 @@ import lombok.Data;
  */
 @Data
 @Builder
-public class RedisKeyValueDto <T> {
+public class RedisKeyValueDto {
     /**
      * The key of redis. Constraints:
      * Must be not blank.
@@ -27,8 +26,8 @@ public class RedisKeyValueDto <T> {
      * Must be null if get value
      */
     @Null(groups = {RedisGetValueGroup.class}, message = "Value must not be set, it should be null.")
-    @NotBlank(groups = {RedisSetValueGroup.class}, message = "Value must be not blank.")
-    private T value;
+    @NotNull(groups = {RedisSetValueGroup.class}, message = "Value must be not null.")
+    private String value;
 
     /**
      * Value timeout in unit of second. Constraints:
@@ -38,7 +37,8 @@ public class RedisKeyValueDto <T> {
      * 4. As return value, if it is -2 means the key does not exist
      * 5. As return value, -1 means the key exists but has no associated expire.
      */
-    @Size(groups = {RedisGetValueGroup.class, RedisSetValueGroup.class}, min = 1, max = 2592000, message = "Value timeout must be between 1 and 2592000 seconds (30 days).")
+    @Min(groups = {RedisGetValueGroup.class, RedisSetValueGroup.class}, value = 1, message = "Value timeout must be between 1 and 2592000 seconds (30 days).")
+    @Max(groups = {RedisGetValueGroup.class, RedisSetValueGroup.class}, value = 2592000, message = "Value timeout must be between 1 and 2592000 seconds (30 days).")
     private Long timeout;
 
     /**
