@@ -4,7 +4,7 @@ import com.pokemoney.userservice.Constants;
 import com.pokemoney.userservice.dto.RequestRegisterUserDto;
 import com.pokemoney.userservice.entity.User;
 import com.pokemoney.userservice.repository.UserRepository;
-import com.pokemoney.userservice.service.feignclient.LeafClient;
+import com.pokemoney.userservice.feignclient.LeafClient;
 import org.springframework.stereotype.Service;
 
 /**

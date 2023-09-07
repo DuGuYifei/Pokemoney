@@ -4,6 +4,7 @@ import com.pokemoney.commons.dto.RedisKeyValueDto;
 import com.pokemoney.commons.dto.ResponseSuccessDto;
 import com.pokemoney.commons.dto.validation.RedisGetValueGroup;
 import com.pokemoney.commons.dto.validation.RedisSetValueGroup;
+import com.pokemoney.commons.errors.GenericInternalServerError;
 import com.pokemoney.commons.errors.GenericNotFoundError;
 import com.pokemoney.redisservice.service.RedisService;
 import org.springframework.http.ResponseEntity;
@@ -38,9 +39,10 @@ public class RedisController {
      *
      * @param redisKeyValueDto The {@link RedisKeyValueDto} to be stored.
      * @return The {@link ResponseSuccessDto} of the result.
+     * @throws GenericInternalServerError If redis set error.
      */
     @PostMapping("/set")
-    public ResponseEntity<ResponseSuccessDto> setKeyValue(@RequestBody @Validated(RedisSetValueGroup.class) RedisKeyValueDto redisKeyValueDto) {
+    public ResponseEntity<ResponseSuccessDto> setKeyValue(@RequestBody @Validated(RedisSetValueGroup.class) RedisKeyValueDto redisKeyValueDto) throws GenericInternalServerError {
         redisService.setByDto(redisKeyValueDto);
         ResponseSuccessDto responseSuccessDto = ResponseSuccessDto.builder()
                 .message("Store successfully.")

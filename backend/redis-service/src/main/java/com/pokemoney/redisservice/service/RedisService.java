@@ -1,6 +1,7 @@
 package com.pokemoney.redisservice.service;
 
 import com.pokemoney.commons.dto.RedisKeyValueDto;
+import com.pokemoney.commons.errors.GenericInternalServerError;
 import com.pokemoney.commons.errors.GenericNotFoundError;
 import lombok.Getter;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -30,11 +31,16 @@ public class RedisService {
      * Set the value into Redis.
      *
      * @param redisKeyValueDto The {@link RedisKeyValueDto} to be set.
+     * @throws GenericInternalServerError If redis set error.
      */
-    public void setByDto(RedisKeyValueDto redisKeyValueDto) {
+    public void setByDto(RedisKeyValueDto redisKeyValueDto) throws GenericInternalServerError {
         String key = redisKeyValueDto.getPrefix() + redisKeyValueDto.getKey();
         if (redisKeyValueDto.getTimeout() == null) {
-            redisTemplate.opsForValue().set(key, redisKeyValueDto.getValue());
+            try {
+                redisTemplate.opsForValue().set(key, redisKeyValueDto.getValue());
+            } catch (Exception e) {
+                throw new GenericInternalServerError("Redis set error.");
+            }
             return;
         }
         redisTemplate.opsForValue().set(key, redisKeyValueDto.getValue(), redisKeyValueDto.getTimeout(), java.util.concurrent.TimeUnit.SECONDS);
@@ -57,12 +63,7 @@ public class RedisService {
         if (value == null) {
             throw new GenericNotFoundError("Value not found.");
         }
-        try{
-            String t = (String) value;
-            redisKeyValueDto.setValue(t);
-        } catch (ClassCastException e) {
-            throw new GenericNotFoundError("Value of the key is not the type you wanted.");
-        }
+        redisKeyValueDto.setValue((String) value);
         return redisKeyValueDto;
     }
 }

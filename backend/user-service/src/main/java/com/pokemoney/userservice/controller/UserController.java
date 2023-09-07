@@ -12,8 +12,9 @@ import com.pokemoney.userservice.dto.validation.RegisterValidationGroup;
 import com.pokemoney.userservice.dto.validation.TryRegisterValidationGroup;
 import com.pokemoney.userservice.entity.User;
 import com.pokemoney.userservice.service.UserService;
-import com.pokemoney.userservice.service.feignclient.RedisClient;
+import com.pokemoney.userservice.feignclient.RedisClient;
 import com.pokemoney.userservice.utils.CodeGenerator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/v1/user")
+@Slf4j
 public class UserController {
     /**
      * User service.
@@ -70,7 +72,13 @@ public class UserController {
                 .timeout(600L)
                 .prefix(Constants.REDIS_REGISTER_PREFIX)
                 .build();
-        boolean isSuccess = redisClient.setKeyValue(redisKeyValueDto).getStatusCode().is2xxSuccessful();
+        boolean isSuccess;
+        try {
+            isSuccess = redisClient.setKeyValue(redisKeyValueDto).getStatusCode().is2xxSuccessful();
+        } catch (Exception e) {
+            log.error("Failed to store verification code in redis.", e);
+            throw new GenericInternalServerError("Failed to store verification code in redis.");
+        }
         if (!isSuccess) {
             throw new GenericInternalServerError("Failed to store verification code in redis.");
         }
@@ -79,7 +87,13 @@ public class UserController {
                 .text("Your verification code is " + verificationCodeStr)
                 .subject("Pokemoney Registration Verification")
                 .build();
-        smtpEmail.sendMimeMessage(mailProperty);
+        try {
+            smtpEmail.sendMimeMessage(mailProperty);
+            log.debug("Send verification code to email - {}", requestRegisterUserDto.getEmail());
+        } catch (Exception e) {
+            log.error("Failed to send verification code to email - {}", requestRegisterUserDto.getEmail(), e);
+            throw new GenericInternalServerError("Failed to send verification code to email.");
+        }
         requestRegisterUserDto.setPassword("*");
         ResponseSuccessDto responseSuccessDto = ResponseSuccessDto.builder()
                 .status(200)
@@ -91,9 +105,13 @@ public class UserController {
 
     /**
      * Verify the registration, and register user.
+     *
+     * @param requestRegisterUserDto The {@link RequestRegisterUserDto} to be registered.
+     * @return The {@link ResponseRegisterUserDto} of the result.
+     * @throws GenericInternalServerError If failed in internal server.
      */
     @PostMapping("/register-verify")
-    public ResponseEntity<ResponseRegisterUserDto> register(@Validated(RegisterValidationGroup.class) RequestRegisterUserDto requestRegisterUserDto) {
+    public ResponseEntity<ResponseRegisterUserDto> register(@Validated(RegisterValidationGroup.class) RequestRegisterUserDto requestRegisterUserDto) throws GenericInternalServerError {
         // TODO: verify the email and verification code in redis
         userService.setSegmentId(requestRegisterUserDto);
         User user = userService.createUser(requestRegisterUserDto);

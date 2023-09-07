@@ -1,0 +1,12 @@
+2023-09-08 06:09:48,108 INFO org.springframework.boot.StartupInfoLogger [main] Starting LeafServerApplication using Java 17.0.8 with PID 15320 (D:\duguyifei\pokemoney\backend\leaf\leaf-service\target\classes started by AnyHelper in D:\duguyifei\pokemoney)
+2023-09-08 06:09:48,117 INFO org.springframework.boot.SpringApplication [main] The following 1 profile is active: "dev"
+2023-09-08 06:09:49,266 INFO org.springframework.cloud.context.scope.GenericScope [main] BeanFactory id=855f3784-0959-3451-a2b3-ce3d5db192dc
+2023-09-08 06:09:49,697 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat initialized with port(s): 8082 (http)
+2023-09-08 06:09:49,714 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing ProtocolHandler ["http-nio-8082"]
+2023-09-08 06:09:49,717 INFO org.apache.juli.logging.DirectJDKLog [main] Starting service [Tomcat]
+2023-09-08 06:09:49,718 INFO org.apache.juli.logging.DirectJDKLog [main] Starting Servlet engine: [Apache Tomcat/10.1.11]
+2023-09-08 06:09:49,885 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing Spring embedded WebApplicationContext
+2023-09-08 06:09:49,886 INFO org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext [main] Root WebApplicationContext: initialization completed in 1718 ms
+2023-09-08 06:09:50,118 INFO com.alibaba.druid.pool.DruidDataSource [main] {dataSource-1} inited
+2023-09-08 06:09:50,235 INFO com.sankuai.inf.leaf.segment.SegmentIDGenImpl [main] Init ...
+2023-09-08 06:09:50,236 INFO com.sankuai.inf.leaf.segment.SegmentIDGenImpl [main] update cache from db
