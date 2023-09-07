@@ -5,6 +5,7 @@ import com.pokemoney.commons.dto.ResponseErrorDto;
 import com.pokemoney.commons.dto.ResponseValidationErrorDto;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
@@ -20,6 +21,7 @@ import java.util.Set;
  * The global rest controller advice.
  */
 @RestControllerAdvice
+@Slf4j
 public class GlobalRestControllerAdvice {
     /**
      * This method handles HttpBaseError exceptions and returns an HTTP response
@@ -30,7 +32,12 @@ public class GlobalRestControllerAdvice {
      */
     @ExceptionHandler(HttpBaseError.class)
     public ResponseEntity<ResponseErrorDto> httpErrorHandler(HttpBaseError e) {
-        // TODO:Add log
+        log.error("Handled HttpBaseError:------------------");
+        log.error("", e);
+        for (StackTraceElement element : e.getStackTrace()) {
+            log.error("trace:{}", element);
+        }
+        log.error("----------------------------------------");
         ResponseErrorDto result = ResponseErrorDto
                 .builder()
                 .message(e.e.getMessage())
@@ -50,7 +57,7 @@ public class GlobalRestControllerAdvice {
      */
     @ExceptionHandler({BindException.class, MethodArgumentNotValidException.class})
     public ResponseEntity<ResponseValidationErrorDto> handleValidationException(BindException e) {
-        // TODO: Add log
+        log.error("Handled BindException:", e);
         List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
         ResponseValidationErrorDto result = new ResponseValidationErrorDto(
                 400,
@@ -70,6 +77,7 @@ public class GlobalRestControllerAdvice {
      */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ResponseErrorDto> handleValidationException(ConstraintViolationException e) {
+        log.error("Handle ConstraintViolationException:", e);
         Set<ConstraintViolation<?>> messages = e.getConstraintViolations();
         StringBuilder sb = new StringBuilder();
         for (ConstraintViolation<?> message : messages) {
@@ -93,7 +101,12 @@ public class GlobalRestControllerAdvice {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResponseErrorDto> handleUnknownException(Exception e) {
-        // TODO: Add log
+        log.error("Handle UnknownException:-------------------");
+        log.error("", e);
+        for (StackTraceElement element : e.getStackTrace()) {
+            log.error("trace:{}", element);
+        }
+        log.error("------------------------------------------");
         e.printStackTrace();
         ResponseErrorDto result = ResponseErrorDto
                 .builder()

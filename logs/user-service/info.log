@@ -1,0 +1,29 @@
+2023-09-07 10:21:10,536 INFO org.hibernate.validator.internal.util.Version [background-preinit] HV000001: Hibernate Validator 8.0.1.Final
+2023-09-07 10:21:10,605 INFO org.springframework.boot.StartupInfoLogger [main] Starting UserServiceApplication using Java 17.0.8 with PID 5328 (D:\duguyifei\pokemoney\backend\user-service\target\classes started by AnyHelper in D:\duguyifei\pokemoney)
+2023-09-07 10:21:10,607 INFO org.springframework.boot.SpringApplication [main] The following 1 profile is active: "yifei"
+2023-09-07 10:21:11,522 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2023-09-07 10:21:11,691 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 163 ms. Found 1 JPA repository interfaces.
+2023-09-07 10:21:11,926 INFO org.springframework.cloud.context.scope.GenericScope [main] BeanFactory id=d513954c-949f-3122-ac9a-fb6eb78cc997
+2023-09-07 10:21:11,974 INFO org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'methodValidationConfiguration' of type [com.pokemoney.commons.config.MethodValidationConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2023-09-07 10:21:12,000 INFO org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'com.pokemoney.userservice.feignclient.LeafClient' of type [org.springframework.cloud.openfeign.FeignClientFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2023-09-07 10:21:12,002 INFO org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'com.pokemoney.userservice.feignclient.RedisClient' of type [org.springframework.cloud.openfeign.FeignClientFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2023-09-07 10:21:12,316 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat initialized with port(s): 8081 (http)
+2023-09-07 10:21:12,327 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing ProtocolHandler ["http-nio-8081"]
+2023-09-07 10:21:12,330 INFO org.apache.juli.logging.DirectJDKLog [main] Starting service [Tomcat]
+2023-09-07 10:21:12,331 INFO org.apache.juli.logging.DirectJDKLog [main] Starting Servlet engine: [Apache Tomcat/10.1.11]
+2023-09-07 10:21:12,467 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing Spring embedded WebApplicationContext
+2023-09-07 10:21:12,468 INFO org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext [main] Root WebApplicationContext: initialization completed in 1789 ms
+2023-09-07 10:21:12,518 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
+2023-09-07 10:21:12,741 INFO com.zaxxer.hikari.pool.HikariPool [main] HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:test_db user=ADMIN
+2023-09-07 10:21:12,744 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
+2023-09-07 10:21:12,759 INFO org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration [main] H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:test_db'
+2023-09-07 10:21:12,892 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2023-09-07 10:21:12,993 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 6.2.6.Final
+2023-09-07 10:21:12,997 INFO org.hibernate.cfg.Environment [main] HHH000406: Using bytecode reflection optimizer
+2023-09-07 10:21:13,154 INFO org.hibernate.bytecode.internal.BytecodeProviderInitiator [main] HHH000021: Bytecode provider name : bytebuddy
+2023-09-07 10:21:13,314 INFO org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo [main] No LoadTimeWeaver setup: ignoring JPA class transformer
+2023-09-07 10:21:13,550 INFO org.hibernate.bytecode.internal.BytecodeProviderInitiator [main] HHH000021: Bytecode provider name : bytebuddy
+2023-09-07 10:21:14,239 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2023-09-07 10:21:14,312 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2023-09-07 10:21:14,762 INFO org.springframework.cloud.openfeign.FeignClientFactoryBean [main] For 'leaf-service' URL not provided. Will try picking an instance via load-balancing.
+2023-09-07 10:21:14,864 INFO org.springframework.cloud.openfeign.FeignClientFactoryBean [main] For 'redis-service' URL not provided. Will try picking an instance via load-balancing.
