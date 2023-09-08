@@ -1,4 +1,4 @@
-package com.pokemoney.commons.errors;
+package com.pokemoney.commons.http.errors;
 
 /**
  * An error indicating that the client does not have permission to access the

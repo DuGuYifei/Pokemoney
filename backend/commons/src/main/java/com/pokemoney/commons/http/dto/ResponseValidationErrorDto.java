@@ -1,4 +1,4 @@
-package com.pokemoney.commons.dto;
+package com.pokemoney.commons.http.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

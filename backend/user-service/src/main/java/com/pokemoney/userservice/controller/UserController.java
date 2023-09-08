@@ -1,10 +1,10 @@
 package com.pokemoney.userservice.controller;
 
-import com.pokemoney.commons.dto.RedisKeyValueDto;
-import com.pokemoney.commons.dto.ResponseDto;
-import com.pokemoney.commons.errors.GenericForbiddenError;
-import com.pokemoney.commons.errors.GenericInternalServerError;
-import com.pokemoney.commons.errors.GenericNotFoundError;
+import com.pokemoney.commons.redis.RedisKeyValueDto;
+import com.pokemoney.commons.http.dto.ResponseDto;
+import com.pokemoney.commons.http.errors.GenericForbiddenError;
+import com.pokemoney.commons.http.errors.GenericInternalServerError;
+import com.pokemoney.commons.http.errors.GenericNotFoundError;
 import com.pokemoney.commons.mail.MailProperty;
 import com.pokemoney.commons.mail.SmtpEmail;
 import com.pokemoney.userservice.Constants;

@@ -1,8 +1,8 @@
 package com.pokemoney.redisservice.service;
 
-import com.pokemoney.commons.dto.RedisKeyValueDto;
-import com.pokemoney.commons.errors.GenericInternalServerError;
-import com.pokemoney.commons.errors.GenericNotFoundError;
+import com.pokemoney.commons.redis.RedisKeyValueDto;
+import com.pokemoney.commons.http.errors.GenericInternalServerError;
+import com.pokemoney.commons.http.errors.GenericNotFoundError;
 import lombok.Getter;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;

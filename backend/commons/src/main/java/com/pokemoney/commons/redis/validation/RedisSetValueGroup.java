@@ -1,4 +1,4 @@
-package com.pokemoney.commons.dto.validation;
+package com.pokemoney.commons.redis.validation;
 
 /**
  * This interface is the validation interface for redis set value.
