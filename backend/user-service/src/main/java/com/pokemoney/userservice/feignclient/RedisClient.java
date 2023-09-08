@@ -1,8 +1,8 @@
 package com.pokemoney.userservice.feignclient;
 
-import com.pokemoney.commons.dto.RedisKeyValueDto;
-import com.pokemoney.commons.dto.ResponseDto;
-import com.pokemoney.commons.errors.GenericNotFoundError;
+import com.pokemoney.commons.redis.RedisKeyValueDto;
+import com.pokemoney.commons.http.dto.ResponseDto;
+import com.pokemoney.commons.http.errors.GenericNotFoundError;
 import com.pokemoney.userservice.Constants;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;

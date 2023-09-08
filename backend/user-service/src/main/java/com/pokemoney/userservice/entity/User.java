@@ -4,7 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.pokemoney.userservice.Constants;
 import com.pokemoney.userservice.dto.RequestRegisterUserDto;
-import com.pokemoney.commons.errors.GenericForbiddenError;
+import com.pokemoney.commons.http.errors.GenericForbiddenError;
 import com.pokemoney.userservice.utils.enums.UserRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;

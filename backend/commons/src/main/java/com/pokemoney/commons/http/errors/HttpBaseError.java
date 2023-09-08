@@ -1,4 +1,4 @@
-package com.pokemoney.commons.errors;
+package com.pokemoney.commons.http.errors;
 
 /**
  * The abstract class HttpBaseError represents a base class for all HTTP error

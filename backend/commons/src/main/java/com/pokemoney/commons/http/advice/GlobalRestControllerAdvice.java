@@ -1,8 +1,8 @@
-package com.pokemoney.commons.advice;
+package com.pokemoney.commons.http.advice;
 
-import com.pokemoney.commons.dto.ResponseDto;
-import com.pokemoney.commons.errors.HttpBaseError;
-import com.pokemoney.commons.dto.ResponseValidationErrorDto;
+import com.pokemoney.commons.http.dto.ResponseDto;
+import com.pokemoney.commons.http.errors.HttpBaseError;
+import com.pokemoney.commons.http.dto.ResponseValidationErrorDto;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;

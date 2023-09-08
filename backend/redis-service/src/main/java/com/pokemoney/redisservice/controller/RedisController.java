@@ -1,11 +1,11 @@
 package com.pokemoney.redisservice.controller;
 
-import com.pokemoney.commons.dto.RedisKeyValueDto;
-import com.pokemoney.commons.dto.ResponseDto;
-import com.pokemoney.commons.dto.validation.RedisGetValueGroup;
-import com.pokemoney.commons.dto.validation.RedisSetValueGroup;
-import com.pokemoney.commons.errors.GenericInternalServerError;
-import com.pokemoney.commons.errors.GenericNotFoundError;
+import com.pokemoney.commons.redis.RedisKeyValueDto;
+import com.pokemoney.commons.http.dto.ResponseDto;
+import com.pokemoney.commons.redis.validation.RedisGetValueGroup;
+import com.pokemoney.commons.redis.validation.RedisSetValueGroup;
+import com.pokemoney.commons.http.errors.GenericInternalServerError;
+import com.pokemoney.commons.http.errors.GenericNotFoundError;
 import com.pokemoney.redisservice.service.RedisService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;

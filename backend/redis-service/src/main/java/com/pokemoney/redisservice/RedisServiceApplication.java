@@ -8,7 +8,7 @@ import org.springframework.context.annotation.ComponentScan;
  * This class is the main class of the redis-service.
  */
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.pokemoney.redisservice", "com.pokemoney.commons.errors", "com.pokemoney.commons.advice", "com.pokemoney.commons.dto"})
+@ComponentScan(basePackages = {"com.pokemoney.redisservice", "com.pokemoney.commons.http", "com.pokemoney.commons.config", "com.pokemoney.commons.redis*"})
 public class RedisServiceApplication {
     /**
      * Application main entry point.

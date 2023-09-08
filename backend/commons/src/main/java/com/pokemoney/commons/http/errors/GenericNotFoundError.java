@@ -1,4 +1,4 @@
-package com.pokemoney.commons.errors;
+package com.pokemoney.commons.http.errors;
 
 /**
  * This class represents a custom HttpBaseError that is thrown when a generic

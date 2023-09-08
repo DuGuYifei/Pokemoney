@@ -1,8 +1,7 @@
-package com.pokemoney.commons.dto;
+package com.pokemoney.commons.redis;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.pokemoney.commons.dto.validation.RedisGetValueGroup;
-import com.pokemoney.commons.dto.validation.RedisSetValueGroup;
+import com.pokemoney.commons.redis.validation.RedisGetValueGroup;
+import com.pokemoney.commons.redis.validation.RedisSetValueGroup;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
