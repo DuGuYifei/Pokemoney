@@ -24,18 +24,18 @@ public interface RedisClient {
      * Store key, value and timeout in redis.
      *
      * @param redisKeyValueDto The {@link RedisKeyValueDto} to be stored.
-     * @return The {@link ResponseSuccessDto} of the result.
+     * @return The {@link ResponseSuccessDto<RedisKeyValueDto>} of the result.
      */
     @PostMapping("/api/v1/set")
-    ResponseEntity<ResponseSuccessDto> setKeyValue(RedisKeyValueDto redisKeyValueDto);
+    ResponseEntity<ResponseSuccessDto<RedisKeyValueDto>> setKeyValue(RedisKeyValueDto redisKeyValueDto);
 
     /**
      * Get value from redis.
      *
      * @param redisKeyValueDto The {@link RedisKeyValueDto} to get.
-     * @return The {@link ResponseSuccessDto} with data of {@link RedisKeyValueDto}.
+     * @return The {@link ResponseSuccessDto<RedisKeyValueDto>} with data of {@link RedisKeyValueDto}.
      * @throws GenericNotFoundError If key or value not found.
      */
     @PostMapping("/api/v1/get")
-    ResponseEntity<ResponseSuccessDto> getKeyValue(RedisKeyValueDto redisKeyValueDto) throws GenericNotFoundError;
+    ResponseEntity<ResponseSuccessDto<RedisKeyValueDto>> getKeyValue(RedisKeyValueDto redisKeyValueDto) throws GenericNotFoundError;
 }

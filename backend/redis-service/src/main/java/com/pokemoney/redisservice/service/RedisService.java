@@ -50,18 +50,20 @@ public class RedisService {
      * Get the value from Redis.
      *
      * @param redisKeyValueDto The {@link RedisKeyValueDto} to get.
-     * @return The value of the {@link RedisKeyValueDto} to get.
+     * @return <RequestRegisterUserDto>The value of the {@link RedisKeyValueDto} to get.
      */
     public RedisKeyValueDto getByDto(RedisKeyValueDto redisKeyValueDto) throws GenericNotFoundError {
         String key = redisKeyValueDto.getPrefix() + redisKeyValueDto.getKey();
         Long remainTime = redisTemplate.getExpire(key);
-        if (remainTime == -2L) {
-            throw new GenericNotFoundError("Key not found.");
+        if (remainTime != null) {
+            if (remainTime == -2L) {
+                throw new GenericNotFoundError("Key not found.");
+            }
+            redisKeyValueDto.setTimeout(remainTime);
         }
-        redisKeyValueDto.setTimeout(remainTime);
         Object value = redisTemplate.opsForValue().get(key);
         if (value == null) {
-            throw new GenericNotFoundError("Value not found.");
+            throw new GenericNotFoundError("Key not found.");
         }
         redisKeyValueDto.setValue((String) value);
         return redisKeyValueDto;
