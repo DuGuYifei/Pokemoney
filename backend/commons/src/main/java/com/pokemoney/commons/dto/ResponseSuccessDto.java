@@ -7,7 +7,7 @@ import lombok.*;
  */
 @Data
 @Builder
-public class ResponseSuccessDto {
+public class ResponseSuccessDto<T> {
     /**
      * The HTTP status code of the response.
      */
@@ -28,5 +28,5 @@ public class ResponseSuccessDto {
     /**
      * The data in the format of json.
      */
-    private Object data;
+    private T data;
 }
