@@ -3,19 +3,17 @@ package com.pokemoney.commons.dto;
 import lombok.*;
 
 /**
- * DTO for success result.
+ * The interface of Response DTO.
  */
 @Data
 @Builder
-public class ResponseSuccessDto<T> {
+@NoArgsConstructor
+@AllArgsConstructor
+public class ResponseDto<T> {
     /**
      * The HTTP status code of the response.
-     */
-    @Builder.Default
-    private final Boolean success = true;
-
-    /**
-     * The HTTP status code of the response.
+     * <= 0: failure
+     * > 0: success
      */
     @NonNull
     private Integer status;

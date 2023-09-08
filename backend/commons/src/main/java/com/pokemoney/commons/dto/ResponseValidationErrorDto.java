@@ -1,5 +1,7 @@
 package com.pokemoney.commons.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;
@@ -12,7 +14,7 @@ import java.util.List;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ResponseValidationErrorDto extends ResponseErrorDto{
+public class ResponseValidationErrorDto extends ResponseDto<ResponseValidationErrorDto.ValidationErrorList>{
     /**
      * DTO for validation BindException or MethodArgumentNotValidException error result.
      */
@@ -39,20 +41,20 @@ public class ResponseValidationErrorDto extends ResponseErrorDto{
             this.message = fieldError.getDefaultMessage();
         }
     }
-    /**
-     * The list of ValidationErrorDto.
-     */
-    @NonNull
-    private final List<ValidationErrorDto> errors;
+
+    @Data
+    @AllArgsConstructor
+    public static class ValidationErrorList {
+        @JsonProperty("error_list")
+        List<ResponseValidationErrorDto.ValidationErrorDto> errorList;
+    }
 
     /**
      * Constructor.
      *
      * @param message The error message.
-     * @param status The HTTP status code of the response.
      */
-    public ResponseValidationErrorDto(Integer status, String message, List<FieldError> errors) {
-        super(false, status, message);
-        this.errors = errors.stream().map(ValidationErrorDto::new).toList();
+    public ResponseValidationErrorDto(String message, List<FieldError> errors) {
+        super(-1, message, new ValidationErrorList(errors.stream().map(ValidationErrorDto::new).toList()));
     }
 }

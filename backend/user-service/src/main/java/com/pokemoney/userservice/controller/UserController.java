@@ -1,11 +1,10 @@
 package com.pokemoney.userservice.controller;
 
 import com.pokemoney.commons.dto.RedisKeyValueDto;
-import com.pokemoney.commons.dto.ResponseSuccessDto;
+import com.pokemoney.commons.dto.ResponseDto;
 import com.pokemoney.commons.errors.GenericForbiddenError;
 import com.pokemoney.commons.errors.GenericInternalServerError;
 import com.pokemoney.commons.errors.GenericNotFoundError;
-import com.pokemoney.commons.errors.HttpBaseError;
 import com.pokemoney.commons.mail.MailProperty;
 import com.pokemoney.commons.mail.SmtpEmail;
 import com.pokemoney.userservice.Constants;
@@ -17,15 +16,12 @@ import com.pokemoney.userservice.entity.User;
 import com.pokemoney.userservice.service.UserService;
 import com.pokemoney.userservice.feignclient.RedisClient;
 import com.pokemoney.userservice.utils.CodeGenerator;
-import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Objects;
 
 
 /**
@@ -65,11 +61,11 @@ public class UserController {
      * Try to register user, send verification to user's email.
      *
      * @param requestRegisterUserDto The {@link RequestRegisterUserDto} to be registered.
-     * @return The {@link ResponseSuccessDto<RequestRegisterUserDto>} of the result.
+     * @return The {@link ResponseDto<RequestRegisterUserDto>} of the result.
      * @throws GenericInternalServerError If failed in internal server.
      */
     @PostMapping("/register")
-    public ResponseEntity<ResponseSuccessDto<RequestRegisterUserDto>> tryRegister(@Validated(TryRegisterValidationGroup.class) RequestRegisterUserDto requestRegisterUserDto) throws GenericInternalServerError {
+    public ResponseEntity<ResponseDto<RequestRegisterUserDto>> tryRegister(@Validated(TryRegisterValidationGroup.class) RequestRegisterUserDto requestRegisterUserDto) throws GenericInternalServerError {
         long verificationCode = CodeGenerator.GenerateNumber(Constants.VERIFICATION_CODE_LENGTH);
         String verificationCodeStr = String.format("%0" + Constants.VERIFICATION_CODE_LENGTH + "d", verificationCode);
         RedisKeyValueDto redisKeyValueDto = RedisKeyValueDto.builder()
@@ -97,8 +93,8 @@ public class UserController {
             throw new GenericInternalServerError("Failed to send verification code to email.");
         }
         requestRegisterUserDto.setPassword("*");
-        ResponseSuccessDto<RequestRegisterUserDto> responseSuccessDto = ResponseSuccessDto.<RequestRegisterUserDto>builder()
-                .status(200)
+        ResponseDto<RequestRegisterUserDto> responseSuccessDto = ResponseDto.<RequestRegisterUserDto>builder()
+                .status(1)
                 .message("Verification code has been sent to your email.")
                 .data(requestRegisterUserDto)
                 .build();
@@ -114,14 +110,14 @@ public class UserController {
      * @throws GenericForbiddenError      If verification code expired.
      */
     @PostMapping("/register-verify")
-    public ResponseEntity<ResponseSuccessDto<ResponseRegisterUserDto>> register(@Validated(RegisterValidationGroup.class) RequestRegisterUserDto requestRegisterUserDto) throws GenericInternalServerError, GenericForbiddenError {
+    public ResponseEntity<ResponseDto<ResponseRegisterUserDto>> register(@Validated(RegisterValidationGroup.class) RequestRegisterUserDto requestRegisterUserDto) throws GenericInternalServerError, GenericForbiddenError {
         RedisKeyValueDto redisKeyValueDto = RedisKeyValueDto.builder()
                 .key(requestRegisterUserDto.getEmail())
                 .prefix(Constants.REDIS_REGISTER_PREFIX)
                 .build();
 
         String verificationCode;
-        ResponseSuccessDto<RedisKeyValueDto> responseFromRedis;
+        ResponseDto<RedisKeyValueDto> responseFromRedis;
 
         try {
             responseFromRedis = redisClient.getKeyValue(redisKeyValueDto).getBody();
@@ -150,8 +146,8 @@ public class UserController {
         User user = userService.createUser(requestRegisterUserDto);
         String jwt = user.generateJwtToken();
         ResponseRegisterUserDto responseRegisterUserDto = ResponseRegisterUserDto.builder().jwt(jwt).build();
-        ResponseSuccessDto<ResponseRegisterUserDto> responseSuccessDto = ResponseSuccessDto.<ResponseRegisterUserDto>builder()
-                .status(200)
+        ResponseDto<ResponseRegisterUserDto> responseSuccessDto = ResponseDto.<ResponseRegisterUserDto>builder()
+                .status(1)
                 .message("Register successfully.")
                 .data(responseRegisterUserDto)
                 .build();
