@@ -1,7 +1,7 @@
 package com.pokemoney.commons.advice;
 
+import com.pokemoney.commons.dto.ResponseDto;
 import com.pokemoney.commons.errors.HttpBaseError;
-import com.pokemoney.commons.dto.ResponseErrorDto;
 import com.pokemoney.commons.dto.ResponseValidationErrorDto;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -31,17 +31,17 @@ public class GlobalRestControllerAdvice {
      * @return A ResponseEntity object with the status code and error message
      */
     @ExceptionHandler(HttpBaseError.class)
-    public ResponseEntity<ResponseErrorDto> httpErrorHandler(HttpBaseError e) {
+    public ResponseEntity<ResponseDto> httpErrorHandler(HttpBaseError e) {
         log.error("Handled HttpBaseError:------------------");
         log.error("", e);
         for (StackTraceElement element : e.getStackTrace()) {
             log.error("trace:{}", element);
         }
         log.error("----------------------------------------");
-        ResponseErrorDto result = ResponseErrorDto
+        ResponseDto result = ResponseDto
                 .builder()
                 .message(e.e.getMessage())
-                .status(e.statusCode)
+                .status(0)
                 .build();
         return ResponseEntity.status(e.statusCode).body(result);
     }
@@ -60,7 +60,6 @@ public class GlobalRestControllerAdvice {
         log.error("Handled BindException:", e);
         List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
         ResponseValidationErrorDto result = new ResponseValidationErrorDto(
-                400,
                 "Validation failed",
                 fieldErrors);
         return ResponseEntity.status(400).body(result);
@@ -76,7 +75,7 @@ public class GlobalRestControllerAdvice {
      * @return A ResponseEntity object with the 403 status code and the validation error message
      */
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ResponseErrorDto> handleValidationException(ConstraintViolationException e) {
+    public ResponseEntity<ResponseDto> handleValidationException(ConstraintViolationException e) {
         log.error("Handle ConstraintViolationException:", e);
         Set<ConstraintViolation<?>> messages = e.getConstraintViolations();
         StringBuilder sb = new StringBuilder();
@@ -84,10 +83,10 @@ public class GlobalRestControllerAdvice {
             sb.append(message.getMessage());
             sb.append(";");
         }
-        ResponseErrorDto result = ResponseErrorDto
+        ResponseDto result = ResponseDto
                 .builder()
                 .message(sb.toString())
-                .status(400)
+                .status(-1)
                 .build();
         return ResponseEntity.status(400).body(result);
     }
@@ -100,7 +99,7 @@ public class GlobalRestControllerAdvice {
      * @return A ResponseEntity object with the 422 status code and a generic error message
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ResponseErrorDto> handleUnknownException(Exception e) {
+    public ResponseEntity<ResponseDto> handleUnknownException(Exception e) {
         log.error("Handle UnknownException:-------------------");
         log.error("", e);
         for (StackTraceElement element : e.getStackTrace()) {
@@ -108,10 +107,10 @@ public class GlobalRestControllerAdvice {
         }
         log.error("------------------------------------------");
         e.printStackTrace();
-        ResponseErrorDto result = ResponseErrorDto
+        ResponseDto result = ResponseDto
                 .builder()
                 .message("Something went wrong")
-                .status(422)
+                .status(0)
                 .build();
         return ResponseEntity.status(422).body(result);
     }

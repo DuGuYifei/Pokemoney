@@ -1,7 +1,7 @@
 package com.pokemoney.redisservice.controller;
 
 import com.pokemoney.commons.dto.RedisKeyValueDto;
-import com.pokemoney.commons.dto.ResponseSuccessDto;
+import com.pokemoney.commons.dto.ResponseDto;
 import com.pokemoney.commons.dto.validation.RedisGetValueGroup;
 import com.pokemoney.commons.dto.validation.RedisSetValueGroup;
 import com.pokemoney.commons.errors.GenericInternalServerError;
@@ -38,15 +38,15 @@ public class RedisController {
      * Store key and value code in redis.
      *
      * @param redisKeyValueDto The {@link RedisKeyValueDto} to be stored.
-     * @return The {@link ResponseSuccessDto<RedisKeyValueDto>} of the result.
+     * @return The {@link ResponseDto<RedisKeyValueDto>} of the result.
      * @throws GenericInternalServerError If redis set error.
      */
     @PostMapping("/set")
-    public ResponseEntity<ResponseSuccessDto<RedisKeyValueDto>> setKeyValue(@RequestBody @Validated(RedisSetValueGroup.class) RedisKeyValueDto redisKeyValueDto) throws GenericInternalServerError {
+    public ResponseEntity<ResponseDto<RedisKeyValueDto>> setKeyValue(@RequestBody @Validated(RedisSetValueGroup.class) RedisKeyValueDto redisKeyValueDto) throws GenericInternalServerError {
         redisService.setByDto(redisKeyValueDto);
-        ResponseSuccessDto<RedisKeyValueDto> responseSuccessDto = ResponseSuccessDto.<RedisKeyValueDto>builder()
+        ResponseDto<RedisKeyValueDto> responseSuccessDto = ResponseDto.<RedisKeyValueDto>builder()
                 .message("Store successfully.")
-                .status(200)
+                .status(1)
                 .data(redisKeyValueDto)
                 .build();
         return ResponseEntity.ok(responseSuccessDto);
@@ -56,16 +56,16 @@ public class RedisController {
      * Get value from redis.
      *
      * @param redisKeyValueDto The {@link RedisKeyValueDto} to get.
-     * @return The {@link ResponseSuccessDto<RedisKeyValueDto>} with data of {@link RedisKeyValueDto}.
+     * @return The {@link ResponseDto<RedisKeyValueDto>} with data of {@link RedisKeyValueDto}.
      * @throws GenericNotFoundError If key or value not found or value is not expected type.
      */
     @PostMapping("/get")
-    public ResponseEntity<ResponseSuccessDto<RedisKeyValueDto>> getKeyValue(@RequestBody @Validated(RedisGetValueGroup.class) RedisKeyValueDto redisKeyValueDto) throws GenericNotFoundError {
+    public ResponseEntity<ResponseDto<RedisKeyValueDto>> getKeyValue(@RequestBody @Validated(RedisGetValueGroup.class) RedisKeyValueDto redisKeyValueDto) throws GenericNotFoundError {
         redisKeyValueDto = redisService.getByDto(redisKeyValueDto);
-        ResponseSuccessDto<RedisKeyValueDto> responseSuccessDto = ResponseSuccessDto.<RedisKeyValueDto>builder()
+        ResponseDto<RedisKeyValueDto> responseSuccessDto = ResponseDto.<RedisKeyValueDto>builder()
                 .message("Get successfully.")
                 .data(redisKeyValueDto)
-                .status(200)
+                .status(1)
                 .build();
         return ResponseEntity.ok(responseSuccessDto);
     }

@@ -1385,3 +1385,328 @@ Caused by: org.apache.hc.client5.http.HttpHostConnectException: Connect to http:
 	... 40 more
 
 2023-09-08 08:15:22,764 INFO com.netflix.discovery.DiscoveryClient [SpringApplicationShutdownHook] Completed shut down of DiscoveryClient
+2023-09-08 09:14:42,624 INFO org.hibernate.validator.internal.util.Version [background-preinit] HV000001: Hibernate Validator 8.0.1.Final
+2023-09-08 09:14:42,683 INFO org.springframework.boot.StartupInfoLogger [main] Starting UserServiceApplication using Java 17.0.8 with PID 10840 (D:\duguyifei\pokemoney\backend\user-service\target\classes started by AnyHelper in D:\duguyifei\pokemoney)
+2023-09-08 09:14:42,687 INFO org.springframework.boot.SpringApplication [main] The following 1 profile is active: "yifei"
+2023-09-08 09:14:43,590 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2023-09-08 09:14:43,801 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 201 ms. Found 1 JPA repository interfaces.
+2023-09-08 09:14:44,092 INFO org.springframework.cloud.context.scope.GenericScope [main] BeanFactory id=d513954c-949f-3122-ac9a-fb6eb78cc997
+2023-09-08 09:14:44,160 INFO org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'methodValidationConfiguration' of type [com.pokemoney.commons.config.MethodValidationConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2023-09-08 09:14:44,187 INFO org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'com.pokemoney.userservice.feignclient.LeafClient' of type [org.springframework.cloud.openfeign.FeignClientFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2023-09-08 09:14:44,189 INFO org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'com.pokemoney.userservice.feignclient.RedisClient' of type [org.springframework.cloud.openfeign.FeignClientFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2023-09-08 09:14:44,553 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat initialized with port(s): 8081 (http)
+2023-09-08 09:14:44,570 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing ProtocolHandler ["http-nio-8081"]
+2023-09-08 09:14:44,572 INFO org.apache.juli.logging.DirectJDKLog [main] Starting service [Tomcat]
+2023-09-08 09:14:44,574 INFO org.apache.juli.logging.DirectJDKLog [main] Starting Servlet engine: [Apache Tomcat/10.1.11]
+2023-09-08 09:14:44,719 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing Spring embedded WebApplicationContext
+2023-09-08 09:14:44,719 INFO org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext [main] Root WebApplicationContext: initialization completed in 1970 ms
+2023-09-08 09:14:44,774 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
+2023-09-08 09:14:44,973 INFO com.zaxxer.hikari.pool.HikariPool [main] HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:test_db user=ADMIN
+2023-09-08 09:14:44,975 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
+2023-09-08 09:14:44,989 INFO org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration [main] H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:test_db'
+2023-09-08 09:14:45,161 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2023-09-08 09:14:45,240 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 6.2.6.Final
+2023-09-08 09:14:45,243 INFO org.hibernate.cfg.Environment [main] HHH000406: Using bytecode reflection optimizer
+2023-09-08 09:14:45,423 INFO org.hibernate.bytecode.internal.BytecodeProviderInitiator [main] HHH000021: Bytecode provider name : bytebuddy
+2023-09-08 09:14:45,591 INFO org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo [main] No LoadTimeWeaver setup: ignoring JPA class transformer
+2023-09-08 09:14:45,903 INFO org.hibernate.bytecode.internal.BytecodeProviderInitiator [main] HHH000021: Bytecode provider name : bytebuddy
+2023-09-08 09:14:46,846 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2023-09-08 09:14:46,964 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2023-09-08 09:14:47,539 INFO org.springframework.cloud.openfeign.FeignClientFactoryBean [main] For 'leaf-service' URL not provided. Will try picking an instance via load-balancing.
+2023-09-08 09:14:47,630 INFO org.springframework.cloud.openfeign.FeignClientFactoryBean [main] For 'redis-service' URL not provided. Will try picking an instance via load-balancing.
+2023-09-08 09:14:48,237 INFO org.springframework.cloud.netflix.eureka.config.DiscoveryClientOptionalArgsConfiguration [main] Eureka HTTP Client uses RestTemplate.
+2023-09-08 09:14:48,430 INFO org.springframework.cloud.netflix.eureka.InstanceInfoFactory [main] Setting initial instance status as: STARTING
+2023-09-08 09:14:48,502 INFO com.netflix.discovery.DiscoveryClient [main] Initializing Eureka in region us-east-1
+2023-09-08 09:14:48,514 INFO com.netflix.discovery.shared.resolver.aws.ConfigClusterResolver [main] Resolving eureka endpoints via configuration
+2023-09-08 09:14:48,543 INFO com.netflix.discovery.DiscoveryClient [main] Disable delta property : false
+2023-09-08 09:14:48,544 INFO com.netflix.discovery.DiscoveryClient [main] Single vip registry refresh property : null
+2023-09-08 09:14:48,544 INFO com.netflix.discovery.DiscoveryClient [main] Force full registry fetch : false
+2023-09-08 09:14:48,544 INFO com.netflix.discovery.DiscoveryClient [main] Application is null : false
+2023-09-08 09:14:48,544 INFO com.netflix.discovery.DiscoveryClient [main] Registered Applications size is zero : true
+2023-09-08 09:14:48,544 INFO com.netflix.discovery.DiscoveryClient [main] Application version is -1: true
+2023-09-08 09:14:48,544 INFO com.netflix.discovery.DiscoveryClient [main] Getting all instance registry info from the eureka server
+2023-09-08 09:14:48,989 INFO com.netflix.discovery.DiscoveryClient [main] The response status is 200
+2023-09-08 09:14:48,993 INFO com.netflix.discovery.DiscoveryClient [main] Starting heartbeat executor: renew interval is: 30
+2023-09-08 09:14:48,996 INFO com.netflix.discovery.InstanceInfoReplicator [main] InstanceInfoReplicator onDemand update allowed rate per min is 4
+2023-09-08 09:14:49,002 INFO com.netflix.discovery.DiscoveryClient [main] Discovery Client initialized at timestamp 1694135689001 with initial instances count: 1
+2023-09-08 09:14:49,005 INFO org.springframework.cloud.netflix.eureka.serviceregistry.EurekaServiceRegistry [main] Registering application USER-SERVICE with eureka with status UP
+2023-09-08 09:14:49,006 INFO com.netflix.discovery.DiscoveryClient$3 [main] Saw local status change event StatusChangeEvent [timestamp=1694135689006, current=UP, previous=STARTING]
+2023-09-08 09:14:49,008 INFO org.apache.juli.logging.DirectJDKLog [main] Starting ProtocolHandler ["http-nio-8081"]
+2023-09-08 09:14:49,008 INFO com.netflix.discovery.DiscoveryClient [DiscoveryClient-InstanceInfoReplicator-0] DiscoveryClient_USER-SERVICE/LAPTOP-RC33QHKB:user-service:8081: registering service...
+2023-09-08 09:14:49,040 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat started on port(s): 8081 (http) with context path ''
+2023-09-08 09:14:49,041 INFO org.springframework.cloud.netflix.eureka.serviceregistry.EurekaAutoServiceRegistration [main] Updating port to 8081
+2023-09-08 09:14:49,054 INFO com.netflix.discovery.DiscoveryClient [DiscoveryClient-InstanceInfoReplicator-0] DiscoveryClient_USER-SERVICE/LAPTOP-RC33QHKB:user-service:8081 - registration status: 204
+2023-09-08 09:14:49,167 INFO org.springframework.boot.StartupInfoLogger [main] Started UserServiceApplication in 7.033 seconds (process running for 8.404)
+2023-09-08 09:15:03,660 INFO org.apache.juli.logging.DirectJDKLog [http-nio-8081-exec-2] Initializing Spring DispatcherServlet 'dispatcherServlet'
+2023-09-08 09:15:03,661 INFO org.springframework.web.servlet.FrameworkServlet [http-nio-8081-exec-2] Initializing Servlet 'dispatcherServlet'
+2023-09-08 09:15:03,664 INFO org.springframework.web.servlet.FrameworkServlet [http-nio-8081-exec-2] Completed initialization in 2 ms
+2023-09-08 09:19:46,342 INFO org.springframework.cloud.netflix.eureka.serviceregistry.EurekaServiceRegistry [SpringApplicationShutdownHook] Unregistering application USER-SERVICE with eureka with status DOWN
+2023-09-08 09:19:46,342 INFO com.netflix.discovery.DiscoveryClient$3 [SpringApplicationShutdownHook] Saw local status change event StatusChangeEvent [timestamp=1694135986342, current=DOWN, previous=UP]
+2023-09-08 09:19:46,343 INFO com.netflix.discovery.DiscoveryClient [DiscoveryClient-InstanceInfoReplicator-0] DiscoveryClient_USER-SERVICE/LAPTOP-RC33QHKB:user-service:8081: registering service...
+2023-09-08 09:19:46,355 INFO com.netflix.discovery.DiscoveryClient [DiscoveryClient-InstanceInfoReplicator-0] DiscoveryClient_USER-SERVICE/LAPTOP-RC33QHKB:user-service:8081 - registration status: 204
+2023-09-08 09:19:46,381 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [SpringApplicationShutdownHook] Closing JPA EntityManagerFactory for persistence unit 'default'
+2023-09-08 09:19:46,385 INFO com.zaxxer.hikari.HikariDataSource [SpringApplicationShutdownHook] HikariPool-1 - Shutdown initiated...
+2023-09-08 09:19:46,387 INFO com.zaxxer.hikari.HikariDataSource [SpringApplicationShutdownHook] HikariPool-1 - Shutdown completed.
+2023-09-08 09:19:46,388 INFO com.netflix.discovery.DiscoveryClient [SpringApplicationShutdownHook] Shutting down DiscoveryClient ...
+2023-09-08 09:19:48,568 INFO com.netflix.discovery.shared.resolver.aws.ConfigClusterResolver [AsyncResolver-bootstrap-executor-0] Resolving eureka endpoints via configuration
+2023-09-08 09:19:49,404 INFO com.netflix.discovery.DiscoveryClient [SpringApplicationShutdownHook] Unregistering ...
+2023-09-08 09:19:49,415 INFO com.netflix.discovery.DiscoveryClient [SpringApplicationShutdownHook] DiscoveryClient_USER-SERVICE/LAPTOP-RC33QHKB:user-service:8081 - deregister  status: 200
+2023-09-08 09:19:49,420 INFO com.netflix.discovery.DiscoveryClient [SpringApplicationShutdownHook] Completed shut down of DiscoveryClient
+2023-09-08 09:19:56,629 INFO org.hibernate.validator.internal.util.Version [background-preinit] HV000001: Hibernate Validator 8.0.1.Final
+2023-09-08 09:19:56,689 INFO org.springframework.boot.StartupInfoLogger [main] Starting UserServiceApplication using Java 17.0.8 with PID 20000 (D:\duguyifei\pokemoney\backend\user-service\target\classes started by AnyHelper in D:\duguyifei\pokemoney)
+2023-09-08 09:19:56,693 INFO org.springframework.boot.SpringApplication [main] The following 1 profile is active: "yifei"
+2023-09-08 09:19:57,666 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2023-09-08 09:19:57,855 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 180 ms. Found 1 JPA repository interfaces.
+2023-09-08 09:19:58,216 INFO org.springframework.cloud.context.scope.GenericScope [main] BeanFactory id=d513954c-949f-3122-ac9a-fb6eb78cc997
+2023-09-08 09:19:58,318 INFO org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'methodValidationConfiguration' of type [com.pokemoney.commons.config.MethodValidationConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2023-09-08 09:19:58,363 INFO org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'com.pokemoney.userservice.feignclient.LeafClient' of type [org.springframework.cloud.openfeign.FeignClientFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2023-09-08 09:19:58,371 INFO org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'com.pokemoney.userservice.feignclient.RedisClient' of type [org.springframework.cloud.openfeign.FeignClientFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2023-09-08 09:19:58,811 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat initialized with port(s): 8081 (http)
+2023-09-08 09:19:58,836 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing ProtocolHandler ["http-nio-8081"]
+2023-09-08 09:19:58,843 INFO org.apache.juli.logging.DirectJDKLog [main] Starting service [Tomcat]
+2023-09-08 09:19:58,845 INFO org.apache.juli.logging.DirectJDKLog [main] Starting Servlet engine: [Apache Tomcat/10.1.11]
+2023-09-08 09:19:59,015 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing Spring embedded WebApplicationContext
+2023-09-08 09:19:59,015 INFO org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext [main] Root WebApplicationContext: initialization completed in 2262 ms
+2023-09-08 09:19:59,070 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
+2023-09-08 09:19:59,264 INFO com.zaxxer.hikari.pool.HikariPool [main] HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:test_db user=ADMIN
+2023-09-08 09:19:59,266 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
+2023-09-08 09:19:59,283 INFO org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration [main] H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:test_db'
+2023-09-08 09:19:59,451 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2023-09-08 09:19:59,533 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 6.2.6.Final
+2023-09-08 09:19:59,538 INFO org.hibernate.cfg.Environment [main] HHH000406: Using bytecode reflection optimizer
+2023-09-08 09:19:59,720 INFO org.hibernate.bytecode.internal.BytecodeProviderInitiator [main] HHH000021: Bytecode provider name : bytebuddy
+2023-09-08 09:19:59,891 INFO org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo [main] No LoadTimeWeaver setup: ignoring JPA class transformer
+2023-09-08 09:20:00,202 INFO org.hibernate.bytecode.internal.BytecodeProviderInitiator [main] HHH000021: Bytecode provider name : bytebuddy
+2023-09-08 09:20:01,133 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2023-09-08 09:20:01,222 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2023-09-08 09:20:01,842 INFO org.springframework.cloud.openfeign.FeignClientFactoryBean [main] For 'leaf-service' URL not provided. Will try picking an instance via load-balancing.
+2023-09-08 09:20:01,951 INFO org.springframework.cloud.openfeign.FeignClientFactoryBean [main] For 'redis-service' URL not provided. Will try picking an instance via load-balancing.
+2023-09-08 09:20:02,563 INFO org.springframework.cloud.netflix.eureka.config.DiscoveryClientOptionalArgsConfiguration [main] Eureka HTTP Client uses RestTemplate.
+2023-09-08 09:20:02,826 INFO org.springframework.cloud.netflix.eureka.InstanceInfoFactory [main] Setting initial instance status as: STARTING
+2023-09-08 09:20:02,890 INFO com.netflix.discovery.DiscoveryClient [main] Initializing Eureka in region us-east-1
+2023-09-08 09:20:02,895 INFO com.netflix.discovery.shared.resolver.aws.ConfigClusterResolver [main] Resolving eureka endpoints via configuration
+2023-09-08 09:20:02,921 INFO com.netflix.discovery.DiscoveryClient [main] Disable delta property : false
+2023-09-08 09:20:02,921 INFO com.netflix.discovery.DiscoveryClient [main] Single vip registry refresh property : null
+2023-09-08 09:20:02,921 INFO com.netflix.discovery.DiscoveryClient [main] Force full registry fetch : false
+2023-09-08 09:20:02,921 INFO com.netflix.discovery.DiscoveryClient [main] Application is null : false
+2023-09-08 09:20:02,921 INFO com.netflix.discovery.DiscoveryClient [main] Registered Applications size is zero : true
+2023-09-08 09:20:02,921 INFO com.netflix.discovery.DiscoveryClient [main] Application version is -1: true
+2023-09-08 09:20:02,921 INFO com.netflix.discovery.DiscoveryClient [main] Getting all instance registry info from the eureka server
+2023-09-08 09:20:03,393 INFO com.netflix.discovery.DiscoveryClient [main] The response status is 200
+2023-09-08 09:20:03,397 INFO com.netflix.discovery.DiscoveryClient [main] Starting heartbeat executor: renew interval is: 30
+2023-09-08 09:20:03,401 INFO com.netflix.discovery.InstanceInfoReplicator [main] InstanceInfoReplicator onDemand update allowed rate per min is 4
+2023-09-08 09:20:03,408 INFO com.netflix.discovery.DiscoveryClient [main] Discovery Client initialized at timestamp 1694136003407 with initial instances count: 3
+2023-09-08 09:20:03,412 INFO org.springframework.cloud.netflix.eureka.serviceregistry.EurekaServiceRegistry [main] Registering application USER-SERVICE with eureka with status UP
+2023-09-08 09:20:03,412 INFO com.netflix.discovery.DiscoveryClient$3 [main] Saw local status change event StatusChangeEvent [timestamp=1694136003412, current=UP, previous=STARTING]
+2023-09-08 09:20:03,415 INFO com.netflix.discovery.DiscoveryClient [DiscoveryClient-InstanceInfoReplicator-0] DiscoveryClient_USER-SERVICE/LAPTOP-RC33QHKB:user-service:8081: registering service...
+2023-09-08 09:20:03,416 INFO org.apache.juli.logging.DirectJDKLog [main] Starting ProtocolHandler ["http-nio-8081"]
+2023-09-08 09:20:03,449 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat started on port(s): 8081 (http) with context path ''
+2023-09-08 09:20:03,450 INFO org.springframework.cloud.netflix.eureka.serviceregistry.EurekaAutoServiceRegistration [main] Updating port to 8081
+2023-09-08 09:20:03,464 INFO com.netflix.discovery.DiscoveryClient [DiscoveryClient-InstanceInfoReplicator-0] DiscoveryClient_USER-SERVICE/LAPTOP-RC33QHKB:user-service:8081 - registration status: 204
+2023-09-08 09:20:03,545 INFO org.springframework.boot.StartupInfoLogger [main] Started UserServiceApplication in 7.366 seconds (process running for 8.641)
+2023-09-08 09:20:10,836 INFO org.apache.juli.logging.DirectJDKLog [http-nio-8081-exec-2] Initializing Spring DispatcherServlet 'dispatcherServlet'
+2023-09-08 09:20:10,837 INFO org.springframework.web.servlet.FrameworkServlet [http-nio-8081-exec-2] Initializing Servlet 'dispatcherServlet'
+2023-09-08 09:20:10,841 INFO org.springframework.web.servlet.FrameworkServlet [http-nio-8081-exec-2] Completed initialization in 3 ms
+2023-09-08 09:21:38,338 INFO org.springframework.cloud.netflix.eureka.serviceregistry.EurekaServiceRegistry [SpringApplicationShutdownHook] Unregistering application USER-SERVICE with eureka with status DOWN
+2023-09-08 09:21:38,338 INFO com.netflix.discovery.DiscoveryClient$3 [SpringApplicationShutdownHook] Saw local status change event StatusChangeEvent [timestamp=1694136098338, current=DOWN, previous=UP]
+2023-09-08 09:21:38,339 INFO com.netflix.discovery.DiscoveryClient [DiscoveryClient-InstanceInfoReplicator-0] DiscoveryClient_USER-SERVICE/LAPTOP-RC33QHKB:user-service:8081: registering service...
+2023-09-08 09:21:38,363 INFO com.netflix.discovery.DiscoveryClient [DiscoveryClient-InstanceInfoReplicator-0] DiscoveryClient_USER-SERVICE/LAPTOP-RC33QHKB:user-service:8081 - registration status: 204
+2023-09-08 09:21:38,367 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [SpringApplicationShutdownHook] Closing JPA EntityManagerFactory for persistence unit 'default'
+2023-09-08 09:21:38,371 INFO com.zaxxer.hikari.HikariDataSource [SpringApplicationShutdownHook] HikariPool-1 - Shutdown initiated...
+2023-09-08 09:21:38,374 INFO com.zaxxer.hikari.HikariDataSource [SpringApplicationShutdownHook] HikariPool-1 - Shutdown completed.
+2023-09-08 09:21:38,375 INFO com.netflix.discovery.DiscoveryClient [SpringApplicationShutdownHook] Shutting down DiscoveryClient ...
+2023-09-08 09:21:41,382 INFO com.netflix.discovery.DiscoveryClient [SpringApplicationShutdownHook] Unregistering ...
+2023-09-08 09:21:41,399 INFO com.netflix.discovery.DiscoveryClient [SpringApplicationShutdownHook] DiscoveryClient_USER-SERVICE/LAPTOP-RC33QHKB:user-service:8081 - deregister  status: 200
+2023-09-08 09:21:41,405 INFO com.netflix.discovery.DiscoveryClient [SpringApplicationShutdownHook] Completed shut down of DiscoveryClient
+2023-09-08 09:21:48,267 INFO org.hibernate.validator.internal.util.Version [background-preinit] HV000001: Hibernate Validator 8.0.1.Final
+2023-09-08 09:21:48,323 INFO org.springframework.boot.StartupInfoLogger [main] Starting UserServiceApplication using Java 17.0.8 with PID 16488 (D:\duguyifei\pokemoney\backend\user-service\target\classes started by AnyHelper in D:\duguyifei\pokemoney)
+2023-09-08 09:21:48,327 INFO org.springframework.boot.SpringApplication [main] The following 1 profile is active: "yifei"
+2023-09-08 09:21:49,335 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2023-09-08 09:21:49,523 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 178 ms. Found 1 JPA repository interfaces.
+2023-09-08 09:21:49,835 INFO org.springframework.cloud.context.scope.GenericScope [main] BeanFactory id=d513954c-949f-3122-ac9a-fb6eb78cc997
+2023-09-08 09:21:49,909 INFO org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'methodValidationConfiguration' of type [com.pokemoney.commons.config.MethodValidationConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2023-09-08 09:21:49,942 INFO org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'com.pokemoney.userservice.feignclient.LeafClient' of type [org.springframework.cloud.openfeign.FeignClientFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2023-09-08 09:21:49,945 INFO org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'com.pokemoney.userservice.feignclient.RedisClient' of type [org.springframework.cloud.openfeign.FeignClientFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2023-09-08 09:21:50,320 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat initialized with port(s): 8081 (http)
+2023-09-08 09:21:50,339 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing ProtocolHandler ["http-nio-8081"]
+2023-09-08 09:21:50,343 INFO org.apache.juli.logging.DirectJDKLog [main] Starting service [Tomcat]
+2023-09-08 09:21:50,344 INFO org.apache.juli.logging.DirectJDKLog [main] Starting Servlet engine: [Apache Tomcat/10.1.11]
+2023-09-08 09:21:50,533 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing Spring embedded WebApplicationContext
+2023-09-08 09:21:50,534 INFO org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext [main] Root WebApplicationContext: initialization completed in 2134 ms
+2023-09-08 09:21:50,602 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
+2023-09-08 09:21:50,839 INFO com.zaxxer.hikari.pool.HikariPool [main] HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:test_db user=ADMIN
+2023-09-08 09:21:50,842 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
+2023-09-08 09:21:50,859 INFO org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration [main] H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:test_db'
+2023-09-08 09:21:51,045 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2023-09-08 09:21:51,135 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 6.2.6.Final
+2023-09-08 09:21:51,139 INFO org.hibernate.cfg.Environment [main] HHH000406: Using bytecode reflection optimizer
+2023-09-08 09:21:51,348 INFO org.hibernate.bytecode.internal.BytecodeProviderInitiator [main] HHH000021: Bytecode provider name : bytebuddy
+2023-09-08 09:21:51,531 INFO org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo [main] No LoadTimeWeaver setup: ignoring JPA class transformer
+2023-09-08 09:21:51,844 INFO org.hibernate.bytecode.internal.BytecodeProviderInitiator [main] HHH000021: Bytecode provider name : bytebuddy
+2023-09-08 09:21:52,700 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2023-09-08 09:21:52,790 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2023-09-08 09:21:53,379 INFO org.springframework.cloud.openfeign.FeignClientFactoryBean [main] For 'leaf-service' URL not provided. Will try picking an instance via load-balancing.
+2023-09-08 09:21:53,472 INFO org.springframework.cloud.openfeign.FeignClientFactoryBean [main] For 'redis-service' URL not provided. Will try picking an instance via load-balancing.
+2023-09-08 09:21:54,187 INFO org.springframework.cloud.netflix.eureka.config.DiscoveryClientOptionalArgsConfiguration [main] Eureka HTTP Client uses RestTemplate.
+2023-09-08 09:21:54,435 INFO org.springframework.cloud.netflix.eureka.InstanceInfoFactory [main] Setting initial instance status as: STARTING
+2023-09-08 09:21:54,487 INFO com.netflix.discovery.DiscoveryClient [main] Initializing Eureka in region us-east-1
+2023-09-08 09:21:54,499 INFO com.netflix.discovery.shared.resolver.aws.ConfigClusterResolver [main] Resolving eureka endpoints via configuration
+2023-09-08 09:21:54,558 INFO com.netflix.discovery.DiscoveryClient [main] Disable delta property : false
+2023-09-08 09:21:54,558 INFO com.netflix.discovery.DiscoveryClient [main] Single vip registry refresh property : null
+2023-09-08 09:21:54,559 INFO com.netflix.discovery.DiscoveryClient [main] Force full registry fetch : false
+2023-09-08 09:21:54,559 INFO com.netflix.discovery.DiscoveryClient [main] Application is null : false
+2023-09-08 09:21:54,559 INFO com.netflix.discovery.DiscoveryClient [main] Registered Applications size is zero : true
+2023-09-08 09:21:54,560 INFO com.netflix.discovery.DiscoveryClient [main] Application version is -1: true
+2023-09-08 09:21:54,560 INFO com.netflix.discovery.DiscoveryClient [main] Getting all instance registry info from the eureka server
+2023-09-08 09:21:55,350 INFO com.netflix.discovery.DiscoveryClient [main] The response status is 200
+2023-09-08 09:21:55,355 INFO com.netflix.discovery.DiscoveryClient [main] Starting heartbeat executor: renew interval is: 30
+2023-09-08 09:21:55,361 INFO com.netflix.discovery.InstanceInfoReplicator [main] InstanceInfoReplicator onDemand update allowed rate per min is 4
+2023-09-08 09:21:55,372 INFO com.netflix.discovery.DiscoveryClient [main] Discovery Client initialized at timestamp 1694136115371 with initial instances count: 3
+2023-09-08 09:21:55,376 INFO org.springframework.cloud.netflix.eureka.serviceregistry.EurekaServiceRegistry [main] Registering application USER-SERVICE with eureka with status UP
+2023-09-08 09:21:55,377 INFO com.netflix.discovery.DiscoveryClient$3 [main] Saw local status change event StatusChangeEvent [timestamp=1694136115377, current=UP, previous=STARTING]
+2023-09-08 09:21:55,386 INFO org.apache.juli.logging.DirectJDKLog [main] Starting ProtocolHandler ["http-nio-8081"]
+2023-09-08 09:21:55,386 INFO com.netflix.discovery.DiscoveryClient [DiscoveryClient-InstanceInfoReplicator-0] DiscoveryClient_USER-SERVICE/LAPTOP-RC33QHKB:user-service:8081: registering service...
+2023-09-08 09:21:55,427 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat started on port(s): 8081 (http) with context path ''
+2023-09-08 09:21:55,428 INFO org.springframework.cloud.netflix.eureka.serviceregistry.EurekaAutoServiceRegistration [main] Updating port to 8081
+2023-09-08 09:21:55,457 INFO com.netflix.discovery.DiscoveryClient [DiscoveryClient-InstanceInfoReplicator-0] DiscoveryClient_USER-SERVICE/LAPTOP-RC33QHKB:user-service:8081 - registration status: 204
+2023-09-08 09:21:55,627 INFO org.springframework.boot.StartupInfoLogger [main] Started UserServiceApplication in 7.853 seconds (process running for 9.142)
+2023-09-08 09:24:43,682 INFO org.springframework.cloud.netflix.eureka.serviceregistry.EurekaServiceRegistry [SpringApplicationShutdownHook] Unregistering application USER-SERVICE with eureka with status DOWN
+2023-09-08 09:24:43,682 INFO com.netflix.discovery.DiscoveryClient$3 [SpringApplicationShutdownHook] Saw local status change event StatusChangeEvent [timestamp=1694136283682, current=DOWN, previous=UP]
+2023-09-08 09:24:43,683 INFO com.netflix.discovery.DiscoveryClient [DiscoveryClient-InstanceInfoReplicator-0] DiscoveryClient_USER-SERVICE/LAPTOP-RC33QHKB:user-service:8081: registering service...
+2023-09-08 09:24:43,708 INFO com.netflix.discovery.DiscoveryClient [DiscoveryClient-InstanceInfoReplicator-0] DiscoveryClient_USER-SERVICE/LAPTOP-RC33QHKB:user-service:8081 - registration status: 204
+2023-09-08 09:24:43,715 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [SpringApplicationShutdownHook] Closing JPA EntityManagerFactory for persistence unit 'default'
+2023-09-08 09:24:43,718 INFO com.zaxxer.hikari.HikariDataSource [SpringApplicationShutdownHook] HikariPool-1 - Shutdown initiated...
+2023-09-08 09:24:43,719 INFO com.zaxxer.hikari.HikariDataSource [SpringApplicationShutdownHook] HikariPool-1 - Shutdown completed.
+2023-09-08 09:24:43,720 INFO com.netflix.discovery.DiscoveryClient [SpringApplicationShutdownHook] Shutting down DiscoveryClient ...
+2023-09-08 09:24:46,729 INFO com.netflix.discovery.DiscoveryClient [SpringApplicationShutdownHook] Unregistering ...
+2023-09-08 09:24:46,746 INFO com.netflix.discovery.DiscoveryClient [SpringApplicationShutdownHook] DiscoveryClient_USER-SERVICE/LAPTOP-RC33QHKB:user-service:8081 - deregister  status: 200
+2023-09-08 09:24:46,752 INFO com.netflix.discovery.DiscoveryClient [SpringApplicationShutdownHook] Completed shut down of DiscoveryClient
+2023-09-08 09:24:52,515 INFO org.hibernate.validator.internal.util.Version [background-preinit] HV000001: Hibernate Validator 8.0.1.Final
+2023-09-08 09:24:52,575 INFO org.springframework.boot.StartupInfoLogger [main] Starting UserServiceApplication using Java 17.0.8 with PID 14752 (D:\duguyifei\pokemoney\backend\user-service\target\classes started by AnyHelper in D:\duguyifei\pokemoney)
+2023-09-08 09:24:52,579 INFO org.springframework.boot.SpringApplication [main] The following 1 profile is active: "yifei"
+2023-09-08 09:24:53,510 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2023-09-08 09:24:53,674 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 153 ms. Found 1 JPA repository interfaces.
+2023-09-08 09:24:53,984 INFO org.springframework.cloud.context.scope.GenericScope [main] BeanFactory id=d513954c-949f-3122-ac9a-fb6eb78cc997
+2023-09-08 09:24:54,055 INFO org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'methodValidationConfiguration' of type [com.pokemoney.commons.config.MethodValidationConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2023-09-08 09:24:54,086 INFO org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'com.pokemoney.userservice.feignclient.LeafClient' of type [org.springframework.cloud.openfeign.FeignClientFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2023-09-08 09:24:54,089 INFO org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'com.pokemoney.userservice.feignclient.RedisClient' of type [org.springframework.cloud.openfeign.FeignClientFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2023-09-08 09:24:54,441 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat initialized with port(s): 8081 (http)
+2023-09-08 09:24:54,458 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing ProtocolHandler ["http-nio-8081"]
+2023-09-08 09:24:54,463 INFO org.apache.juli.logging.DirectJDKLog [main] Starting service [Tomcat]
+2023-09-08 09:24:54,465 INFO org.apache.juli.logging.DirectJDKLog [main] Starting Servlet engine: [Apache Tomcat/10.1.11]
+2023-09-08 09:24:54,619 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing Spring embedded WebApplicationContext
+2023-09-08 09:24:54,621 INFO org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext [main] Root WebApplicationContext: initialization completed in 1970 ms
+2023-09-08 09:24:54,678 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
+2023-09-08 09:24:54,893 INFO com.zaxxer.hikari.pool.HikariPool [main] HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:test_db user=ADMIN
+2023-09-08 09:24:54,895 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
+2023-09-08 09:24:54,909 INFO org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration [main] H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:test_db'
+2023-09-08 09:24:55,075 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2023-09-08 09:24:55,170 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 6.2.6.Final
+2023-09-08 09:24:55,173 INFO org.hibernate.cfg.Environment [main] HHH000406: Using bytecode reflection optimizer
+2023-09-08 09:24:55,362 INFO org.hibernate.bytecode.internal.BytecodeProviderInitiator [main] HHH000021: Bytecode provider name : bytebuddy
+2023-09-08 09:24:55,516 INFO org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo [main] No LoadTimeWeaver setup: ignoring JPA class transformer
+2023-09-08 09:24:55,816 INFO org.hibernate.bytecode.internal.BytecodeProviderInitiator [main] HHH000021: Bytecode provider name : bytebuddy
+2023-09-08 09:24:56,765 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2023-09-08 09:24:56,869 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2023-09-08 09:24:57,474 INFO org.springframework.cloud.openfeign.FeignClientFactoryBean [main] For 'leaf-service' URL not provided. Will try picking an instance via load-balancing.
+2023-09-08 09:24:57,585 INFO org.springframework.cloud.openfeign.FeignClientFactoryBean [main] For 'redis-service' URL not provided. Will try picking an instance via load-balancing.
+2023-09-08 09:24:58,171 INFO org.springframework.cloud.netflix.eureka.config.DiscoveryClientOptionalArgsConfiguration [main] Eureka HTTP Client uses RestTemplate.
+2023-09-08 09:24:58,405 INFO org.springframework.cloud.netflix.eureka.InstanceInfoFactory [main] Setting initial instance status as: STARTING
+2023-09-08 09:24:58,455 INFO com.netflix.discovery.DiscoveryClient [main] Initializing Eureka in region us-east-1
+2023-09-08 09:24:58,466 INFO com.netflix.discovery.shared.resolver.aws.ConfigClusterResolver [main] Resolving eureka endpoints via configuration
+2023-09-08 09:24:58,501 INFO com.netflix.discovery.DiscoveryClient [main] Disable delta property : false
+2023-09-08 09:24:58,502 INFO com.netflix.discovery.DiscoveryClient [main] Single vip registry refresh property : null
+2023-09-08 09:24:58,502 INFO com.netflix.discovery.DiscoveryClient [main] Force full registry fetch : false
+2023-09-08 09:24:58,502 INFO com.netflix.discovery.DiscoveryClient [main] Application is null : false
+2023-09-08 09:24:58,502 INFO com.netflix.discovery.DiscoveryClient [main] Registered Applications size is zero : true
+2023-09-08 09:24:58,502 INFO com.netflix.discovery.DiscoveryClient [main] Application version is -1: true
+2023-09-08 09:24:58,502 INFO com.netflix.discovery.DiscoveryClient [main] Getting all instance registry info from the eureka server
+2023-09-08 09:24:58,949 INFO com.netflix.discovery.DiscoveryClient [main] The response status is 200
+2023-09-08 09:24:58,953 INFO com.netflix.discovery.DiscoveryClient [main] Starting heartbeat executor: renew interval is: 30
+2023-09-08 09:24:58,957 INFO com.netflix.discovery.InstanceInfoReplicator [main] InstanceInfoReplicator onDemand update allowed rate per min is 4
+2023-09-08 09:24:58,966 INFO com.netflix.discovery.DiscoveryClient [main] Discovery Client initialized at timestamp 1694136298964 with initial instances count: 3
+2023-09-08 09:24:58,970 INFO org.springframework.cloud.netflix.eureka.serviceregistry.EurekaServiceRegistry [main] Registering application USER-SERVICE with eureka with status UP
+2023-09-08 09:24:58,970 INFO com.netflix.discovery.DiscoveryClient$3 [main] Saw local status change event StatusChangeEvent [timestamp=1694136298970, current=UP, previous=STARTING]
+2023-09-08 09:24:58,973 INFO com.netflix.discovery.DiscoveryClient [DiscoveryClient-InstanceInfoReplicator-0] DiscoveryClient_USER-SERVICE/LAPTOP-RC33QHKB:user-service:8081: registering service...
+2023-09-08 09:24:58,975 INFO org.apache.juli.logging.DirectJDKLog [main] Starting ProtocolHandler ["http-nio-8081"]
+2023-09-08 09:24:59,015 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat started on port(s): 8081 (http) with context path ''
+2023-09-08 09:24:59,015 INFO org.springframework.cloud.netflix.eureka.serviceregistry.EurekaAutoServiceRegistration [main] Updating port to 8081
+2023-09-08 09:24:59,022 INFO com.netflix.discovery.DiscoveryClient [DiscoveryClient-InstanceInfoReplicator-0] DiscoveryClient_USER-SERVICE/LAPTOP-RC33QHKB:user-service:8081 - registration status: 204
+2023-09-08 09:24:59,192 INFO org.springframework.boot.StartupInfoLogger [main] Started UserServiceApplication in 7.187 seconds (process running for 8.358)
+2023-09-08 09:25:04,221 INFO org.apache.juli.logging.DirectJDKLog [http-nio-8081-exec-1] Initializing Spring DispatcherServlet 'dispatcherServlet'
+2023-09-08 09:25:04,221 INFO org.springframework.web.servlet.FrameworkServlet [http-nio-8081-exec-1] Initializing Servlet 'dispatcherServlet'
+2023-09-08 09:25:04,224 INFO org.springframework.web.servlet.FrameworkServlet [http-nio-8081-exec-1] Completed initialization in 2 ms
+2023-09-08 09:30:57,639 INFO org.springframework.cloud.netflix.eureka.serviceregistry.EurekaServiceRegistry [SpringApplicationShutdownHook] Unregistering application USER-SERVICE with eureka with status DOWN
+2023-09-08 09:30:57,640 INFO com.netflix.discovery.DiscoveryClient$3 [SpringApplicationShutdownHook] Saw local status change event StatusChangeEvent [timestamp=1694136657640, current=DOWN, previous=UP]
+2023-09-08 09:30:57,641 INFO com.netflix.discovery.DiscoveryClient [DiscoveryClient-InstanceInfoReplicator-0] DiscoveryClient_USER-SERVICE/LAPTOP-RC33QHKB:user-service:8081: registering service...
+2023-09-08 09:30:57,649 INFO com.netflix.discovery.DiscoveryClient [DiscoveryClient-InstanceInfoReplicator-0] DiscoveryClient_USER-SERVICE/LAPTOP-RC33QHKB:user-service:8081 - registration status: 204
+2023-09-08 09:30:57,672 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [SpringApplicationShutdownHook] Closing JPA EntityManagerFactory for persistence unit 'default'
+2023-09-08 09:30:57,676 INFO com.zaxxer.hikari.HikariDataSource [SpringApplicationShutdownHook] HikariPool-1 - Shutdown initiated...
+2023-09-08 09:30:57,684 INFO com.zaxxer.hikari.HikariDataSource [SpringApplicationShutdownHook] HikariPool-1 - Shutdown completed.
+2023-09-08 09:30:57,684 INFO com.netflix.discovery.DiscoveryClient [SpringApplicationShutdownHook] Shutting down DiscoveryClient ...
+2023-09-08 09:31:00,690 INFO com.netflix.discovery.DiscoveryClient [SpringApplicationShutdownHook] Unregistering ...
+2023-09-08 09:31:00,709 INFO com.netflix.discovery.DiscoveryClient [SpringApplicationShutdownHook] DiscoveryClient_USER-SERVICE/LAPTOP-RC33QHKB:user-service:8081 - deregister  status: 200
+2023-09-08 09:31:00,718 INFO com.netflix.discovery.DiscoveryClient [SpringApplicationShutdownHook] Completed shut down of DiscoveryClient
+2023-09-08 09:31:06,975 INFO org.hibernate.validator.internal.util.Version [background-preinit] HV000001: Hibernate Validator 8.0.1.Final
+2023-09-08 09:31:07,036 INFO org.springframework.boot.StartupInfoLogger [main] Starting UserServiceApplication using Java 17.0.8 with PID 22512 (D:\duguyifei\pokemoney\backend\user-service\target\classes started by AnyHelper in D:\duguyifei\pokemoney)
+2023-09-08 09:31:07,040 INFO org.springframework.boot.SpringApplication [main] The following 1 profile is active: "yifei"
+2023-09-08 09:31:07,958 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2023-09-08 09:31:08,159 INFO org.springframework.data.repository.config.RepositoryConfigurationDelegate [main] Finished Spring Data repository scanning in 190 ms. Found 1 JPA repository interfaces.
+2023-09-08 09:31:08,487 INFO org.springframework.cloud.context.scope.GenericScope [main] BeanFactory id=d513954c-949f-3122-ac9a-fb6eb78cc997
+2023-09-08 09:31:08,559 INFO org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'methodValidationConfiguration' of type [com.pokemoney.commons.config.MethodValidationConfiguration$$SpringCGLIB$$0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2023-09-08 09:31:08,592 INFO org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'com.pokemoney.userservice.feignclient.LeafClient' of type [org.springframework.cloud.openfeign.FeignClientFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2023-09-08 09:31:08,595 INFO org.springframework.context.support.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [main] Bean 'com.pokemoney.userservice.feignclient.RedisClient' of type [org.springframework.cloud.openfeign.FeignClientFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2023-09-08 09:31:08,982 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat initialized with port(s): 8081 (http)
+2023-09-08 09:31:08,998 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing ProtocolHandler ["http-nio-8081"]
+2023-09-08 09:31:09,006 INFO org.apache.juli.logging.DirectJDKLog [main] Starting service [Tomcat]
+2023-09-08 09:31:09,009 INFO org.apache.juli.logging.DirectJDKLog [main] Starting Servlet engine: [Apache Tomcat/10.1.11]
+2023-09-08 09:31:09,165 INFO org.apache.juli.logging.DirectJDKLog [main] Initializing Spring embedded WebApplicationContext
+2023-09-08 09:31:09,165 INFO org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext [main] Root WebApplicationContext: initialization completed in 2067 ms
+2023-09-08 09:31:09,215 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Starting...
+2023-09-08 09:31:09,431 INFO com.zaxxer.hikari.pool.HikariPool [main] HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:test_db user=ADMIN
+2023-09-08 09:31:09,434 INFO com.zaxxer.hikari.HikariDataSource [main] HikariPool-1 - Start completed.
+2023-09-08 09:31:09,448 INFO org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration [main] H2 console available at '/h2-console'. Database available at 'jdbc:h2:mem:test_db'
+2023-09-08 09:31:09,667 INFO org.hibernate.jpa.internal.util.LogHelper [main] HHH000204: Processing PersistenceUnitInfo [name: default]
+2023-09-08 09:31:09,755 INFO org.hibernate.Version [main] HHH000412: Hibernate ORM core version 6.2.6.Final
+2023-09-08 09:31:09,759 INFO org.hibernate.cfg.Environment [main] HHH000406: Using bytecode reflection optimizer
+2023-09-08 09:31:09,956 INFO org.hibernate.bytecode.internal.BytecodeProviderInitiator [main] HHH000021: Bytecode provider name : bytebuddy
+2023-09-08 09:31:10,149 INFO org.springframework.orm.jpa.persistenceunit.SpringPersistenceUnitInfo [main] No LoadTimeWeaver setup: ignoring JPA class transformer
+2023-09-08 09:31:10,491 INFO org.hibernate.bytecode.internal.BytecodeProviderInitiator [main] HHH000021: Bytecode provider name : bytebuddy
+2023-09-08 09:31:11,417 INFO org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator [main] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2023-09-08 09:31:11,502 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [main] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2023-09-08 09:31:12,104 INFO org.springframework.cloud.openfeign.FeignClientFactoryBean [main] For 'leaf-service' URL not provided. Will try picking an instance via load-balancing.
+2023-09-08 09:31:12,209 INFO org.springframework.cloud.openfeign.FeignClientFactoryBean [main] For 'redis-service' URL not provided. Will try picking an instance via load-balancing.
+2023-09-08 09:31:12,859 INFO org.springframework.cloud.netflix.eureka.config.DiscoveryClientOptionalArgsConfiguration [main] Eureka HTTP Client uses RestTemplate.
+2023-09-08 09:31:13,214 INFO org.springframework.cloud.netflix.eureka.InstanceInfoFactory [main] Setting initial instance status as: STARTING
+2023-09-08 09:31:13,260 INFO com.netflix.discovery.DiscoveryClient [main] Initializing Eureka in region us-east-1
+2023-09-08 09:31:13,267 INFO com.netflix.discovery.shared.resolver.aws.ConfigClusterResolver [main] Resolving eureka endpoints via configuration
+2023-09-08 09:31:13,296 INFO com.netflix.discovery.DiscoveryClient [main] Disable delta property : false
+2023-09-08 09:31:13,296 INFO com.netflix.discovery.DiscoveryClient [main] Single vip registry refresh property : null
+2023-09-08 09:31:13,296 INFO com.netflix.discovery.DiscoveryClient [main] Force full registry fetch : false
+2023-09-08 09:31:13,297 INFO com.netflix.discovery.DiscoveryClient [main] Application is null : false
+2023-09-08 09:31:13,297 INFO com.netflix.discovery.DiscoveryClient [main] Registered Applications size is zero : true
+2023-09-08 09:31:13,297 INFO com.netflix.discovery.DiscoveryClient [main] Application version is -1: true
+2023-09-08 09:31:13,297 INFO com.netflix.discovery.DiscoveryClient [main] Getting all instance registry info from the eureka server
+2023-09-08 09:31:13,857 INFO com.netflix.discovery.DiscoveryClient [main] The response status is 200
+2023-09-08 09:31:13,860 INFO com.netflix.discovery.DiscoveryClient [main] Starting heartbeat executor: renew interval is: 30
+2023-09-08 09:31:13,864 INFO com.netflix.discovery.InstanceInfoReplicator [main] InstanceInfoReplicator onDemand update allowed rate per min is 4
+2023-09-08 09:31:13,871 INFO com.netflix.discovery.DiscoveryClient [main] Discovery Client initialized at timestamp 1694136673870 with initial instances count: 3
+2023-09-08 09:31:13,875 INFO org.springframework.cloud.netflix.eureka.serviceregistry.EurekaServiceRegistry [main] Registering application USER-SERVICE with eureka with status UP
+2023-09-08 09:31:13,876 INFO com.netflix.discovery.DiscoveryClient$3 [main] Saw local status change event StatusChangeEvent [timestamp=1694136673876, current=UP, previous=STARTING]
+2023-09-08 09:31:13,882 INFO org.apache.juli.logging.DirectJDKLog [main] Starting ProtocolHandler ["http-nio-8081"]
+2023-09-08 09:31:13,882 INFO com.netflix.discovery.DiscoveryClient [DiscoveryClient-InstanceInfoReplicator-0] DiscoveryClient_USER-SERVICE/LAPTOP-RC33QHKB:user-service:8081: registering service...
+2023-09-08 09:31:13,918 INFO org.springframework.boot.web.embedded.tomcat.TomcatWebServer [main] Tomcat started on port(s): 8081 (http) with context path ''
+2023-09-08 09:31:13,919 INFO org.springframework.cloud.netflix.eureka.serviceregistry.EurekaAutoServiceRegistration [main] Updating port to 8081
+2023-09-08 09:31:13,939 INFO com.netflix.discovery.DiscoveryClient [DiscoveryClient-InstanceInfoReplicator-0] DiscoveryClient_USER-SERVICE/LAPTOP-RC33QHKB:user-service:8081 - registration status: 204
+2023-09-08 09:31:14,005 INFO org.springframework.boot.StartupInfoLogger [main] Started UserServiceApplication in 7.517 seconds (process running for 8.657)
+2023-09-08 09:31:18,409 INFO org.apache.juli.logging.DirectJDKLog [http-nio-8081-exec-4] Initializing Spring DispatcherServlet 'dispatcherServlet'
+2023-09-08 09:31:18,409 INFO org.springframework.web.servlet.FrameworkServlet [http-nio-8081-exec-4] Initializing Servlet 'dispatcherServlet'
+2023-09-08 09:31:18,412 INFO org.springframework.web.servlet.FrameworkServlet [http-nio-8081-exec-4] Completed initialization in 3 ms
+2023-09-08 09:32:47,936 INFO org.springframework.cloud.netflix.eureka.serviceregistry.EurekaServiceRegistry [SpringApplicationShutdownHook] Unregistering application USER-SERVICE with eureka with status DOWN
+2023-09-08 09:32:47,936 INFO com.netflix.discovery.DiscoveryClient$3 [SpringApplicationShutdownHook] Saw local status change event StatusChangeEvent [timestamp=1694136767936, current=DOWN, previous=UP]
+2023-09-08 09:32:47,937 INFO com.netflix.discovery.DiscoveryClient [DiscoveryClient-InstanceInfoReplicator-0] DiscoveryClient_USER-SERVICE/LAPTOP-RC33QHKB:user-service:8081: registering service...
+2023-09-08 09:32:47,960 INFO com.netflix.discovery.DiscoveryClient [DiscoveryClient-InstanceInfoReplicator-0] DiscoveryClient_USER-SERVICE/LAPTOP-RC33QHKB:user-service:8081 - registration status: 204
+2023-09-08 09:32:47,966 INFO org.springframework.orm.jpa.AbstractEntityManagerFactoryBean [SpringApplicationShutdownHook] Closing JPA EntityManagerFactory for persistence unit 'default'
+2023-09-08 09:32:47,969 INFO com.zaxxer.hikari.HikariDataSource [SpringApplicationShutdownHook] HikariPool-1 - Shutdown initiated...
+2023-09-08 09:32:47,971 INFO com.zaxxer.hikari.HikariDataSource [SpringApplicationShutdownHook] HikariPool-1 - Shutdown completed.
+2023-09-08 09:32:47,971 INFO com.netflix.discovery.DiscoveryClient [SpringApplicationShutdownHook] Shutting down DiscoveryClient ...
