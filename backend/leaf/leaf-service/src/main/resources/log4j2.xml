@@ -18,7 +18,7 @@
                                  fileName="${LOG_HOME}/info.log"
                                  filePattern="${LOG_HOME}/$${date:yyyy-MM}/info-%d{yyyy-MM-dd}-%i.log.gz">
             <Filters>
-                <ThresholdFilter level="warn" onMatch="DENY" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="info" onMatch="accept" onMismatch="deny"/>
             </Filters>
             <PatternLayout>
                 <pattern>%d %p %C{} [%t] %m%n</pattern>
