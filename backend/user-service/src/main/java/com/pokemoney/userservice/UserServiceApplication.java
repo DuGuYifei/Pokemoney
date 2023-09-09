@@ -9,7 +9,13 @@ import org.springframework.context.annotation.ComponentScan;
  * Application main class
  */
 @SpringBootApplication
-@ComponentScan({"com.pokemoney.userservice", "com.pokemoney.commons.mail", "com.pokemoney.commons.http", "com.pokemoney.commons.config", "com.pokemoney.commons.redis"})
+@ComponentScan({"com.pokemoney.userservice",
+        "com.pokemoney.commons.mail",
+        "com.pokemoney.commons.http",
+        "com.pokemoney.commons.config",
+        "com.pokemoney.commons.redis",
+})
+
 @EnableFeignClients
 public class UserServiceApplication {
     /**

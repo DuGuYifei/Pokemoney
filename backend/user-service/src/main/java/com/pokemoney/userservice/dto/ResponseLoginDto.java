@@ -9,7 +9,7 @@ import lombok.NonNull;
  */
 @Data
 @Builder
-public class ResponseRegisterUserDto {
+public class ResponseLoginDto {
     /**
      * The JWT for user.
      */

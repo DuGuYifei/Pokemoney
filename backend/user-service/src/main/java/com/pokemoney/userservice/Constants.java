@@ -14,16 +14,6 @@ public class Constants {
     public static final String SERVICE_NAME = "user-service";
 
     /**
-     * The secret key for JWT.
-     */
-    public static final String JWT_SECRET = "pokemoney";
-
-    /**
-     * The subject for JWT.
-     */
-    public static final String JWT_SUBJECT = SERVICE_NAME;
-
-    /**
      * The key of leaf-service in eureka-service.
      */
     public static final String LEAF_IN_EUREKA_KEY = "leaf-service";
@@ -47,4 +37,9 @@ public class Constants {
      * The prefix of redis key for register.
      */
     public static final String REDIS_REGISTER_PREFIX = SERVICE_NAME + ":register:";
+
+    /**
+     * The prefix of redis key for login.
+     */
+    public static final String REDIS_LOGIN_PREFIX = SERVICE_NAME + ":login:";
 }
