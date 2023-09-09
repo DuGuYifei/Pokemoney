@@ -1,10 +1,6 @@
 package com.pokemoney.userservice.entity;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.pokemoney.userservice.Constants;
 import com.pokemoney.userservice.dto.RequestRegisterUserDto;
-import com.pokemoney.commons.http.errors.GenericForbiddenError;
 import com.pokemoney.userservice.utils.enums.UserRole;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
@@ -21,8 +17,6 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import java.io.Serial;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -32,11 +26,6 @@ import java.util.UUID;
 @Entity
 @Table(name = "t_users")
 public class User implements Serializable {
-    /**
-     * JWT algorithm.
-     */
-    private static final Algorithm algorithm = Algorithm.HMAC256(Constants.JWT_SECRET);
-
     /**
      * Serial version UID.
      */
@@ -117,38 +106,10 @@ public class User implements Serializable {
      * Verifies the password of the user.
      *
      * @param password the password to verify which is provided by user
-     * @throws GenericForbiddenError if the password is incorrect
+     * @return true if the password is correct
      */
-    public void verifyPassword(String password) throws GenericForbiddenError {
-        if (!BCrypt.checkpw(password, this.getPassword())) {
-            throw new GenericForbiddenError("Invalid e-mail or password");
-        }
-    }
-
-    /**
-     * Generates a JWT for the user.
-     *
-     * @return The JWT
-     */
-    public String generateJwtToken() {
-        Date now = new Date();
-        return JWT.create().withJWTId(UUID.randomUUID().toString()).withIssuedAt(now).withExpiresAt(new Date(now.getTime() + 2592000000L)) // 30 days
-                .withSubject(Constants.JWT_SUBJECT).withAudience(id.toString()).sign(algorithm);
-    }
-
-    /**
-     * Verifies a JWT and returns the user ID encoded in the token.
-     * The subject must be {@link Constants#JWT_SUBJECT}.
-     * The expiration time will be accepted within 5 seconds.
-     *
-     * @param token The JWT
-     * @return The user ID encoded in the token
-     */
-    public static Long verifyJwtToken(String token) throws GenericForbiddenError {
-        try {
-            return Long.parseLong(JWT.require(algorithm).withSubject(Constants.JWT_SUBJECT).acceptExpiresAt(5).build().verify(token).getAudience().get(0));
-        } catch (Exception e) {
-            throw new GenericForbiddenError("Invalid token");
-        }
+    public Boolean verifyPassword(String password){
+        System.out.println(password + " " + this.getPassword());
+        return BCrypt.checkpw(password, this.getPassword());
     }
 }

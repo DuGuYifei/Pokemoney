@@ -23,7 +23,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = lombok.AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RequestRegisterUserDto {
-
     /**
      * User id. Provided by leaf-service. Constraints:
      * Must be null when validating it from user.
@@ -55,6 +54,7 @@ public class RequestRegisterUserDto {
      * The email of user, provided by user. Constraints:
      * Must be not blank.
      * Must be valid email.
+     * Must be less than 50 characters.
      */
     @NotBlank(groups = {TryRegisterValidationGroup.class, RegisterValidationGroup.class}, message = "Email must be not blank.")
     @Pattern(groups = {TryRegisterValidationGroup.class, RegisterValidationGroup.class}, regexp = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$", message = "Email must be valid.")

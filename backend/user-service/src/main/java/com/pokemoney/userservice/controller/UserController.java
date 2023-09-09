@@ -1,20 +1,23 @@
 package com.pokemoney.userservice.controller;
 
-import com.pokemoney.commons.redis.RedisKeyValueDto;
 import com.pokemoney.commons.http.dto.ResponseDto;
 import com.pokemoney.commons.http.errors.GenericForbiddenError;
 import com.pokemoney.commons.http.errors.GenericInternalServerError;
 import com.pokemoney.commons.http.errors.GenericNotFoundError;
 import com.pokemoney.commons.mail.MailProperty;
 import com.pokemoney.commons.mail.SmtpEmail;
+import com.pokemoney.commons.redis.RedisKeyValueDto;
 import com.pokemoney.userservice.Constants;
+import com.pokemoney.userservice.dto.RequestLoginDto;
 import com.pokemoney.userservice.dto.RequestRegisterUserDto;
-import com.pokemoney.userservice.dto.ResponseRegisterUserDto;
+import com.pokemoney.userservice.dto.ResponseLoginDto;
+import com.pokemoney.userservice.dto.VerifyLoginDto;
 import com.pokemoney.userservice.dto.validation.RegisterValidationGroup;
 import com.pokemoney.userservice.dto.validation.TryRegisterValidationGroup;
 import com.pokemoney.userservice.entity.User;
-import com.pokemoney.userservice.service.UserService;
 import com.pokemoney.userservice.feignclient.RedisClient;
+import com.pokemoney.userservice.service.JwtService;
+import com.pokemoney.userservice.service.UserService;
 import com.pokemoney.userservice.utils.CodeGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 /**
- * User controller.
+ * User controller
  */
 @RestController
 @RequestMapping("/api/v1/user")
@@ -35,6 +38,11 @@ public class UserController {
      * User service.
      */
     private final UserService userService;
+
+    /**
+     * Jwt service.
+     */
+    private final JwtService jwtService;
 
     /**
      * Smtp email component.
@@ -51,8 +59,9 @@ public class UserController {
      *
      * @param userService User service.
      */
-    public UserController(UserService userService, SmtpEmail smtpEmail, RedisClient redisClient) {
+    public UserController(UserService userService, JwtService jwtService, SmtpEmail smtpEmail, RedisClient redisClient) {
         this.userService = userService;
+        this.jwtService = jwtService;
         this.smtpEmail = smtpEmail;
         this.redisClient = redisClient;
     }
@@ -105,12 +114,11 @@ public class UserController {
      * Verify the registration, and register user.
      *
      * @param requestRegisterUserDto The {@link RequestRegisterUserDto} to be registered.
-     * @return The {@link ResponseRegisterUserDto} of the result.
-     * @throws GenericInternalServerError If failed in internal server.
-     * @throws GenericForbiddenError      If verification code expired.
+     * @return The {@link ResponseLoginDto} of the result.
+     * @throws GenericForbiddenError If verification code expired.
      */
     @PostMapping("/register-verify")
-    public ResponseEntity<ResponseDto<ResponseRegisterUserDto>> register(@Validated(RegisterValidationGroup.class) RequestRegisterUserDto requestRegisterUserDto) throws GenericInternalServerError, GenericForbiddenError {
+    public ResponseEntity<ResponseDto<ResponseLoginDto>> register(@Validated(RegisterValidationGroup.class) RequestRegisterUserDto requestRegisterUserDto) throws GenericForbiddenError {
         RedisKeyValueDto redisKeyValueDto = RedisKeyValueDto.builder()
                 .key(requestRegisterUserDto.getEmail())
                 .prefix(Constants.REDIS_REGISTER_PREFIX)
@@ -144,12 +152,37 @@ public class UserController {
 
         userService.setSegmentId(requestRegisterUserDto);
         User user = userService.createUser(requestRegisterUserDto);
-        String jwt = user.generateJwtToken();
-        ResponseRegisterUserDto responseRegisterUserDto = ResponseRegisterUserDto.builder().jwt(jwt).build();
-        ResponseDto<ResponseRegisterUserDto> responseSuccessDto = ResponseDto.<ResponseRegisterUserDto>builder()
+        String jwt = jwtService.generateJwt(user);
+        ResponseLoginDto responseRegisterUserDto = ResponseLoginDto.builder().jwt(jwt).build();
+        ResponseDto<ResponseLoginDto> responseSuccessDto = ResponseDto.<ResponseLoginDto>builder()
                 .status(1)
                 .message("Register successfully.")
                 .data(responseRegisterUserDto)
+                .build();
+        return ResponseEntity.ok(responseSuccessDto);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ResponseDto<ResponseLoginDto>> login(@Validated RequestLoginDto requestLoginDto) throws GenericForbiddenError, GenericInternalServerError {
+        VerifyLoginDto verifyLoginDto = userService.generateVerifyLoginDto(requestLoginDto);
+        User user = userService.verifyLogin(verifyLoginDto);
+        String jwt = jwtService.generateJwt(user);
+        try {
+            redisClient.setKeyValue(RedisKeyValueDto.builder()
+                    .key(jwt)
+                    .value(user.getEmail())
+                    .timeout(2592000L) // one month
+                    .prefix(Constants.REDIS_LOGIN_PREFIX)
+                    .build());
+        } catch (Exception e) {
+            log.error("Failed to send request to set jwt in redis.", e);
+            throw new GenericInternalServerError("Something wrong when login.");
+        }
+        ResponseLoginDto responseLoginDto = ResponseLoginDto.builder().jwt(jwt).build();
+        ResponseDto<ResponseLoginDto> responseSuccessDto = ResponseDto.<ResponseLoginDto>builder()
+                .status(1)
+                .message("Login successfully.")
+                .data(responseLoginDto)
                 .build();
         return ResponseEntity.ok(responseSuccessDto);
     }

@@ -34,9 +34,6 @@ public class GlobalRestControllerAdvice {
     public ResponseEntity<ResponseDto> httpErrorHandler(HttpBaseError e) {
         log.error("Handled HttpBaseError:------------------");
         log.error("", e);
-        for (StackTraceElement element : e.getStackTrace()) {
-            log.error("trace:{}", element);
-        }
         log.error("----------------------------------------");
         ResponseDto result = ResponseDto
                 .builder()
@@ -77,18 +74,12 @@ public class GlobalRestControllerAdvice {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ResponseDto> handleValidationException(ConstraintViolationException e) {
         log.error("Handle ConstraintViolationException:", e);
-        Set<ConstraintViolation<?>> messages = e.getConstraintViolations();
-        StringBuilder sb = new StringBuilder();
-        for (ConstraintViolation<?> message : messages) {
-            sb.append(message.getMessage());
-            sb.append(";");
-        }
-        ResponseDto result = ResponseDto
-                .builder()
-                .message(sb.toString())
-                .status(-1)
-                .build();
+        Set<ConstraintViolation<?>> cvSet = e.getConstraintViolations();
+        ResponseValidationErrorDto result = new ResponseValidationErrorDto(
+                "Validation failed",
+                cvSet);
         return ResponseEntity.status(400).body(result);
+
     }
 
     /**
