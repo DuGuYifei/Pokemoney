@@ -1,0 +1,1 @@
+INSERT INTO t_permissions (service_name) VALUES (1, 'basic');

@@ -31,11 +31,11 @@ public class GlobalRestControllerAdvice {
      * @return A ResponseEntity object with the status code and error message
      */
     @ExceptionHandler(HttpBaseError.class)
-    public ResponseEntity<ResponseDto> httpErrorHandler(HttpBaseError e) {
+    public ResponseEntity<ResponseDto<?>> httpErrorHandler(HttpBaseError e) {
         log.error("Handled HttpBaseError:------------------");
         log.error("", e);
         log.error("----------------------------------------");
-        ResponseDto result = ResponseDto
+        ResponseDto<?> result = ResponseDto
                 .builder()
                 .message(e.e.getMessage())
                 .status(0)
@@ -72,7 +72,7 @@ public class GlobalRestControllerAdvice {
      * @return A ResponseEntity object with the 403 status code and the validation error message
      */
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ResponseDto> handleValidationException(ConstraintViolationException e) {
+    public ResponseEntity<ResponseDto<?>> handleValidationException(ConstraintViolationException e) {
         log.error("Handle ConstraintViolationException:", e);
         Set<ConstraintViolation<?>> cvSet = e.getConstraintViolations();
         ResponseValidationErrorDto result = new ResponseValidationErrorDto(
@@ -90,7 +90,7 @@ public class GlobalRestControllerAdvice {
      * @return A ResponseEntity object with the 422 status code and a generic error message
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ResponseDto> handleUnknownException(Exception e) {
+    public ResponseEntity<ResponseDto<?>> handleUnknownException(Exception e) {
         log.error("Handle UnknownException:-------------------");
         log.error("", e);
         for (StackTraceElement element : e.getStackTrace()) {
@@ -98,7 +98,7 @@ public class GlobalRestControllerAdvice {
         }
         log.error("------------------------------------------");
         e.printStackTrace();
-        ResponseDto result = ResponseDto
+        ResponseDto<?> result = ResponseDto
                 .builder()
                 .message("Something went wrong")
                 .status(0)

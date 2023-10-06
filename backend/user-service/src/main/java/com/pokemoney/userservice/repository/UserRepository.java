@@ -1,14 +1,14 @@
 package com.pokemoney.userservice.repository;
 
-import com.pokemoney.userservice.entity.User;
+import com.pokemoney.userservice.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**
- * This is a repository of t_users table.
+ * This is a repository of user.
  */
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     /**
      * Check if user exists by username.
@@ -30,15 +30,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * Find user by username.
      *
      * @param username Username.
-     * @return User.
+     * @return UserEntity.
      */
-    User findByUsername(String username);
+    UserEntity findByUsername(String username);
 
     /**
      * Find user by email.
      *
      * @param email Email.
-     * @return User.
+     * @return UserEntity.
      */
-    User findByEmail(String email);
+    UserEntity findByEmail(String email);
 }
