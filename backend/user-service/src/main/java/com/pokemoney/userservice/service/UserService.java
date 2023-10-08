@@ -3,12 +3,11 @@ package com.pokemoney.userservice.service;
 import com.pokemoney.commons.http.dto.ResponseDto;
 import com.pokemoney.commons.http.errors.GenericForbiddenError;
 import com.pokemoney.commons.http.errors.GenericInternalServerError;
-import com.pokemoney.commons.http.errors.GenericNotFoundError;
 import com.pokemoney.commons.redis.RedisKeyValueDto;
 import com.pokemoney.userservice.Constants;
 import com.pokemoney.userservice.dto.RequestLoginDto;
 import com.pokemoney.userservice.dto.RequestRegisterCommonUserDto;
-import com.pokemoney.userservice.dto.VerifyLoginDto;
+import com.pokemoney.userservice.dto.RequestVerifyLoginDto;
 import com.pokemoney.userservice.entity.RoleEntity;
 import com.pokemoney.userservice.entity.UserEntity;
 import com.pokemoney.userservice.feignclient.RedisClient;
@@ -103,16 +102,16 @@ public class UserService {
      * Find a user based on username or email.
      *
      * @param requestLoginDto The {@link RequestLoginDto} send by user.
-     * @return The {@link VerifyLoginDto} which will be verified.
+     * @return The {@link RequestVerifyLoginDto} which will be verified.
      */
-    public VerifyLoginDto generateVerifyLoginDto(RequestLoginDto requestLoginDto) {
-        VerifyLoginDto verifyLoginDto = VerifyLoginDto.builder().password(requestLoginDto.getPassword()).build();
+    public RequestVerifyLoginDto generateVerifyLoginDto(RequestLoginDto requestLoginDto) {
+        RequestVerifyLoginDto requestVerifyLoginDto = RequestVerifyLoginDto.builder().password(requestLoginDto.getPassword()).build();
         if (requestLoginDto.getUsernameOrEmail().contains("@")) {
-            verifyLoginDto.setEmail(requestLoginDto.getUsernameOrEmail());
+            requestVerifyLoginDto.setEmail(requestLoginDto.getUsernameOrEmail());
         } else {
-            verifyLoginDto.setUsername(requestLoginDto.getUsernameOrEmail());
+            requestVerifyLoginDto.setUsername(requestLoginDto.getUsernameOrEmail());
         }
-        return verifyLoginDto;
+        return requestVerifyLoginDto;
     }
 
     /**
@@ -121,20 +120,20 @@ public class UserService {
      * The password should be correct.
      * The user should not be banned.
      *
-     * @param verifyLoginDto The {@link VerifyLoginDto} to be verified.
+     * @param requestVerifyLoginDto The {@link RequestVerifyLoginDto} to be verified.
      * @return UserEntity if login successfully, null otherwise.
      */
-    public UserEntity verifyLogin(@Valid VerifyLoginDto verifyLoginDto) throws GenericForbiddenError {
+    public UserEntity verifyLogin(@Valid RequestVerifyLoginDto requestVerifyLoginDto) throws GenericForbiddenError {
         UserEntity userEntity;
-        if (verifyLoginDto.getEmail() != null) {
-            userEntity = userRepository.findByEmail(verifyLoginDto.getEmail());
+        if (requestVerifyLoginDto.getEmail() != null) {
+            userEntity = userRepository.findByEmail(requestVerifyLoginDto.getEmail());
         } else {
-            userEntity = userRepository.findByUsername(verifyLoginDto.getUsername());
+            userEntity = userRepository.findByUsername(requestVerifyLoginDto.getUsername());
         }
         if (userEntity == null) {
             throw new GenericForbiddenError("User not exist.");
         }
-        if (!userEntity.verifyPassword(verifyLoginDto.getPassword())) {
+        if (!userEntity.verifyPassword(requestVerifyLoginDto.getPassword())) {
             throw new GenericForbiddenError("Invalid account or password.");
         }
         if (userEntity.getIsBan()) {
@@ -205,8 +204,6 @@ public class UserService {
             } else {
                 throw new RuntimeException(e);
             }
-        } catch (GenericNotFoundError e) {
-            throw new RuntimeException("Failed to get verification code from redis by GenericNotFoundError. But it shouldn't run to here.", e);
         } catch (Exception e) {
             throw new RuntimeException("Failed to get verification code from redis.", e);
         }
@@ -215,24 +212,6 @@ public class UserService {
         }
         if (!verificationCode.equals(requestRegisterCommonUserDto.getVerificationCode())) {
             throw new GenericForbiddenError("Verification code not match.");
-        }
-    }
-
-    /**
-     * Store jwt status in redis.
-     *
-     * @param jwt        Json Web Token
-     * @param userEntity UserEntity
-     */
-    public void storeJwtStatus(String jwt, UserEntity userEntity) {
-        // The service should still work when there is no redis, this service can verify jwt. So use try catch.
-        try {
-            redisClient.setKeyValue(RedisKeyValueDto.builder().key(jwt)
-                    // TODO: store different information as hash set
-                    .value(userEntity.getEmail()).timeout(2592000L) // one month
-                    .prefix(Constants.REDIS_LOGIN_PREFIX).build());
-        } catch (Exception e) {
-            log.warn("Failed to send request to set jwt in redis.", e);
         }
     }
 }

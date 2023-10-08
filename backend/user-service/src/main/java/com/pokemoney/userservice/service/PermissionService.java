@@ -1,13 +1,17 @@
 package com.pokemoney.userservice.service;
 
+import com.pokemoney.commons.http.errors.GenericForbiddenError;
+import com.pokemoney.commons.http.errors.GenericNotFoundError;
 import com.pokemoney.userservice.Constants;
 import com.pokemoney.userservice.dto.RequestPermissionDto;
 import com.pokemoney.userservice.entity.PermissionEntity;
 import com.pokemoney.userservice.feignclient.LeafClient;
 import com.pokemoney.userservice.repository.PermissionRepository;
+import com.pokemoney.userservice.vo.JwtInfo;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -67,6 +71,7 @@ public class PermissionService {
     public void savePermission(RequestPermissionDto requestPermissionDto) {
         Integer id = Integer.parseInt(leafClient.getSegmentId(Constants.USER_PERMISSION_IN_LEAF_KEY));
         permissionRepository.save(PermissionEntity.builder().id(id).permissionBit(requestPermissionDto.getPermissionBit()).serviceName(requestPermissionDto.getServiceName()).build());
+        permissionBitMap.put(requestPermissionDto.getServiceName(), requestPermissionDto.getPermissionBit());
     }
 
     /**
@@ -76,6 +81,27 @@ public class PermissionService {
         List<PermissionEntity> permissionEntities = permissionRepository.findAll();
         for (PermissionEntity permissionEntity : permissionEntities) {
             permissionBitMap.put(permissionEntity.getServiceName(), permissionEntity.getId());
+        }
+    }
+
+    /**
+     * Verify permission based on information of jwt.
+     *
+     * @param jwtInfo The {@link JwtInfo}.
+     * @param service The service name.
+     * @throws GenericForbiddenError If no permission to access this service.
+     * @throws GenericNotFoundError  If service not found.
+     */
+    public void verifyPermissionByJwtInfo(JwtInfo jwtInfo, String service) throws GenericForbiddenError, GenericNotFoundError {
+        BigInteger servicePermission = new BigInteger(jwtInfo.getPermission());
+        Integer serviceBit = permissionBitMap.get(service);
+        if (serviceBit == null) {
+            throw new GenericNotFoundError("Invalid service.");
+        }
+
+        // if the service bit is not set to 1, throw exception.
+        if ((servicePermission.and(BigInteger.ONE.shiftLeft(serviceBit))).equals(BigInteger.ZERO)) {
+            throw new GenericForbiddenError("No permission to access this service.");
         }
     }
 }

@@ -55,7 +55,7 @@ public class Constants {
     public static final String REDIS_REGISTER_PREFIX = SERVICE_NAME + ":register:";
 
     /**
-     * The prefix of redis key for login.
+     * The prefix of redis key for token.
      */
-    public static final String REDIS_LOGIN_PREFIX = SERVICE_NAME + ":login:";
+    public static final String REDIS_TOKEN_PREFIX = SERVICE_NAME + ":token:";
 }

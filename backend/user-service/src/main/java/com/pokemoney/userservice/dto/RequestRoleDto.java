@@ -30,17 +30,25 @@ public class RequestRoleDto {
      * Must be not blank.
      * Must be less than 20 characters.
      */
-    @NotBlank
+    @NotBlank(message = "Role name must be not blank.")
     @Size(max = 20, message = "Role name must be less than 20 characters.")
     @JsonProperty("role_name")
     private String roleName;
+
+    /**
+     * The permission level, provided by user. Constraints:
+     * Must be not null.
+     */
+    @NotNull(message = "Permission level must be not null.")
+    @JsonProperty("permission_level")
+    private Integer permissionLevel;
 
     /**
      * The role description, provided by user. Constraints:
      * Must be not blank.
      * Must be less than 50 characters.
      */
-    @NotBlank
+    @NotBlank(message = "Role description must be not blank.")
     @Size(max = 50, message = "Role description must be less than 50 characters.")
     private String description;
 }

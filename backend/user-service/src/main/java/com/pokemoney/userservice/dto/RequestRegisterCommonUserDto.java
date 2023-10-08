@@ -48,7 +48,7 @@ public class RequestRegisterCommonUserDto {
      * Must be less than 50 characters.
      */
     @NotBlank(groups = {TryRegisterValidationGroup.class, RegisterValidationGroup.class}, message = "Email must be not blank.")
-    @Pattern(groups = {TryRegisterValidationGroup.class, RegisterValidationGroup.class}, regexp = "^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\\\\.[a-zA-Z0-9-]+)*\\\\.[a-zA-Z0-9]{2,6}$", message = "Email must be valid.")
+    @Pattern(groups = {TryRegisterValidationGroup.class, RegisterValidationGroup.class}, regexp = "^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\\.[a-zA-Z0-9-]+)*\\.[a-zA-Z0-9]{2,6}$", message = "Email must be valid.")
     @Size(groups = {TryRegisterValidationGroup.class, RegisterValidationGroup.class}, max = 50, message = "Email must be less than 50 characters.")
     private String email;
 

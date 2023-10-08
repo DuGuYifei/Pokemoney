@@ -1,20 +1,15 @@
 package com.pokemoney.userservice.controller;
 
 import com.pokemoney.commons.http.dto.ResponseDto;
-import com.pokemoney.userservice.Constants;
 import com.pokemoney.userservice.dto.RequestPermissionDto;
+import com.pokemoney.userservice.service.NotifyEurekaInstancesService;
 import com.pokemoney.userservice.service.PermissionService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.List;
 
 /**
  * Permission controller
@@ -29,26 +24,19 @@ public class PermissionController {
     private final PermissionService permissionService;
 
     /**
-     * Discovery client.
+     * Notify eureka instances service.
      */
-    private final DiscoveryClient discoveryClient;
-
-    /**
-     * Rest template.
-     */
-    private final RestTemplate restTemplate;
+    private final NotifyEurekaInstancesService notifyEurekaInstancesService;
 
     /**
      * Constructor.
      *
-     * @param permissionService permissionEntity service.
-     * @param discoveryClient   Discovery client.
-     * @param restTemplate    Rest template.
+     * @param permissionService            permissionEntity service.
+     * @param notifyEurekaInstancesService Notify eureka instances service.
      */
-    public PermissionController(PermissionService permissionService, DiscoveryClient discoveryClient, RestTemplate restTemplate) {
+    public PermissionController(PermissionService permissionService, NotifyEurekaInstancesService notifyEurekaInstancesService) {
         this.permissionService = permissionService;
-        this.discoveryClient = discoveryClient;
-        this.restTemplate = restTemplate;
+        this.notifyEurekaInstancesService = notifyEurekaInstancesService;
     }
 
     /**
@@ -60,12 +48,7 @@ public class PermissionController {
     @PostMapping("/add")
     public ResponseEntity<ResponseDto<?>> add(@Validated RequestPermissionDto requestPermissionDto) {
         permissionService.savePermission(requestPermissionDto);
-        List<ServiceInstance> userServiceInstances = discoveryClient.getInstances(Constants.SERVICE_NAME);
-        // notify other user service to update permission bit map
-        for (ServiceInstance userServiceInstance : userServiceInstances) {
-            String url = userServiceInstance.getUri() + "/api/v1/permission/update-map";
-            restTemplate.postForEntity(url, requestPermissionDto, ResponseDto.class);
-        }
+        notifyEurekaInstancesService.notifyUserServicePermissionUpdateEvent(requestPermissionDto);
         return ResponseEntity.ok(ResponseDto.builder().message("Add permission successfully.").status(1).build());
     }
 
@@ -80,5 +63,4 @@ public class PermissionController {
         PermissionService.getPermissionBitMap().put(requestPermissionDto.getServiceName(), requestPermissionDto.getPermissionBit());
         return ResponseEntity.ok(ResponseDto.builder().message("Update permission bit map successfully.").status(1).build());
     }
-
 }

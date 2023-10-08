@@ -27,7 +27,7 @@ public class RequestPermissionDto {
      * Must be not blank.
      * Must be less than 50 characters.
      */
-    @NotBlank
+    @NotBlank(message = "Service name must be not blank.")
     @Size(max = 20, message = "Service name must be less than 50 characters.")
     private String serviceName;
 }

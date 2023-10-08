@@ -1,11 +1,15 @@
 package com.pokemoney.redisservice.service;
 
+import com.pokemoney.commons.redis.RedisHashKeyValueDto;
 import com.pokemoney.commons.redis.RedisKeyValueDto;
 import com.pokemoney.commons.http.errors.GenericInternalServerError;
 import com.pokemoney.commons.http.errors.GenericNotFoundError;
 import lombok.Getter;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class is the service of operating on Redis.
@@ -50,7 +54,7 @@ public class RedisService {
      * Get the value from Redis.
      *
      * @param redisKeyValueDto The {@link RedisKeyValueDto} to get.
-     * @return <RequestRegisterUserDto>The value of the {@link RedisKeyValueDto} to get.
+     * @return The value of the {@link RedisKeyValueDto} to get.
      */
     public RedisKeyValueDto getByDto(RedisKeyValueDto redisKeyValueDto) throws GenericNotFoundError {
         String key = redisKeyValueDto.getPrefix() + redisKeyValueDto.getKey();
@@ -68,4 +72,52 @@ public class RedisService {
         redisKeyValueDto.setValue((String) value);
         return redisKeyValueDto;
     }
+
+    /**
+     * Hash set the value into Redis.
+     *
+     * @param redisHashKeyValueDto The {@link RedisHashKeyValueDto} to be set.
+     * @throws GenericInternalServerError If redis set error.
+     */
+    public void hSetByDto(RedisHashKeyValueDto redisHashKeyValueDto) throws GenericInternalServerError {
+        String key = redisHashKeyValueDto.getPrefix() + redisHashKeyValueDto.getKey();
+        if (redisHashKeyValueDto.getTimeout() == null) {
+            try {
+                redisTemplate.opsForHash().putAll(key, redisHashKeyValueDto.getValue());
+            } catch (Exception e) {
+                throw new GenericInternalServerError("Redis set hash map error.");
+            }
+            return;
+        }
+        redisTemplate.opsForHash().putAll(key, redisHashKeyValueDto.getValue());
+    }
+
+    /**
+     * Hash get the value from Redis.
+     *
+     * @param redisHashKeyValueDto The {@link RedisHashKeyValueDto} to get.
+     * @return The value of the {@link RedisHashKeyValueDto} to get.
+     */
+    public RedisHashKeyValueDto hGetByDto(RedisHashKeyValueDto redisHashKeyValueDto) throws GenericNotFoundError {
+        String key = redisHashKeyValueDto.getPrefix() + redisHashKeyValueDto.getKey();
+        Long remainTime = redisTemplate.getExpire(key);
+        if (remainTime != null) {
+            if (remainTime == -2L) {
+                throw new GenericNotFoundError("Key not found.");
+            }
+            redisHashKeyValueDto.setTimeout(remainTime);
+        }
+        Map<Object, Object> value = redisTemplate.opsForHash().entries(key);
+        if (value == null) {
+            throw new GenericNotFoundError("Key not found.");
+        }
+        Map<String, String> valueMap = new HashMap<>();
+        for (Map.Entry<Object, Object> entry : value.entrySet()) {
+            valueMap.put((String) entry.getKey(), (String) entry.getValue());
+        }
+        redisHashKeyValueDto.setValue(valueMap);
+        return redisHashKeyValueDto;
+    }
+
+
 }

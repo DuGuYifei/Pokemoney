@@ -7,8 +7,8 @@ import com.pokemoney.commons.mail.MailProperty;
 import com.pokemoney.commons.mail.SmtpEmailService;
 import com.pokemoney.userservice.dto.RequestLoginDto;
 import com.pokemoney.userservice.dto.RequestRegisterCommonUserDto;
+import com.pokemoney.userservice.dto.RequestVerifyLoginDto;
 import com.pokemoney.userservice.dto.ResponseLoginDto;
-import com.pokemoney.userservice.dto.VerifyLoginDto;
 import com.pokemoney.userservice.dto.validation.RegisterValidationGroup;
 import com.pokemoney.userservice.dto.validation.TryRegisterValidationGroup;
 import com.pokemoney.userservice.entity.RoleEntity;
@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigInteger;
+import java.util.UUID;
 
 
 /**
@@ -143,13 +144,14 @@ public class UserController {
      */
     @PostMapping("/login")
     public ResponseEntity<ResponseDto<ResponseLoginDto>> login(@Validated RequestLoginDto requestLoginDto) throws GenericForbiddenError {
-        VerifyLoginDto verifyLoginDto = userService.generateVerifyLoginDto(requestLoginDto);
-        UserEntity userEntity = userService.verifyLogin(verifyLoginDto);
+        RequestVerifyLoginDto requestVerifyLoginDto = userService.generateVerifyLoginDto(requestLoginDto);
+        UserEntity userEntity = userService.verifyLogin(requestVerifyLoginDto);
 
-        String jwt = jwtService.generateJwt(userEntity);
-        userService.storeJwtStatus(jwt, userEntity);
+        UUID id = UUID.randomUUID();
+        String jwt = jwtService.generateJwt(userEntity, id.toString());
+        jwtService.storeJwtStatus(jwt, userEntity, id.toString());
 
-        ResponseLoginDto responseLoginDto = ResponseLoginDto.builder().jwt(jwt).build();
+        ResponseLoginDto responseLoginDto = ResponseLoginDto.builder().id(userEntity.getId()).jwt(jwt).build();
         ResponseDto<ResponseLoginDto> responseSuccessDto = ResponseDto.<ResponseLoginDto>builder()
                 .status(1)
                 .message("Login successfully.")

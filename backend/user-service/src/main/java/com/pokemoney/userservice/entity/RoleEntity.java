@@ -28,6 +28,12 @@ public class RoleEntity {
     private String roleName;
 
     /**
+     * Permission level
+     */
+    @JsonProperty("permission_level")
+    private Integer permissionLevel;
+
+    /**
      * RoleEntity description.
      */
     private String description;

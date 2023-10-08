@@ -14,7 +14,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @AtLeastOneNotBlank(fields = {"email", "username"}, message = "Email or username must be not blank.")
-public class VerifyLoginDto {
+public class RequestVerifyLoginDto {
     /**
      * The email of user, provided by user. Constraints:
      * Must be not blank (has been verified in {@link RequestLoginDto}).

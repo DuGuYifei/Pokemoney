@@ -1,10 +1,12 @@
 package com.pokemoney.userservice.service;
 
+import com.pokemoney.commons.http.errors.GenericForbiddenError;
 import com.pokemoney.userservice.Constants;
 import com.pokemoney.userservice.dto.RequestRoleDto;
 import com.pokemoney.userservice.entity.RoleEntity;
 import com.pokemoney.userservice.feignclient.LeafClient;
 import com.pokemoney.userservice.repository.RoleRepository;
+import com.pokemoney.userservice.vo.JwtInfo;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class RoleService {
     /**
      * Concurrent hash map of role. Used to accelerate the query of role.
+     * Key is role name.
      */
     @Getter
     private final static Map<String, RoleEntity> roleMap = new ConcurrentHashMap<>();
@@ -66,8 +69,9 @@ public class RoleService {
      * @param requestRoleDto Role dto.
      */
     public RoleEntity saveRole(RequestRoleDto requestRoleDto) {
+        Integer id = Integer.parseInt(leafClient.getSegmentId(Constants.USER_ROLE_IN_LEAF_KEY));
         RoleEntity roleEntity = RoleEntity.builder()
-                .id(Integer.parseInt(leafClient.getSegmentId(Constants.USER_ROLE_IN_LEAF_KEY)))
+                .id(id)
                 .roleName(requestRoleDto.getRoleName())
                 .description(requestRoleDto.getDescription())
                 .build();
@@ -81,5 +85,20 @@ public class RoleService {
      */
     private void initRoleMap() {
         roleRepository.findAll().forEach(roleEntity -> roleMap.put(roleEntity.getRoleName(), roleEntity));
+    }
+
+    /**
+     * verify role by jwt info
+     *
+     * @param jwtInfo The {@link JwtInfo}.
+     * @param requiredRoleLevelName The required role level name.
+     * @throws GenericForbiddenError If no permission to access this service.
+     */
+    public void verifyRole(JwtInfo jwtInfo, String requiredRoleLevelName) throws GenericForbiddenError {
+        RoleEntity roleEntity = getRole(jwtInfo.getRole());
+        RoleEntity requiredRoleEntity = getRole(requiredRoleLevelName);
+        if (roleEntity.getPermissionLevel() < requiredRoleEntity.getPermissionLevel()) {
+            throw new GenericForbiddenError("No permission to access this service.");
+        }
     }
 }
