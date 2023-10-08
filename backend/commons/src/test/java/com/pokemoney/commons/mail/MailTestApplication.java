@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * This is a spring main class which is used for test SmtpEmail.
+ * This is a spring main class which is used for test SmtpEmailService.
  */
 @SpringBootApplication
 public class MailTestApplication {

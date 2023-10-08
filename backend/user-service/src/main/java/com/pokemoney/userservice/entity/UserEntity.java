@@ -1,11 +1,7 @@
 package com.pokemoney.userservice.entity;
 
-import com.pokemoney.userservice.dto.RequestRegisterUserDto;
-import com.pokemoney.userservice.utils.enums.UserRole;
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.Entity;
+import com.pokemoney.userservice.dto.RequestRegisterCommonUserDto;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 
 @Getter
@@ -25,7 +22,7 @@ import java.sql.Timestamp;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "t_users")
-public class User implements Serializable {
+public class UserEntity implements Serializable {
     /**
      * Serial version UID.
      */
@@ -33,24 +30,24 @@ public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * User id.
+     * UserEntity id.
      */
     @Id
     private Long id;
 
     /**
-     * User name.
+     * UserEntity name.
      */
     @Column(unique = true)
     private String username;
 
     /**
-     * User password.
+     * UserEntity password.
      */
     private String password;
 
     /**
-     * User email.
+     * UserEntity email.
      */
     @Column(unique = true)
     private String email;
@@ -61,35 +58,56 @@ public class User implements Serializable {
     private Boolean isBan;
 
     /**
-     * User register date.
+     * UserEntity register date.
      */
     private Timestamp registerDate;
 
     /**
-     * User last login date.
+     * UserEntity last login date.
      */
     private Timestamp lastLoginDate;
 
     /**
-     * User role.
+     * UserEntity role.
      */
-    private UserRole userRole;
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private RoleEntity userRole;
+
+    /**
+     * UserEntity permission code, each binary bit represents a permission for one service.
+     */
+    private BigInteger servicePermission;
 
     /**
      * Create a user from RegisterUserDto
      *
-     * @param requestRegisterUserDto RegisterUserDto contains user information from user.
-     * @return User object of user entity (NOT from persistent storage).
+     * @param requestRegisterCommonUserDto RegisterUserDto contains user information from user.
+     * @param segmentId              Segment id.
+     * @param roleEntity            RoleEntity object of user role.
+     * @return UserEntity object of user entity (NOT from persistent storage).
      */
-    public static User fromRegisterUserDto(RequestRegisterUserDto requestRegisterUserDto) {
-        String hashedPassword = BCrypt.hashpw(requestRegisterUserDto.getPassword(), BCrypt.gensalt());
-        return User.builder().id(requestRegisterUserDto.getId()).username(requestRegisterUserDto.getUsername()).password(hashedPassword).email(requestRegisterUserDto.getEmail()).isBan(false).registerDate(new Timestamp(System.currentTimeMillis())).userRole(UserRole.COMMON_USER).build();
+    public static UserEntity fromRegisterUserDto(RequestRegisterCommonUserDto requestRegisterCommonUserDto, Long segmentId, RoleEntity roleEntity, BigInteger permission) {
+        String hashedPassword = BCrypt.hashpw(requestRegisterCommonUserDto.getPassword(), BCrypt.gensalt());
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        return UserEntity.builder()
+                .id(segmentId)
+                .username(requestRegisterCommonUserDto.getUsername())
+                .password(hashedPassword)
+                .email(requestRegisterCommonUserDto.getEmail())
+                .isBan(false)
+                .registerDate(timestamp)
+                .lastLoginDate(timestamp)
+                .userRole(roleEntity)
+                .servicePermission(permission)
+                .build();
     }
 
     /**
      * Ban user. In the future, it can be extended for
      * ban reason, ban by whom, ban date, etc.
      */
+    // TODO: delete the user from redis if it is existed
     public void ban() {
         this.setIsBan(true);
     }

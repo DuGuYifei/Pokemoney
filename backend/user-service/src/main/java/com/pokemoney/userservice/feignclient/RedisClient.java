@@ -1,8 +1,8 @@
 package com.pokemoney.userservice.feignclient;
 
+import com.pokemoney.commons.redis.RedisHashKeyValueDto;
 import com.pokemoney.commons.redis.RedisKeyValueDto;
 import com.pokemoney.commons.http.dto.ResponseDto;
-import com.pokemoney.commons.http.errors.GenericNotFoundError;
 import com.pokemoney.userservice.Constants;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +28,25 @@ public interface RedisClient {
      *
      * @param redisKeyValueDto The {@link RedisKeyValueDto} to get.
      * @return The {@link ResponseDto<RedisKeyValueDto>} with data of {@link RedisKeyValueDto}.
-     * @throws GenericNotFoundError If key or value not found.
      */
     @PostMapping("/api/v1/get")
-    ResponseEntity<ResponseDto<RedisKeyValueDto>> getKeyValue(RedisKeyValueDto redisKeyValueDto) throws GenericNotFoundError;
+    ResponseEntity<ResponseDto<RedisKeyValueDto>> getKeyValue(RedisKeyValueDto redisKeyValueDto);
+
+    /**
+     * Store key and hash value code in redis.
+     *
+     * @param redisHashKeyValueDto The {@link RedisHashKeyValueDto} to be stored.
+     * @return The {@link ResponseDto<RedisHashKeyValueDto>} of the result.
+     */
+    @PostMapping("/hSet")
+    ResponseEntity<ResponseDto<RedisHashKeyValueDto>> hSetKeyValue(RedisHashKeyValueDto redisHashKeyValueDto);
+
+    /**
+     * Get hash value from redis.
+     *
+     * @param redisHashKeyValueDto The {@link RedisHashKeyValueDto} to get.
+     * @return The {@link ResponseDto<RedisHashKeyValueDto>} with data of {@link RedisHashKeyValueDto}.
+     */
+    @PostMapping("/hGet")
+    ResponseEntity<ResponseDto<RedisHashKeyValueDto>> hGetKeyValue(RedisHashKeyValueDto redisHashKeyValueDto);
 }

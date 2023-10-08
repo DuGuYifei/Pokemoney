@@ -11,6 +11,11 @@ import lombok.NonNull;
 @Builder
 public class ResponseLoginDto {
     /**
+     * The user id.
+     */
+    @NonNull
+    private Long id;
+    /**
      * The JWT for user.
      */
     @NonNull

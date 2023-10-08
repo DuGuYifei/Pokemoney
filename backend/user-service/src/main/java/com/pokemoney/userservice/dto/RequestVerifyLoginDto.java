@@ -14,7 +14,7 @@ import lombok.Setter;
 @Setter
 @Getter
 @AtLeastOneNotBlank(fields = {"email", "username"}, message = "Email or username must be not blank.")
-public class VerifyLoginDto {
+public class RequestVerifyLoginDto {
     /**
      * The email of user, provided by user. Constraints:
      * Must be not blank (has been verified in {@link RequestLoginDto}).
@@ -22,7 +22,7 @@ public class VerifyLoginDto {
      * Must be less than 50 characters.
      */
     @Size(max = 50, message = "Email must be less than 50 characters.")
-    @Pattern(regexp = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$", message = "Email must be valid.")
+    @Pattern(regexp = "^[a-zA-Z0-9_.-]+@[a-zA-Z0-9-]+(\\\\.[a-zA-Z0-9-]+)*\\\\.[a-zA-Z0-9]{2,6}$", message = "Email must be valid.")
     private String email;
 
     /**

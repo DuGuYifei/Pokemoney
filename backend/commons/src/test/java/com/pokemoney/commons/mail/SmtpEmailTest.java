@@ -7,16 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 /**
- * This is a test class for SmtpEmail.
+ * This is a test class for SmtpEmailService.
  */
 @SpringBootTest
 public class SmtpEmailTest {
 
     /**
-     * The SmtpEmail instance.
+     * The SmtpEmailService instance.
      */
     @Autowired
-    private SmtpEmail smtpEmail;
+    private SmtpEmailService smtpEmailService;
 
     /**
      * The basic mailProperty.
@@ -40,7 +40,7 @@ public class SmtpEmailTest {
      */
     @Test
     public void testSendSimpleEmail() {
-        Assertions.assertDoesNotThrow(() -> smtpEmail.sendMimeMessage(mailProperty));
+        Assertions.assertDoesNotThrow(() -> smtpEmailService.sendMimeMessage(mailProperty));
     }
 
     /**
@@ -50,6 +50,6 @@ public class SmtpEmailTest {
     @Test
     public void testSendEmailWithoutRequiredContent() {
         mailProperty.setSubject(null);
-        Assertions.assertThrows(IllegalArgumentException.class, () -> smtpEmail.sendMimeMessage(mailProperty));
+        Assertions.assertThrows(IllegalArgumentException.class, () -> smtpEmailService.sendMimeMessage(mailProperty));
     }
 }

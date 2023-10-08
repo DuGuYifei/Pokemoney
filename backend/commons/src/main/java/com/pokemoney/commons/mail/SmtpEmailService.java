@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 
@@ -18,7 +19,7 @@ import java.io.IOException;
  */
 @Validated
 @Component
-public class SmtpEmail {
+public class SmtpEmailService {
     /**
      * The email address of the sender
      */
@@ -31,11 +32,11 @@ public class SmtpEmail {
     private final JavaMailSender javaMailSender;
 
     /**
-     * The constructor of SmtpEmail
+     * The constructor of SmtpEmailService
      *
      * @param javaMailSender The java mail sender
      */
-    public SmtpEmail(JavaMailSender javaMailSender) {
+    public SmtpEmailService(JavaMailSender javaMailSender) {
         this.javaMailSender = javaMailSender;
     }
 

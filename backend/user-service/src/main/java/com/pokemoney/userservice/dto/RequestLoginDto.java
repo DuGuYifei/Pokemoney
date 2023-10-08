@@ -14,7 +14,7 @@ public class RequestLoginDto {
     /**
      * The username or email of user, provided by user. Constraints:
      * Must be not blank.
-     * Other constraints will be handled in {@link VerifyLoginDto}.
+     * Other constraints will be handled in {@link RequestVerifyLoginDto}.
      */
     @NotBlank(message = "Username or email must be not blank.")
     private String usernameOrEmail;

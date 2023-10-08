@@ -18,4 +18,12 @@ public interface LeafClient {
      */
     @RequestMapping(value = "/api/snowflake/get/{key}")
     String getSnowflakeId(@PathVariable("key") String key);
+
+    /**
+     * Get segment id from leaf-service.
+     * @param key Key of segment.
+     * @return Segment id.
+     */
+    @RequestMapping(value = "/api/segment/get/{key}")
+    String getSegmentId(@PathVariable("key") String key);
 }
