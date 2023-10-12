@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pokemoney/constants/AppColors.dart';
 
-import 'package:pokemoney/pages/barrel.dart';
+import 'package:pokemoney/pages/screens/barrel.dart';
 
 class App extends StatefulWidget {
   final int initialIndex;
@@ -67,8 +67,8 @@ class _AppState extends State<App> {
               ),
               tooltip: 'Show Snackbar',
               onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('This is a notifications')));
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(const SnackBar(content: Text('This is a notifications')));
               },
             ),
           ]),

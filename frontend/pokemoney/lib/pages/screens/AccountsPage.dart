@@ -16,7 +16,8 @@ class AccountsPage extends StatelessWidget {
           LedgerBook(id: 1, title: "January", description: "January Expenses", balance: 1500.0),
           LedgerBook(id: 2, title: "February", description: "February Expenses", balance: 1200.0),
         ],
-        alerts: []),
+        alerts: [],
+        funds: []),
     Account(
         id: 2,
         accountName: "Oso Lensra",
@@ -70,7 +71,7 @@ class AccountsPage extends StatelessWidget {
               type: 'notification',
               content: 'This is a new notification alert!'),
           Alert(id: 2, timestamp: DateTime.now(), type: 'notification', content: 'You passed the limit!'),
-        ]),
+        ],funds:[]),
     Account(
         id: 3,
         accountName: "Nasr Taresh",
@@ -144,7 +145,7 @@ class AccountsPage extends StatelessWidget {
               type: ' Fmaily',
               content: 'People added an expense!',
               isRead: true),
-        ]),
+        ],funds:[]),
   ];
 
   @override

@@ -10,6 +10,8 @@ class AppColors {
   static const Color textPrimary = Colors.black;
   static const Color textSecondary = Colors.grey;
   static const Color textClickable = Colors.redAccent;
+  static const Color textInfoCard = Color(0xFFFFFFFF);
+  static const Color textSecondaryInfoCard = Color(0xFF57636C);
 
   static const Color buttonPrimary = Color(0xFF347662);
   static const Color buttonSecondary = Colors.grey;

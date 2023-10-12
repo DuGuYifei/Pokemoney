@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:pokemoney/constants/AppColors.dart';
-import 'package:pokemoney/pages/barrel.dart';
+import 'package:pokemoney/pages/screens/barrel.dart';
 import 'package:pokemoney/widgets/barrel.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -44,8 +44,7 @@ class _SignUpPageState extends State<SignUpPage> {
           const Align(
             alignment: Alignment.centerLeft,
             child: Padding(
-              padding: EdgeInsets.only(
-                  left: 48.0), // Adjust the left padding as needed
+              padding: EdgeInsets.only(left: 48.0), // Adjust the left padding as needed
               child: Column(
                 children: [
                   Text(
@@ -112,8 +111,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   height: 24.0,
                   width: 24.0,
                   child: Checkbox(
-                    fillColor: MaterialStateProperty.all<Color>(
-                        AppColors.primaryColor),
+                    fillColor: MaterialStateProperty.all<Color>(AppColors.primaryColor),
                     value: agree,
                     onChanged: (value) {
                       setState(() {

@@ -7,6 +7,7 @@ class Account {
   String pictureUrl;
   String headerPicture;
   List<LedgerBook> ledgerBooks;
+  List<Fund> funds;
   List<Alert> alerts; // list of user alerts
 
   Account({
@@ -16,7 +17,8 @@ class Account {
     required this.pictureUrl,
     required this.headerPicture,
     required this.ledgerBooks,
-    required this.alerts,
+    required this.funds,
+    required this.alerts
   });
 
   // Add a new alert

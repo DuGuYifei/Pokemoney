@@ -4,11 +4,13 @@ class Fund {
   double balance;
   String name;
   DateTime creationDate;
+  String type;
   
   Fund({
     required this.id,
     required this.balance,
     required this.name,
     required this.creationDate,
+    required this.type,
   });
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pokemoney/app.dart';
-import 'package:pokemoney/pages/barrel.dart';
+import 'package:pokemoney/pages/screens/barrel.dart';
 
 class RouteGenerator {
   static const String app = '/';
@@ -20,7 +20,6 @@ class RouteGenerator {
   RouteGenerator._() {}
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
-    
     switch (settings.name) {
       case app:
         return MaterialPageRoute(

@@ -3,8 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pokemoney/constants/AppColors.dart';
-import 'package:pokemoney/pages/HelpPage.dart';
-import 'package:pokemoney/pages/barrel.dart';
+import 'package:pokemoney/pages/screens/barrel.dart';
 import 'package:pokemoney/widgets/barrel.dart';
 
 void switchAccount() {
@@ -46,20 +45,17 @@ class CustomNavBar extends StatelessWidget {
         CustomHoverableListTile(
           icon: FontAwesomeIcons.creditCard,
           title: 'Funds',
-          onTap: () =>
-              Navigator.of(context)?.pushNamed(RouteGenerator.fundsPage),
+          onTap: () => Navigator.of(context)?.pushNamed(RouteGenerator.fundsPage),
         ),
         CustomHoverableListTile(
           icon: Icons.person,
           title: 'Accoutnts',
-          onTap: () =>
-              Navigator.of(context)?.pushNamed(RouteGenerator.accountsPage),
+          onTap: () => Navigator.of(context)?.pushNamed(RouteGenerator.accountsPage),
         ),
         CustomHoverableListTile(
           icon: FontAwesomeIcons.pieChart,
           title: 'Stats',
-          onTap: () =>
-              Navigator.of(context)?.pushNamed(RouteGenerator.statsPage),
+          onTap: () => Navigator.of(context)?.pushNamed(RouteGenerator.statsPage),
         ),
         Spacer(),
         Divider(
@@ -71,24 +67,20 @@ class CustomNavBar extends StatelessWidget {
         CustomHoverableListTile(
             icon: Icons.brush_outlined,
             title: 'Style',
-            onTap: () =>
-                Navigator.of(context)?.pushNamed(RouteGenerator.stylePage)),
+            onTap: () => Navigator.of(context)?.pushNamed(RouteGenerator.stylePage)),
         CustomHoverableListTile(
             icon: Icons.privacy_tip_outlined,
             title: 'Privacy and Security',
-            onTap: () => Navigator.of(context)
-                ?.pushNamed(RouteGenerator.privacySecurityPage)),
+            onTap: () => Navigator.of(context)?.pushNamed(RouteGenerator.privacySecurityPage)),
         CustomHoverableListTile(
           icon: Icons.info,
           title: 'Help',
-          onTap: () =>
-              Navigator.of(context)?.pushNamed(RouteGenerator.helpPage),
+          onTap: () => Navigator.of(context)?.pushNamed(RouteGenerator.helpPage),
         ),
         CustomHoverableListTile(
           icon: Icons.settings_sharp,
           title: 'Settings',
-          onTap: () =>
-              Navigator.of(context)?.pushNamed(RouteGenerator.settingsPage),
+          onTap: () => Navigator.of(context)?.pushNamed(RouteGenerator.settingsPage),
         ),
       ]),
     );

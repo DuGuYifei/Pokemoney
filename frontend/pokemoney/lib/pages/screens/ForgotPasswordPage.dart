@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pokemoney/pages/barrel.dart';
+import 'package:pokemoney/pages/screens/barrel.dart';
 import 'package:pokemoney/widgets/barrel.dart';
 import 'package:pokemoney/constants/AppColors.dart';
 
@@ -32,8 +32,7 @@ class ForgotPasswordPage extends StatelessWidget {
           const Align(
             alignment: Alignment.centerLeft,
             child: Padding(
-              padding: EdgeInsets.only(
-                  left: 48.0), // Adjust the left padding as needed
+              padding: EdgeInsets.only(left: 48.0), // Adjust the left padding as needed
               child: Column(
                 children: [
                   Text(

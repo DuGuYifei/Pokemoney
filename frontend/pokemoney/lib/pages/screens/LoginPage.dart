@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pokemoney/widgets/barrel.dart';
-import 'package:pokemoney/pages/barrel.dart';
+import 'package:pokemoney/pages/screens/barrel.dart';
 import 'package:pokemoney/constants/AppColors.dart';
 
 class LoginPage extends StatelessWidget {
@@ -34,8 +34,7 @@ class LoginPage extends StatelessWidget {
           const Align(
             alignment: Alignment.centerLeft,
             child: Padding(
-              padding: EdgeInsets.only(
-                  left: 48.0), // Adjust the left padding as needed
+              padding: EdgeInsets.only(left: 48.0), // Adjust the left padding as needed
               child: Column(
                 children: [
                   Text(
@@ -79,8 +78,7 @@ class LoginPage extends StatelessWidget {
             clickableText: 'Forget password?',
             onTap: () {
               // Navigate to another page or perform desired action
-              Navigator.of(context)
-                  ?.pushNamed(RouteGenerator.forgotPasswordPage);
+              Navigator.of(context)?.pushNamed(RouteGenerator.forgotPasswordPage);
             },
             clickableStyle: const TextStyle(
               decoration: TextDecoration.underline,
@@ -138,9 +136,7 @@ class LoginPage extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 10.0),
                   child: Text(
                     'Or continue with',
-                    style: TextStyle(
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.w500),
+                    style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.w500),
                   ),
                 ),
                 Expanded(

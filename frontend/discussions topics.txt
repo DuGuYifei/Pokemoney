@@ -1,0 +1,5 @@
+adding sqlite for the appluication and decide what techneq to use (LOG, WRITE IMMEDTIY), muilty threading, .wal every time sending data to the locally it will also sending it to the backend
+setting of snyc (never, every day, flixble)
+The comuptation of vuislation will happend locally, for now everything will happend locally
+
+HOW to transfer the data locally to the backend , and which data to send?

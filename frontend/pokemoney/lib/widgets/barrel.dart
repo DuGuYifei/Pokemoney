@@ -8,3 +8,4 @@ export 'AccountCard.dart';
 export 'HeaderAccountCard.dart';
 export 'LedgerOwnedContainer.dart';
 export 'AlertsContainer.dart';
+export 'FundCard.dart';
