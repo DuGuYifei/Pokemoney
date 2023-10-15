@@ -9,3 +9,7 @@ export 'HeaderAccountCard.dart';
 export 'LedgerOwnedContainer.dart';
 export 'AlertsContainer.dart';
 export 'FundCard.dart';
+export 'CollaboratorTile.dart';
+export 'CollaboratorSection.dart';
+export 'HistoryTransactionsSection.dart';
+export 'TransactionTile.dart';

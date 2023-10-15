@@ -13,7 +13,7 @@ class FundsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    List<Widget> fundsCards = _fundList.map((funds) => FundCard(funds)).toList();
+    List<Widget> fundsCards = _fundList.map((funds) => FundCard(funds, true)).toList();
     return Scaffold(
       body: ListView(padding: EdgeInsets.all(20.0), children: fundsCards),
     );

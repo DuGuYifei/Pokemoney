@@ -4,6 +4,7 @@ export 'NavBar.dart';
 export 'SignUpPage.dart';
 export 'ForgotPasswordPage.dart';
 export 'FundsPage.dart';
+export 'FundDetailsPage.dart';
 export 'LedgerBooksPage.dart';
 export 'AccountsPage.dart';
 export 'AccountDetailsPage.dart';

@@ -33,6 +33,14 @@ class AlertsContainer extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.cardBackgorund,
         borderRadius: BorderRadius.circular(AppLayout.borderRadiusForContainers),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 2,
+            blurRadius: 3,
+            offset: Offset(0, 3),
+          ),
+        ],
       ),
       child: Column(
         children: [

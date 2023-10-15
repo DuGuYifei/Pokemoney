@@ -24,6 +24,14 @@ class LedgerOwnedContainer extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.cardBackgorund,
         borderRadius: BorderRadius.circular(AppLayout.borderRadiusForContainers),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 2,
+            blurRadius: 3,
+            offset: Offset(0, 3),
+          ),
+        ],
       ),
       child: Column(children: [
         _buildHeader(),
@@ -83,8 +91,8 @@ class LedgerOwnedContainer extends StatelessWidget {
 
     return ListTile(
       leading: Container(
-        width: 25, // Adjust as per your needs.
-        height: 25, // Adjust as per your needs.
+        width: 25,
+        height: 25,
         decoration: const BoxDecoration(
           color: Color(0xFF24292E),
           shape: BoxShape.circle,

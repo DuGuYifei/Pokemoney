@@ -4,16 +4,19 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:pokemoney/constants/AppColors.dart';
 import 'package:pokemoney/model/barrel.dart';
+import 'package:pokemoney/pages/screens/barrel.dart';
 
 class FundCard extends StatelessWidget {
   final Fund _fund;
-
-  const FundCard(this._fund, {Key? key}) : super(key: key);
+  final bool isClickable;
+  const FundCard(this._fund, this.isClickable, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: AlignmentDirectional(0.0, 0.0),
+    return GestureDetector(
+      onTap: isClickable
+          ? () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => FundDetailsPage(_fund)))
+          : null,
       child: Container(
         width: 403.0,
         height: 220.0,
