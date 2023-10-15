@@ -27,17 +27,17 @@ class HistoryTransactionsSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'History transactions',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18.0,
             ),
           ),
-          SizedBox(height: 16.0),
+          const SizedBox(height: 16.0),
           DataTable(
             columnSpacing: 25,
-            columns: [
+            columns: const [
               DataColumn(label: Text('INVOICE')),
               DataColumn(label: Text('VENDOR')),
               DataColumn(label: Text('DATE')),
@@ -57,7 +57,7 @@ class HistoryTransactionsSection extends StatelessWidget {
               // Add action for adding a team member
             },
             child: const Text(
-              'Add team member',
+              'See all transactions',
               style: TextStyle(color: AppColors.textClickable, fontSize: 16.0, fontWeight: FontWeight.bold),
             ),
           )

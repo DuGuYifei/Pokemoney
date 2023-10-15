@@ -13,3 +13,4 @@ export 'CollaboratorTile.dart';
 export 'CollaboratorSection.dart';
 export 'HistoryTransactionsSection.dart';
 export 'TransactionTile.dart';
+export 'LineChartWidget.dart';

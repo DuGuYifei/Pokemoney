@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pokemoney/constants/AppColors.dart';
+import 'package:pokemoney/model/LincePrice.dart';
 import 'package:pokemoney/model/barrel.dart';
 import 'package:pokemoney/widgets/barrel.dart';
 
@@ -55,7 +56,8 @@ class FundDetailsPage extends StatelessWidget {
             HistoryTransactionsSection(
               transactions: sampleTransactions,
             ),
-            // AlertsContainer(account),
+            const SizedBox(height: 10),
+            LineChartWidget(pricePoint),
           ],
         ),
       ),
