@@ -3,6 +3,9 @@ class LedgerBook {
   String title;
   String description;
   double balance;
+  DateTime creationDate;
 
-  LedgerBook({required this.id, required this.title, required this.description, required this.balance});
+
+  LedgerBook({required this.id, required this.title, required this.description, required this.balance,    required this.creationDate,
+});
 }

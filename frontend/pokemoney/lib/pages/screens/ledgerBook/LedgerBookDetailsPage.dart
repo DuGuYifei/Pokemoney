@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:pokemoney/constants/AppColors.dart';
-import 'package:pokemoney/model/LincePrice.dart';
 import 'package:pokemoney/model/barrel.dart';
 import 'package:pokemoney/widgets/barrel.dart';
+import 'package:pokemoney/constants/AppColors.dart';
 
-/// [FundDetailsPage] displays details related to a given [Account].
-///
-/// This page showcases the account's name in the app bar and provides
-/// a detailed view with the `HeaderAccountCard`, `LedgerOwnedContainer`,
-/// and `AlertsContainer` related to the account.
-class FundDetailsPage extends StatelessWidget {
-  final Fund fund;
+class LedgerBookDetailsPage extends StatelessWidget {
+  final LedgerBook _ledgerBook;
 
   final List<Transaction> sampleTransactions = [
     Transaction(
@@ -28,17 +22,14 @@ class FundDetailsPage extends StatelessWidget {
     // Add more transactions as needed
   ];
 
-  /// Creates an [FundDetailsPage] with a given [fund].
-  ///
-  /// [account]: The [Account] object whose details are to be displayed.
-  FundDetailsPage(this.fund, {Key? key}) : super(key: key);
+  LedgerBookDetailsPage(this._ledgerBook, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          fund.name,
+          _ledgerBook.title,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -49,7 +40,7 @@ class FundDetailsPage extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
-            FundCard(fund, false),
+            LedgerBookCard(_ledgerBook,'assets/backgorund_credit/small_background_creditcard.png', false),
             const SizedBox(height: 10),
             CollaboratorSection(),
             const SizedBox(height: 10),
@@ -57,7 +48,7 @@ class FundDetailsPage extends StatelessWidget {
               transactions: sampleTransactions,
             ),
             const SizedBox(height: 10),
-            LineChartWidget(pricePoint),
+            //LineChartWidget(pricePoint),
           ],
         ),
       ),
