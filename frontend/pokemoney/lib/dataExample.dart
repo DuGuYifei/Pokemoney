@@ -13,13 +13,41 @@ final List<Account> accountsList = [
             title: "January",
             description: "January Expenses",
             balance: 1500.0,
-            creationDate: DateTime(2005, 5, 15)),
+            creationDate: DateTime(2005, 5, 15), transactions: [
+              Transaction(
+                invoiceNumber: '51468465',
+                vendor: 'Jane Cooper',
+                billingDate: '2/19/21',
+                amount: 500.00,
+              ),
+              Transaction(
+                invoiceNumber: '54673198',
+                vendor: 'Wade Warren',
+                billingDate: '5/7/16',
+                amount: 235.34,
+              ),
+              // Add more transactions as needed
+            ]),
         LedgerBook(
             id: 2,
             title: "February",
             description: "February Expenses",
             balance: 1200.0,
-            creationDate: DateTime(2005, 5, 15)),
+            creationDate: DateTime(2005, 5, 15), transactions: [
+              Transaction(
+                invoiceNumber: '51468465',
+                vendor: 'Jane Cooper',
+                billingDate: '2/19/21',
+                amount: 500.00,
+              ),
+              Transaction(
+                invoiceNumber: '54673198',
+                vendor: 'Wade Warren',
+                billingDate: '5/7/16',
+                amount: 235.34,
+              ),
+              // Add more transactions as needed
+            ]),
       ],
       alerts: [],
       funds: [
@@ -38,49 +66,161 @@ final List<Account> accountsList = [
             title: "January",
             description: "January Expenses",
             balance: 1500.0,
-            creationDate: DateTime(2005, 5, 15)),
+            creationDate: DateTime(2005, 5, 15), transactions: [
+              Transaction(
+                invoiceNumber: '51468465',
+                vendor: 'Jane Cooper',
+                billingDate: '2/19/21',
+                amount: 500.00,
+              ),
+              Transaction(
+                invoiceNumber: '54673198',
+                vendor: 'Wade Warren',
+                billingDate: '5/7/16',
+                amount: 235.34,
+              ),
+              // Add more transactions as needed
+            ]),
         LedgerBook(
             id: 2,
             title: "February",
             description: "February Expenses",
             balance: 1200.0,
-            creationDate: DateTime(2005, 5, 15)),
+            creationDate: DateTime(2005, 5, 15), transactions: [
+              Transaction(
+                invoiceNumber: '51468465',
+                vendor: 'Jane Cooper',
+                billingDate: '2/19/21',
+                amount: 500.00,
+              ),
+              Transaction(
+                invoiceNumber: '54673198',
+                vendor: 'Wade Warren',
+                billingDate: '5/7/16',
+                amount: 235.34,
+              ),
+              // Add more transactions as needed
+            ]),
         LedgerBook(
             id: 1,
             title: "January",
             description: "January Expenses",
             balance: 1500.0,
-            creationDate: DateTime(2005, 5, 15)),
+            creationDate: DateTime(2005, 5, 15), transactions: [
+              Transaction(
+                invoiceNumber: '51468465',
+                vendor: 'Jane Cooper',
+                billingDate: '2/19/21',
+                amount: 500.00,
+              ),
+              Transaction(
+                invoiceNumber: '54673198',
+                vendor: 'Wade Warren',
+                billingDate: '5/7/16',
+                amount: 235.34,
+              ),
+              // Add more transactions as needed
+            ]),
         LedgerBook(
             id: 2,
             title: "February",
             description: "February Expenses",
             balance: 1200.0,
-            creationDate: DateTime(2005, 5, 15)),
+            creationDate: DateTime(2005, 5, 15), transactions: [
+              Transaction(
+                invoiceNumber: '51468465',
+                vendor: 'Jane Cooper',
+                billingDate: '2/19/21',
+                amount: 500.00,
+              ),
+              Transaction(
+                invoiceNumber: '54673198',
+                vendor: 'Wade Warren',
+                billingDate: '5/7/16',
+                amount: 235.34,
+              ),
+              // Add more transactions as needed
+            ]),
         LedgerBook(
             id: 1,
             title: "January",
             description: "January Expenses",
             balance: 1500.0,
-            creationDate: DateTime(2005, 5, 15)),
+            creationDate: DateTime(2005, 5, 15), transactions: [
+              Transaction(
+                invoiceNumber: '51468465',
+                vendor: 'Jane Cooper',
+                billingDate: '2/19/21',
+                amount: 500.00,
+              ),
+              Transaction(
+                invoiceNumber: '54673198',
+                vendor: 'Wade Warren',
+                billingDate: '5/7/16',
+                amount: 235.34,
+              ),
+              // Add more transactions as needed
+            ]),
         LedgerBook(
             id: 2,
             title: "February",
             description: "February Expenses",
             balance: 1200.0,
-            creationDate: DateTime(2005, 5, 15)),
+            creationDate: DateTime(2005, 5, 15), transactions: [
+              Transaction(
+                invoiceNumber: '51468465',
+                vendor: 'Jane Cooper',
+                billingDate: '2/19/21',
+                amount: 500.00,
+              ),
+              Transaction(
+                invoiceNumber: '54673198',
+                vendor: 'Wade Warren',
+                billingDate: '5/7/16',
+                amount: 235.34,
+              ),
+              // Add more transactions as needed
+            ]),
         LedgerBook(
             id: 1,
             title: "January",
             description: "January Expenses",
             balance: 1500.0,
-            creationDate: DateTime(2005, 5, 15)),
+            creationDate: DateTime(2005, 5, 15), transactions: [
+              Transaction(
+                invoiceNumber: '51468465',
+                vendor: 'Jane Cooper',
+                billingDate: '2/19/21',
+                amount: 500.00,
+              ),
+              Transaction(
+                invoiceNumber: '54673198',
+                vendor: 'Wade Warren',
+                billingDate: '5/7/16',
+                amount: 235.34,
+              ),
+              // Add more transactions as needed
+            ]),
         LedgerBook(
             id: 2,
             title: "February",
             description: "February Expenses",
             balance: 1200.0,
-            creationDate: DateTime(2005, 5, 15)),
+            creationDate: DateTime(2005, 5, 15), transactions: [
+              Transaction(
+                invoiceNumber: '51468465',
+                vendor: 'Jane Cooper',
+                billingDate: '2/19/21',
+                amount: 500.00,
+              ),
+              Transaction(
+                invoiceNumber: '54673198',
+                vendor: 'Wade Warren',
+                billingDate: '5/7/16',
+                amount: 235.34,
+              ),
+              // Add more transactions as needed
+            ]),
       ],
       alerts: [
         Alert(
@@ -136,25 +276,82 @@ final List<Account> accountsList = [
             title: "Work",
             description: "work Expenses",
             balance: 1146.0,
-            creationDate: DateTime(2005, 5, 15)),
+            creationDate: DateTime(2005, 5, 15), transactions: [
+              Transaction(
+                invoiceNumber: '51468465',
+                vendor: 'Jane Cooper',
+                billingDate: '2/19/21',
+                amount: 500.00,
+              ),
+              Transaction(
+                invoiceNumber: '54673198',
+                vendor: 'Wade Warren',
+                billingDate: '5/7/16',
+                amount: 235.34,
+              ),
+              // Add more transactions as needed
+            ]),
         LedgerBook(
             id: 2,
             title: "Home",
             description: "Home Expenses",
             balance: 900.0,
-            creationDate: DateTime(2005, 5, 15)),
+            creationDate: DateTime(2005, 5, 15), transactions: [
+              Transaction(
+                invoiceNumber: '51468465',
+                vendor: 'Jane Cooper',
+                billingDate: '2/19/21',
+                amount: 500.00,
+              ),
+              Transaction(
+                invoiceNumber: '54673198',
+                vendor: 'Wade Warren',
+                billingDate: '5/7/16',
+                amount: 235.34,
+              ),
+              // Add more transactions as needed
+            ]),
         LedgerBook(
             id: 1,
             title: "Work",
             description: "work Expenses",
             balance: 1146.0,
-            creationDate: DateTime(2005, 5, 15)),
+            creationDate: DateTime(2005, 5, 15), transactions: [
+              Transaction(
+                invoiceNumber: '51468465',
+                vendor: 'Jane Cooper',
+                billingDate: '2/19/21',
+                amount: 500.00,
+              ),
+              Transaction(
+                invoiceNumber: '54673198',
+                vendor: 'Wade Warren',
+                billingDate: '5/7/16',
+                amount: 235.34,
+              ),
+              // Add more transactions as needed
+            ]),
         LedgerBook(
             id: 2,
             title: "Home",
             description: "Home Expenses",
             balance: 900.0,
-            creationDate: DateTime(2005, 5, 15)),
+            creationDate: DateTime(2005, 5, 15),
+            transactions: [
+              Transaction(
+                invoiceNumber: '51468465',
+                vendor: 'Jane Cooper',
+                billingDate: '2/19/21',
+                amount: 500.00,
+              ),
+              Transaction(
+                invoiceNumber: '54673198',
+                vendor: 'Wade Warren',
+                billingDate: '5/7/16',
+                amount: 235.34,
+              ),
+              // Add more transactions as needed
+            ]),
       ],
       alerts: [
         Alert(
