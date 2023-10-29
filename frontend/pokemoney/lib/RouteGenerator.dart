@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pokemoney/app.dart';
 import 'package:pokemoney/pages/screens/barrel.dart';
+import 'package:pokemoney/services/ledgerEnteryPage.dart';
 
 class RouteGenerator {
   static const String app = '/';
@@ -35,7 +36,7 @@ class RouteGenerator {
         );
       case ledgerBooksPage:
         return MaterialPageRoute(
-          builder: (_) => LedgerBooksPage(),
+          builder: (_) => LedgerEntryListPage(),
         );
       case accountsPage:
         return MaterialPageRoute(
