@@ -3,3 +3,6 @@ out
 logs
 *.log
 db
+nacos
+nacos-server-2.2.3.zip
+nacos-server-2.2.3.tar.gz
