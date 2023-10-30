@@ -3,8 +3,7 @@
 ## How to run nacos-server
 
 Download nacos-server zip from release page.
-//TODO: add link
-Link is : []()
+Link is : [https://github.com/DuGuYifei/Pokemoney/releases/tag/nacos-server](https://github.com/DuGuYifei/Pokemoney/releases/tag/nacos-server)
 
 Unzip and run the following command:
 
