@@ -30,7 +30,7 @@ class LedgerBookDetailsPage extends StatelessWidget {
             CollaboratorSection(),
             const SizedBox(height: 10),
             HistoryTransactionsSection(
-              transactions: accountsList[1].ledgerBooks[_ledgerBook.id]!.transactions,
+              transactions: accountsList[1].ledgerBooks[_ledgerBook.id!]!.transactions,
             ),
             const SizedBox(height: 10),
             //LineChartWidget(pricePoint),
