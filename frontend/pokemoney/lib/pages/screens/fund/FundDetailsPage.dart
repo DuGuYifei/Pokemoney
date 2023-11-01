@@ -9,16 +9,20 @@ class FundDetailsPage extends StatelessWidget {
 
   final List<Transaction> sampleTransactions = [
     Transaction(
+      ledgerBookId: 2,
       invoiceNumber: '51468465',
-      vendor: 'Jane Cooper',
-      billingDate: '2/19/21',
+      category: 'Jane Cooper',
+      billingDate: DateTime(2002,3,1),
       amount: 500.00,
+      type: 'income',
     ),
     Transaction(
-      invoiceNumber: '54673198',
-      vendor: 'Wade Warren',
-      billingDate: '5/7/16',
-      amount: 235.34,
+      ledgerBookId: 2,
+      invoiceNumber: '51468465',
+      category: 'Jane Cooper',
+      billingDate: DateTime(2002,3,1),
+      amount: 500.00,
+      type: 'income',
     ),
     // Add more transactions as needed
   ];

@@ -20,6 +20,109 @@ class _LedgerBooksPageState extends State<LedgerBooksPage> {
     context.read<LedgerBookProvider>().fetchAllLedgerBooks();
   }
 
+  _showForm(BuildContext context) async {
+    final formKey = GlobalKey<FormState>();
+    final titleController = TextEditingController();
+    final descriptionController = TextEditingController();
+    final balanceController = TextEditingController();
+    final accountIdController = TextEditingController();
+
+    await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 400, maxHeight: 700), // Set your constraints here
+              child: SingleChildScrollView(
+                child: AlertDialog(
+                  title: Text('Add Transaction'),
+                  content: Form(
+                    key: formKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        TextFormField(
+                          controller: titleController,
+                          decoration: InputDecoration(labelText: "Title"),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'The title can\'t be null';
+                            }
+                            return null;
+                          },
+                        ),
+                        TextFormField(
+                          controller: descriptionController,
+                          decoration: InputDecoration(labelText: "Description"),
+                          // Add validation logic if needed
+                        ),
+                        TextFormField(
+                          controller: balanceController,
+                          decoration: InputDecoration(labelText: "Balance"),
+                          keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Balance is required';
+                            }
+                            if (double.tryParse(value) == null) {
+                              return 'Balance has to be a number';
+                            }
+                            return null;
+                          },
+                        ),
+                        TextFormField(
+                          controller: accountIdController,
+                          decoration: InputDecoration(labelText: "Account ID"),
+                          keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Account ID is required';
+                            }
+                            if (int.tryParse(value) == null) {
+                              return 'Account ID has to be an integer';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // This will close the dialog without adding anything
+                      },
+                      child: Text('Cancel'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (formKey.currentState!.validate()) {
+                          formKey.currentState!.save();
+
+                          // Use the saved values to create a new LedgerBook instance and add it
+                          var newLedgerBook = LedgerBook(
+                            accountId: int.parse(accountIdController.text),
+                            title: titleController.text,
+                            description: descriptionController.text,
+                            balance: double.parse(balanceController.text),
+                            creationDate: DateTime.now(),
+                            transactions: [],
+                          );
+
+                          context.read<LedgerBookProvider>().addLedgerBook(newLedgerBook);
+                          Navigator.of(context).pop();
+                        }
+                      },
+                      child: Text('Add'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     // List<Widget> fundsCards = accountsList
@@ -85,16 +188,7 @@ class _LedgerBooksPageState extends State<LedgerBooksPage> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          var newLedgerBook = LedgerBook(
-              accountId: 2,
-              title: "wew",
-              description: "description",
-              balance: 23,
-              creationDate: DateTime(2002, 12, 1),
-              transactions: []);
-          context.read<LedgerBookProvider>().addLedgerBook(newLedgerBook);
-        },
+        onPressed: () => _showForm(context),
         child: const Icon(Icons.add),
       ),
     );

@@ -23,14 +23,14 @@ class CollaboratorSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          const Text(
             'Collaborator',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18.0,
             ),
           ),
-          SizedBox(height: 5.0),
+          const SizedBox(height: 5.0),
           CollaboratorTile(
             imageUrl: "assets/lion.jpg",
             name: 'Cameron Williamson',

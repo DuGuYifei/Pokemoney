@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pokemoney/model/barrel.dart';
 import 'package:pokemoney/constants/barrel.dart';
-import 'package:pokemoney/widgets/barrel.dart';
+import 'package:intl/intl.dart';
 
 class HistoryTransactionsSection extends StatelessWidget {
   final List<Transaction> transactions;
@@ -36,18 +36,19 @@ class HistoryTransactionsSection extends StatelessWidget {
           ),
           const SizedBox(height: 16.0),
           DataTable(
-            columnSpacing: 25,
+            columnSpacing: 15,
             columns: const [
               DataColumn(label: Text('INVOICE')),
-              DataColumn(label: Text('VENDOR')),
+              DataColumn(label: Text('CATEGORY')),
               DataColumn(label: Text('DATE')),
               DataColumn(label: Text('AMOUNT')),
             ],
             rows: transactions.map((transaction) {
+              final formattedDate = DateFormat('yyyy-MM-dd').format(transaction.billingDate);
               return DataRow(cells: [
                 DataCell(Text(transaction.invoiceNumber)),
-                DataCell(Text(transaction.vendor)),
-                DataCell(Text(transaction.billingDate)),
+                DataCell(Text(transaction.category)),
+                DataCell(Text(formattedDate)),
                 DataCell(Text('\$${transaction.amount.toStringAsFixed(2)}')),
               ]);
             }).toList(),
