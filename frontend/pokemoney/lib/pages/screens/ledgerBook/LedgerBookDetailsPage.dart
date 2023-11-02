@@ -7,16 +7,16 @@ import 'package:pokemoney/pages/screens/ledgerBook/TransactionProvider.dart';
 import 'package:provider/provider.dart';
 
 class LedgerBookDetailsPage extends StatelessWidget {
-  final LedgerBook _ledgerBook;
+  final LedgerBook ledgerBook;
 
-  LedgerBookDetailsPage(this._ledgerBook, {Key? key}) : super(key: key);
+  LedgerBookDetailsPage(this.ledgerBook, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          _ledgerBook.title,
+          ledgerBook.title,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -29,12 +29,13 @@ class LedgerBookDetailsPage extends StatelessWidget {
           builder: (context, provider, child) {
             return ListView(
               children: [
-                LedgerBookCard(_ledgerBook, 'assets/backgorund_credit/small_background_creditcard.png', false),
+                LedgerBookCard(ledgerBook, 'assets/backgorund_credit/small_background_creditcard.png', false),
                 const SizedBox(height: 10),
                 CollaboratorSection(),
                 const SizedBox(height: 10),
                 HistoryTransactionsSection(
                   transactions: provider.transactions, // Here we use the transactions from the provider
+                  ledgerBook: ledgerBook,
                 ),
                 const SizedBox(height: 10),
               ],
@@ -46,7 +47,7 @@ class LedgerBookDetailsPage extends StatelessWidget {
           onPressed: () async {
             await Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => TransactionForm(ledgerBook: _ledgerBook),
+                builder: (context) => TransactionForm(ledgerBook: ledgerBook),
               ),
             );
             // You can optionally call `fetchAllTransactions` here to refresh after coming back from the form

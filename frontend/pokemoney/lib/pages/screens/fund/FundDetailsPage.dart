@@ -49,9 +49,9 @@ class FundDetailsPage extends StatelessWidget {
             const SizedBox(height: 10),
             CollaboratorSection(),
             const SizedBox(height: 10),
-            HistoryTransactionsSection(
-              transactions: sampleTransactions,
-            ),
+            // HistoryTransactionsSection(
+            //   transactions: sampleTransactions,
+            // ),
             const SizedBox(height: 10),
             LineChartWidget(pricePoint),
           ],

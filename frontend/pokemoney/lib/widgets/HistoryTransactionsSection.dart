@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:pokemoney/model/barrel.dart';
 import 'package:pokemoney/constants/barrel.dart';
 import 'package:intl/intl.dart';
+import 'package:pokemoney/pages/screens/ledgerBook/TransactionsPage.dart';
 
 class HistoryTransactionsSection extends StatelessWidget {
   final List<Transaction> transactions;
+  final LedgerBook ledgerBook;
 
-  HistoryTransactionsSection({required this.transactions});
+  HistoryTransactionsSection({required this.transactions,required this.ledgerBook,});
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +57,13 @@ class HistoryTransactionsSection extends StatelessWidget {
           ),
           TextButton(
             onPressed: () {
-              // Add action for adding a team member
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => TransactionsPage(
+                    ledgerBook: ledgerBook,
+                  ),
+                ),
+              );
             },
             child: const Text(
               'See all transactions',
