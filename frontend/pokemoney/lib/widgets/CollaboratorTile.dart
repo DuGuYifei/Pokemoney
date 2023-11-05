@@ -5,7 +5,7 @@ class CollaboratorTile extends StatelessWidget {
   final String name;
   final String role;
 
-  CollaboratorTile({required this.imageUrl, required this.name, required this.role});
+  const CollaboratorTile({super.key, required this.imageUrl, required this.name, required this.role});
 
   @override
   Widget build(BuildContext context) {

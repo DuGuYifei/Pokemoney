@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:pokemoney/widgets/barrel.dart';
-import 'package:pokemoney/widgets/barrel.dart';
 import 'package:pokemoney/constants/barrel.dart';
 
 class CollaboratorSection extends StatelessWidget {
+  const CollaboratorSection({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8.0),
@@ -16,7 +17,7 @@ class CollaboratorSection extends StatelessWidget {
             color: Colors.grey.withOpacity(0.1),
             spreadRadius: 2,
             blurRadius: 3,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -31,12 +32,12 @@ class CollaboratorSection extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 5.0),
-          CollaboratorTile(
+          const CollaboratorTile(
             imageUrl: "assets/lion.jpg",
             name: 'Cameron Williamson',
             role: 'Product Designer',
           ),
-          CollaboratorTile(
+          const CollaboratorTile(
             imageUrl: "assets/logo_login.png",
             name: 'Brooklyn Simmons',
             role: 'Software Engineer II',

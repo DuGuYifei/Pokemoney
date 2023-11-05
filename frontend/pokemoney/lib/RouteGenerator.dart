@@ -17,29 +17,29 @@ class RouteGenerator {
   static const String privacySecurityPage = '/privacySecurity';
   static const String helpPage = '/help';
 
-  RouteGenerator._() {}
+  RouteGenerator._();
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case app:
         return MaterialPageRoute(
-          builder: (_) => App(),
+          builder: (_) => const App(),
         );
       case homePage:
         return MaterialPageRoute(
-          builder: (_) => HomePage(),
+          builder: (_) => const HomePage(),
         );
       case fundsPage:
         return MaterialPageRoute(
-          builder: (_) => FundsPage(),
+          builder: (_) => const FundsPage(),
         );
       case ledgerBooksPage:
         return MaterialPageRoute(
-          builder: (_) => LedgerBooksPage(),
+          builder: (_) => const LedgerBooksPage(),
         );
       case accountsPage:
         return MaterialPageRoute(
-          builder: (_) => AccountsPage(),
+          builder: (_) => const AccountsPage(),
         );
       case loginPage:
         return MaterialPageRoute(
@@ -47,7 +47,7 @@ class RouteGenerator {
         );
       case signUpPage:
         return MaterialPageRoute(
-          builder: (_) => SignUpPage(),
+          builder: (_) => const SignUpPage(),
         );
       case forgotPasswordPage:
         return MaterialPageRoute(
@@ -55,23 +55,23 @@ class RouteGenerator {
         );
       case settingsPage:
         return MaterialPageRoute(
-          builder: (_) => SettingsPage(),
+          builder: (_) => const SettingsPage(),
         );
       case statsPage:
         return MaterialPageRoute(
-          builder: (_) => StatsPage(),
+          builder: (_) => const StatsPage(),
         );
       case stylePage:
         return MaterialPageRoute(
-          builder: (_) => StylePage(),
+          builder: (_) => const StylePage(),
         );
       case privacySecurityPage:
         return MaterialPageRoute(
-          builder: (_) => PrivacySecurityPage(),
+          builder: (_) => const PrivacySecurityPage(),
         );
       case helpPage:
         return MaterialPageRoute(
-          builder: (_) => HelpPage(),
+          builder: (_) => const HelpPage(),
         );
       default:
         throw const FormatException("Route not found");

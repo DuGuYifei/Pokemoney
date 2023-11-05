@@ -3,7 +3,7 @@ import 'package:pokemoney/widgets/barrel.dart';
 import 'package:pokemoney/dataExample.dart';
 
 class AccountsPage extends StatelessWidget {
-  AccountsPage({super.key});
+  const AccountsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class AccountsPage extends StatelessWidget {
         ),
         Expanded(
           // Wrap ListView with Expanded
-          child: ListView(padding: EdgeInsets.all(20.0), children: accountsCards),
+          child: ListView(padding: const EdgeInsets.all(20.0), children: accountsCards),
         ),
       ],
     );

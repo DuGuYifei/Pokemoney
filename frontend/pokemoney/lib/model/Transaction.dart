@@ -2,7 +2,7 @@ class Transaction {
   final int? id;
   final int ledgerBookId;
   final String invoiceNumber;
-  final DateTime billingDate; // Changed to DateTime
+  final DateTime billingDate;
   final double amount;
   final String type;
   final String category;
@@ -11,11 +11,34 @@ class Transaction {
     this.id,
     required this.ledgerBookId,
     required this.invoiceNumber,
-    required this.billingDate, // Changed to DateTime
+    required this.billingDate,
     required this.amount,
     required this.type,
     required this.category,
   });
+
+  //get someFieldValue => null;
+
+// Copy with method to clone the Transaction with modified fields
+  Transaction copyWith({
+    int? id,
+    String? invoiceNumber,
+    String? category,
+    double? amount,
+    String? type,
+    DateTime? billingDate,
+  }) {
+    return Transaction(
+      id: id ?? this.id,
+      invoiceNumber: invoiceNumber ?? this.invoiceNumber,
+      category: category ?? this.category,
+      amount: amount ?? this.amount,
+      type: type ?? this.type,
+      billingDate: billingDate ?? this.billingDate,
+      ledgerBookId: ledgerBookId,
+      // ... other field assignments using ?? to fallback to old values ...
+    );
+  }
 
   // Convert a Transaction object into a Map object
   Map<String, dynamic> toMap() {

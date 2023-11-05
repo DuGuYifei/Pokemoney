@@ -10,7 +10,7 @@ class LineChartWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8.0),
@@ -19,7 +19,7 @@ class LineChartWidget extends StatelessWidget {
             color: Colors.grey.withOpacity(0.1),
             spreadRadius: 2,
             blurRadius: 3,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -39,7 +39,7 @@ class LineChartWidget extends StatelessWidget {
               LineChartBarData(
                   spots: points.map((point) => FlSpot(point.x, point.y)).toList(),
                   isCurved: false,
-                  dotData: FlDotData(show: true))
+                  dotData: const FlDotData(show: true))
             ])),
           ),
         ],

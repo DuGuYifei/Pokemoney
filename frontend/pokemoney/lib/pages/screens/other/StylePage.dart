@@ -8,7 +8,7 @@ class StylePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Style"),
+        title: const Text("Style"),
         centerTitle: true,
         backgroundColor: AppColors.surfaceContainer,
       ),

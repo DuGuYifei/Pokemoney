@@ -7,13 +7,21 @@ import 'package:pokemoney/pages/screens/ledgerBook/TransactionsPage.dart';
 class HistoryTransactionsSection extends StatelessWidget {
   final List<Transaction> transactions;
   final LedgerBook ledgerBook;
+  final int limit; // New parameter to control the number of transactions shown
 
-  HistoryTransactionsSection({required this.transactions,required this.ledgerBook,});
+  const HistoryTransactionsSection({super.key, 
+    required this.transactions,
+    required this.ledgerBook,
+    this.limit = 8,
+  });
 
   @override
   Widget build(BuildContext context) {
+    // If there are more transactions than the limit, only take up to the limit
+    final visibleTransactions = transactions.length > limit ? transactions.sublist(0, limit) : transactions;
+
     return Container(
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(8.0),
@@ -22,7 +30,7 @@ class HistoryTransactionsSection extends StatelessWidget {
             color: Colors.grey.withOpacity(0.1),
             spreadRadius: 2,
             blurRadius: 3,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -45,7 +53,7 @@ class HistoryTransactionsSection extends StatelessWidget {
               DataColumn(label: Text('DATE')),
               DataColumn(label: Text('AMOUNT')),
             ],
-            rows: transactions.map((transaction) {
+            rows: visibleTransactions.map((transaction) {
               final formattedDate = DateFormat('yyyy-MM-dd').format(transaction.billingDate);
               return DataRow(cells: [
                 DataCell(Text(transaction.invoiceNumber)),

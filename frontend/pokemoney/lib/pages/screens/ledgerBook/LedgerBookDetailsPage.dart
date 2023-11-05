@@ -9,10 +9,14 @@ import 'package:provider/provider.dart';
 class LedgerBookDetailsPage extends StatelessWidget {
   final LedgerBook ledgerBook;
 
-  LedgerBookDetailsPage(this.ledgerBook, {Key? key}) : super(key: key);
+  const LedgerBookDetailsPage(this.ledgerBook, {Key? key}) : super(key: key);
 
-  @override
+@override
   Widget build(BuildContext context) {
+    // As soon as this page is built, fetch all transactions for this ledger book.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<TransactionProvider>(context, listen: false).fetchAllTransactions();
+    });
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -31,7 +35,7 @@ class LedgerBookDetailsPage extends StatelessWidget {
               children: [
                 LedgerBookCard(ledgerBook, 'assets/backgorund_credit/small_background_creditcard.png', false),
                 const SizedBox(height: 10),
-                CollaboratorSection(),
+                const CollaboratorSection(),
                 const SizedBox(height: 10),
                 HistoryTransactionsSection(
                   transactions: provider.transactions, // Here we use the transactions from the provider

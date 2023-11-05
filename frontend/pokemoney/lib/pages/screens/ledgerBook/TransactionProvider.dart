@@ -23,4 +23,13 @@ class TransactionProvider with ChangeNotifier {
     await _transactionService.deleteTransaction(id);
     fetchAllTransactions();
   }
+
+ updateTransaction(Transaction transaction) async {
+    await _transactionService.updateTransaction(transaction);
+    fetchAllTransactions(); // Re-fetch the list of transactions after updating
+  }
+    // Call your database helper method to update the transaction in the SQLite database
+    // Example: DBProvider.db.updateTransaction(transaction);
+
+  // ... other methods and properties
 }

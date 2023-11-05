@@ -18,11 +18,11 @@ class FundCard extends StatelessWidget {
           : null,
       child: Align(
         alignment: const AlignmentDirectional(0.0,0.0),
-        child: Container(
+        child: SizedBox(
           width: 403.0,
           height: 220.0,
           child: Stack(
-            alignment: AlignmentDirectional(0.0, 0.0),
+            alignment: const AlignmentDirectional(0.0, 0.0),
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(25.0), // Adjust this value to your preference
@@ -34,14 +34,14 @@ class FundCard extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(27.0, 0.0, 27.0, 0.0),
+                padding: const EdgeInsetsDirectional.fromSTEB(27.0, 0.0, 27.0, 0.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Padding(
-                      padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 30.0),
+                      padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 0.0, 30.0),
                       child: Row(
                         children: [
                           Column(
@@ -70,7 +70,7 @@ class FundCard extends StatelessWidget {
                           ),
                           Expanded(
                             child: Align(
-                              alignment: AlignmentDirectional(1.0, 0.0),
+                              alignment: const AlignmentDirectional(1.0, 0.0),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(8.0),
                                 child: Image.asset(
@@ -90,7 +90,7 @@ class FundCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 50.0, 0.0),
+                          padding: const EdgeInsetsDirectional.fromSTEB(0.0, 0.0, 50.0, 0.0),
                           child: Column(
                             mainAxisSize: MainAxisSize.max,
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,7 +148,7 @@ class FundCard extends StatelessWidget {
                       ],
                     ),
                     Align(
-                      alignment: AlignmentDirectional(1.0, 0.0),
+                      alignment: const AlignmentDirectional(1.0, 0.0),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(0.0),
                         child: Image.asset(

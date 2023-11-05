@@ -18,7 +18,12 @@ class TransactionService {
 
   Future<int> updateTransaction(Transaction transaction) async {
     var dbClient = await _dbHelper.db;
-    return await dbClient.update("transactions", transaction.toMap(), where: "id = ?", whereArgs: [transaction.id]);
+    return await dbClient.update(
+      "transactions",
+      transaction.toMap(),
+      where: "id = ?",
+      whereArgs: [transaction.id],
+    );
   }
 
   Future<int> deleteTransaction(int id) async {

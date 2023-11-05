@@ -5,13 +5,13 @@ import 'package:pokemoney/widgets/barrel.dart';
 class AlertsPage extends StatelessWidget {
   final Account account;
 
-  AlertsPage({required this.account});
+  const AlertsPage({super.key, required this.account});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('All Alerts'),
+        title: const Text('All Alerts'),
       ),
       body: SingleChildScrollView(
         child: AlertsContainer(account),

@@ -13,7 +13,7 @@ class CustomTextField extends StatelessWidget {
   /// The [controller] parameter is used to control the text field's content.
   /// The [labelText] parameter provides a hint text to guide the user's input.
   /// The [obscureText] parameter determines whether the text is obscured, such as for password input.
-  CustomTextField({
+  const CustomTextField({
     Key? key,
     this.headerText,
     required this.controller,
@@ -47,7 +47,7 @@ class CustomTextField extends StatelessWidget {
             child: TextField(
               obscureText: obscureText,
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
                 labelText: labelText,
                 labelStyle: const TextStyle(
                   color: AppColors.textPrimary,

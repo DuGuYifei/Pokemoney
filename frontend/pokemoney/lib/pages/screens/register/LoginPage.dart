@@ -78,7 +78,7 @@ class LoginPage extends StatelessWidget {
             clickableText: 'Forget password?',
             onTap: () {
               // Navigate to another page or perform desired action
-              Navigator.of(context)?.pushNamed(RouteGenerator.forgotPasswordPage);
+              Navigator.of(context).pushNamed(RouteGenerator.forgotPasswordPage);
             },
             clickableStyle: const TextStyle(
               decoration: TextDecoration.underline,
@@ -93,7 +93,7 @@ class LoginPage extends StatelessWidget {
           CustomButton(
             onPressed: () {
               // Navigate to another page or perform desired action
-              Navigator.of(context)?.pushNamed(RouteGenerator.homePage);
+              Navigator.of(context).pushNamed(RouteGenerator.homePage);
             },
             textButton: 'Login',
           ),
@@ -106,7 +106,7 @@ class LoginPage extends StatelessWidget {
             clickableText: 'Sign-up',
             onTap: () {
               // Navigate to another page or perform desired action
-              Navigator.of(context)?.pushNamed(RouteGenerator.signUpPage);
+              Navigator.of(context).pushNamed(RouteGenerator.signUpPage);
             },
             textStyle: const TextStyle(
               fontWeight: FontWeight.w500,
@@ -158,7 +158,7 @@ class LoginPage extends StatelessWidget {
               // google button
               CustomSquareTile(imagePath: 'assets/logo_google.png'),
 
-              const SizedBox(width: 25),
+              SizedBox(width: 25),
 
               // apple button
               CustomSquareTile(imagePath: 'assets/logo_apple.png')

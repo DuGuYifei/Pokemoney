@@ -11,7 +11,7 @@ class FundsPage extends StatelessWidget {
     List<Widget> fundsCards =
         accountsList.expand((account) => account.funds.map((fund) => FundCard(fund, true))).toList();
     return Scaffold(
-      body: ListView(padding: EdgeInsets.all(20.0), children: fundsCards),
+      body: ListView(padding: const EdgeInsets.all(20.0), children: fundsCards),
     );
   }
 }

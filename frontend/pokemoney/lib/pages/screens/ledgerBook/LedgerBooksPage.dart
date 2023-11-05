@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pokemoney/dataExample.dart';
 import 'package:pokemoney/model/barrel.dart';
 import 'package:pokemoney/widgets/barrel.dart';
 import 'package:provider/provider.dart';
@@ -32,10 +31,10 @@ class _LedgerBooksPageState extends State<LedgerBooksPage> {
         builder: (BuildContext context) {
           return Dialog(
             child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: 400, maxHeight: 700), // Set your constraints here
+              constraints: const BoxConstraints(maxWidth: 400, maxHeight: 700), // Set your constraints here
               child: SingleChildScrollView(
                 child: AlertDialog(
-                  title: Text('Add Transaction'),
+                  title: const Text('Add Transaction'),
                   content: Form(
                     key: formKey,
                     child: Column(
@@ -43,7 +42,7 @@ class _LedgerBooksPageState extends State<LedgerBooksPage> {
                       children: <Widget>[
                         TextFormField(
                           controller: titleController,
-                          decoration: InputDecoration(labelText: "Title"),
+                          decoration: const InputDecoration(labelText: "Title"),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'The title can\'t be null';
@@ -53,12 +52,12 @@ class _LedgerBooksPageState extends State<LedgerBooksPage> {
                         ),
                         TextFormField(
                           controller: descriptionController,
-                          decoration: InputDecoration(labelText: "Description"),
+                          decoration: const InputDecoration(labelText: "Description"),
                           // Add validation logic if needed
                         ),
                         TextFormField(
                           controller: balanceController,
-                          decoration: InputDecoration(labelText: "Balance"),
+                          decoration: const InputDecoration(labelText: "Balance"),
                           keyboardType: TextInputType.number,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -72,7 +71,7 @@ class _LedgerBooksPageState extends State<LedgerBooksPage> {
                         ),
                         TextFormField(
                           controller: accountIdController,
-                          decoration: InputDecoration(labelText: "Account ID"),
+                          decoration: const InputDecoration(labelText: "Account ID"),
                           keyboardType: TextInputType.number,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -92,7 +91,7 @@ class _LedgerBooksPageState extends State<LedgerBooksPage> {
                       onPressed: () {
                         Navigator.of(context).pop(); // This will close the dialog without adding anything
                       },
-                      child: Text('Cancel'),
+                      child: const Text('Cancel'),
                     ),
                     ElevatedButton(
                       onPressed: () {
@@ -113,7 +112,7 @@ class _LedgerBooksPageState extends State<LedgerBooksPage> {
                           Navigator.of(context).pop();
                         }
                       },
-                      child: Text('Add'),
+                      child: const Text('Add'),
                     ),
                   ],
                 ),

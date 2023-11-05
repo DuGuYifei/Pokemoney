@@ -38,7 +38,7 @@ class AlertsContainer extends StatelessWidget {
             color: Colors.grey.withOpacity(0.1),
             spreadRadius: 2,
             blurRadius: 3,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -48,7 +48,7 @@ class AlertsContainer extends StatelessWidget {
           SizedBox(
             height: HIGHT_OF_CONTAINER,
             child: ListView.builder(
-              physics: BouncingScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               itemCount: NUMBER_OF_ALERTS_TO_SHOW + 1, // Add 1 for the special tile
               itemBuilder: (context, index) {
                 // If it's the last item, return the special tile

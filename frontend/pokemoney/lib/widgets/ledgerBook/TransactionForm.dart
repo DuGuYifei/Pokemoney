@@ -65,18 +65,14 @@ class _TransactionFormState extends State<TransactionForm> {
         );
       });
     }
-
-    // Assume TransactionProvider has an addTransaction method
-
-    //}
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Add Transaction')),
+      appBar: AppBar(title: const Text('Add Transaction')),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Consumer<TransactionProvider>(
           builder: (context, transactionProvider, child) {
             return Form(
@@ -98,7 +94,7 @@ class _TransactionFormState extends State<TransactionForm> {
                     decoration: InputDecoration(
                       labelText: 'Billing Date',
                       suffixIcon: IconButton(
-                        icon: Icon(Icons.calendar_today),
+                        icon: const Icon(Icons.calendar_today),
                         onPressed: () => _selectDate(context),
                       ),
                     ),
@@ -112,7 +108,7 @@ class _TransactionFormState extends State<TransactionForm> {
                   ),
                   TextFormField(
                     controller: _amountController,
-                    decoration: InputDecoration(labelText: 'Amount'),
+                    decoration: const InputDecoration(labelText: 'Amount'),
                     keyboardType: TextInputType.number,
                     validator: (value) {
                       if (value == null || value.isEmpty) {

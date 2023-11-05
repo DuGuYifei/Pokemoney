@@ -8,7 +8,7 @@ class PrivacySecurityPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Privacy and Security"),
+        title: const Text("Privacy and Security"),
         centerTitle: true,
         backgroundColor: AppColors.surfaceContainer,
       ),

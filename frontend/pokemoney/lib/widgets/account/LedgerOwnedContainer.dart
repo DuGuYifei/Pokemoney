@@ -16,7 +16,7 @@ class LedgerOwnedContainer extends StatelessWidget {
   // Height of the container.
   static const double HEIGHT_OF_CONTAINER = 180.0;
 
-  LedgerOwnedContainer(this.account, {Key? key}) : super(key: key);
+  const LedgerOwnedContainer(this.account, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class LedgerOwnedContainer extends StatelessWidget {
             color: Colors.grey.withOpacity(0.1),
             spreadRadius: 2,
             blurRadius: 3,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),

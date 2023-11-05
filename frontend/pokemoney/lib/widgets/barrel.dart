@@ -11,6 +11,6 @@ export 'account/AlertsContainer.dart';
 export 'fund/FundCard.dart';
 export 'CollaboratorTile.dart';
 export 'CollaboratorSection.dart';
-export 'HistoryTransactionsSection.dart';
+export 'ledgerBook/HistoryTransactionsSection.dart';
 export 'LineChartWidget.dart';
 export 'ledgerBook/LedgerBookCard.dart';

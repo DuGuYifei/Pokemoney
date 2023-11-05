@@ -47,7 +47,7 @@ class FundDetailsPage extends StatelessWidget {
           children: [
             FundCard(fund, false),
             const SizedBox(height: 10),
-            CollaboratorSection(),
+            const CollaboratorSection(),
             const SizedBox(height: 10),
             // HistoryTransactionsSection(
             //   transactions: sampleTransactions,

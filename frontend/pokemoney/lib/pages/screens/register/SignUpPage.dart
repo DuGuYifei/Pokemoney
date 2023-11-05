@@ -5,7 +5,7 @@ import 'package:pokemoney/pages/screens/barrel.dart';
 import 'package:pokemoney/widgets/barrel.dart';
 
 class SignUpPage extends StatefulWidget {
-  SignUpPage({super.key});
+  const SignUpPage({super.key});
 
   @override
   State<SignUpPage> createState() => _SignUpPageState();
@@ -19,7 +19,7 @@ class _SignUpPageState extends State<SignUpPage> {
   bool agree = false;
 
   void signUserUp() {
-    Navigator.of(context)?.pushNamed(RouteGenerator.homePage);
+    Navigator.of(context).pushNamed(RouteGenerator.homePage);
   }
 
   @override

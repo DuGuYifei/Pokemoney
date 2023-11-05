@@ -34,7 +34,7 @@ class _CheckboxExampleState extends State<CheckboxExample> {
       return AppColors.textPrimary;
     }
 
-    final customClickableText = null; //= widget.clickableText != null
+    const customClickableText = null; //= widget.clickableText != null
     //     ? CustomClickableText(
     //         text: 'I agree to the ${widget.clickableText}',
     //         onTap: widget.onTapClickableText != null

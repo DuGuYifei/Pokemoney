@@ -73,7 +73,7 @@ class ForgotPasswordPage extends StatelessWidget {
             clickableText: 'Back to login',
             onTap: () {
               // Navigate to another page or perform desired action
-              Navigator.of(context)?.pushNamed(RouteGenerator.loginPage);
+              Navigator.of(context).pushNamed(RouteGenerator.loginPage);
             },
             clickableStyle: const TextStyle(
               decoration: TextDecoration.underline,
