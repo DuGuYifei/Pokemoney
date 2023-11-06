@@ -70,5 +70,14 @@ class DBHelper {
     type TEXT NOT NULL, 
     FOREIGN KEY (accountId) REFERENCES accounts(id))
 ''');
+
+// Creating the 'funds' table
+    await db.execute('''
+  CREATE TABLE categories(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    iconName TEXT)
+''');
+  
   }
 }

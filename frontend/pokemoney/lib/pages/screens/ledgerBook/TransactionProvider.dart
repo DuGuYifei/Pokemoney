@@ -24,7 +24,7 @@ class TransactionProvider with ChangeNotifier {
     fetchAllTransactions();
   }
 
- updateTransaction(Transaction transaction) async {
+  updateTransaction(Transaction transaction) async {
     await _transactionService.updateTransaction(transaction);
     fetchAllTransactions(); // Re-fetch the list of transactions after updating
   }
