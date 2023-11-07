@@ -28,7 +28,7 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
     super.initState();
     // Initialize text editing controllers with the current transaction's values
     _invoiceNumberController = TextEditingController(text: widget.transaction.invoiceNumber);
-    _categoryController = TextEditingController(text: widget.transaction.category);
+    _categoryController = TextEditingController(text: widget.transaction.categoryId.toString());
     _amountController = TextEditingController(text: widget.transaction.amount.toString());
     _typeController = TextEditingController(text: widget.transaction.type);
     _dateController = TextEditingController(); // Add this line
@@ -40,7 +40,6 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
     // Create an updated transaction instance
     Transaction updatedTransaction = widget.transaction.copyWith(
       invoiceNumber: _invoiceNumberController.text,
-      category: _categoryController.text,
       amount: double.parse(_amountController.text),
       type: _typeController.text,
       billingDate: DateTime.parse(_dateController.text),

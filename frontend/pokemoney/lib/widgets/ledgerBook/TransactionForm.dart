@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:pokemoney/model/barrel.dart';
 import 'package:pokemoney/pages/screens/ledgerBook/TransactionProvider.dart';
+import 'package:pokemoney/providers/CategoryProvider.dart';
 import 'package:provider/provider.dart';
 
 class TransactionForm extends StatefulWidget {
@@ -19,9 +21,21 @@ class _TransactionFormState extends State<TransactionForm> {
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _invoiceNumberController = TextEditingController();
   final TextEditingController _typeController = TextEditingController();
-  final TextEditingController _categoryController = TextEditingController();
+  //final TextEditingController _categoryController = TextEditingController();
 
-  DateTime selectedDate = DateTime.now();
+    late int _selectedCategoryId;
+    DateTime selectedDate = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedCategoryId = 0;
+    // Fetch categories when the form is first created
+    Future.microtask(() =>
+        Provider.of<CategoryProvider>(context, listen: false).fetchAllCategory());
+
+    // Initialize selectedCategory if needed
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -46,7 +60,7 @@ class _TransactionFormState extends State<TransactionForm> {
         billingDate: selectedDate,
         amount: double.parse(_amountController.text),
         type: _typeController.text,
-        category: _categoryController.text,
+        categoryId: _selectedCategoryId, // Use the category ID as a foreign key
       );
 
       // Assuming you have a method like `addTransaction` on your TransactionProvider
@@ -69,6 +83,13 @@ class _TransactionFormState extends State<TransactionForm> {
 
   @override
   Widget build(BuildContext context) {
+    final categoryProvider = Provider.of<CategoryProvider>(context);
+    List<DropdownMenuItem<int>> categoryItems = categoryProvider.categories
+        .map((category) => DropdownMenuItem<int>(
+              value: category.id,
+              child: Text(category.name),
+            ))
+        .toList();
     return Scaffold(
       appBar: AppBar(title: const Text('Add Transaction')),
       body: Padding(
@@ -130,15 +151,21 @@ class _TransactionFormState extends State<TransactionForm> {
                       return null;
                     },
                   ),
-                  TextFormField(
-                    controller: _categoryController,
-                    decoration: const InputDecoration(labelText: 'Category'),
+                  DropdownButtonFormField<int>(
+                    value: _selectedCategoryId,
+                    items: categoryItems,
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedCategoryId = value!;
+                      });
+                    },
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter the category';
+                      if (value == null) {
+                        return 'Please select a category';
                       }
                       return null;
                     },
+                    decoration: const InputDecoration(labelText: 'Category'),
                   ),
                   ElevatedButton(
                     onPressed: () => _submitForm(transactionProvider),
@@ -165,167 +192,6 @@ class _TransactionFormState extends State<TransactionForm> {
     _amountController.dispose();
     _invoiceNumberController.dispose();
     _typeController.dispose();
-    _categoryController.dispose();
     super.dispose();
   }
 }
-// import 'package:flutter/material.dart';
-// import 'package:intl/intl.dart';
-// import 'package:pokemoney/model/barrel.dart';
-
-// class TransactionForm extends StatefulWidget {
-//   final LedgerBook ledgerBook;
-
-//   const TransactionForm({Key? key, required this.ledgerBook}) : super(key: key);
-
-//   @override
-//   _TransactionFormState createState() => _TransactionFormState();
-// }
-
-// class _TransactionFormState extends State<TransactionForm> {
-//   final _formKey = GlobalKey<FormState>();
-//   final TextEditingController _dateController = TextEditingController();
-//   final TextEditingController _amountController = TextEditingController();
-//   final TextEditingController _invoiceNumberController = TextEditingController();
-//   final TextEditingController _typeController = TextEditingController();
-//   final TextEditingController _categoryController = TextEditingController();
-
-//   DateTime selectedDate = DateTime.now();
-
-//   Future<void> _selectDate(BuildContext context) async {
-//     final DateTime? picked = await showDatePicker(
-//       context: context,
-//       initialDate: selectedDate,
-//       firstDate: DateTime(2000),
-//       lastDate: DateTime(2101),
-//     );
-//     if (picked != null && picked != selectedDate) {
-//       setState(() {
-//         selectedDate = picked;
-//         _dateController.text = DateFormat.yMd().format(selectedDate);
-//       });
-//     }
-//   }
-
-//   void _submitForm() {
-//     if (_formKey.currentState!.validate()) {
-//       final Transaction newTransaction = Transaction(
-//         ledgerBookId: widget.ledgerBook.id!,
-//         invoiceNumber: _invoiceNumberController.text,
-//         billingDate: selectedDate,
-//         amount: double.parse(_amountController.text),
-//         type: _typeController.text,
-//         category: _categoryController.text,
-//       );
-
-//       // Process the transaction e.g., save to database or send to an API
-
-//       // Show success message or navigate away
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return AlertDialog(
-//       title: Text('Add Transaction'),
-//       content: Form(
-//         key: _formKey,
-//         child: SingleChildScrollView(
-//           child: Column(
-//             mainAxisSize: MainAxisSize.min,
-//             children: <Widget>[
-//               TextFormField(
-//                 controller: _invoiceNumberController,
-//                 decoration: InputDecoration(labelText: 'Invoice Number'),
-//                 validator: (value) {
-//                   if (value == null || value.isEmpty) {
-//                     return 'Please enter the invoice number';
-//                   }
-//                   return null;
-//                 },
-//               ),
-//               TextFormField(
-//                 controller: _dateController,
-//                 decoration: InputDecoration(
-//                   labelText: 'Billing Date',
-//                   suffixIcon: IconButton(
-//                     icon: Icon(Icons.calendar_today),
-//                     onPressed: () => _selectDate(context),
-//                   ),
-//                 ),
-//                 readOnly: true,
-//                 validator: (value) {
-//                   if (value == null || value.isEmpty) {
-//                     return 'Please select the billing date';
-//                   }
-//                   return null;
-//                 },
-//               ),
-//               TextFormField(
-//                 controller: _amountController,
-//                 decoration: InputDecoration(labelText: 'Amount'),
-//                 keyboardType: TextInputType.number,
-//                 validator: (value) {
-//                   if (value == null || value.isEmpty) {
-//                     return 'Please enter the amount';
-//                   }
-//                   if (double.tryParse(value) == null) {
-//                     return 'Please enter a valid number';
-//                   }
-//                   return null;
-//                 },
-//               ),
-//               TextFormField(
-//                 controller: _typeController,
-//                 decoration: InputDecoration(labelText: 'Type'),
-//                 validator: (value) {
-//                   if (value == null || value.isEmpty) {
-//                     return 'Please enter the transaction type';
-//                   }
-//                   return null;
-//                 },
-//               ),
-//               TextFormField(
-//                 controller: _categoryController,
-//                 decoration: InputDecoration(labelText: 'Category'),
-//                 validator: (value) {
-//                   if (value == null || value.isEmpty) {
-//                     return 'Please enter the category';
-//                   }
-//                   return null;
-//                 },
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//       actions: <Widget>[
-//         TextButton(
-//           onPressed: () {
-//             Navigator.of(context).pop(); // Close the dialog
-//           },
-//           child: Text('Cancel'),
-//         ),
-//         ElevatedButton(
-//           onPressed: () {
-//             if (_formKey.currentState!.validate()) {
-//               _submitForm();
-//               Navigator.of(context).pop(); // Close the dialog
-//             }
-//           },
-//           child: Text('Save'),
-//         ),
-//       ],
-//     );
-//   }
-
-//   @override
-//   void dispose() {
-//     _dateController.dispose();
-//     _amountController.dispose();
-//     _invoiceNumberController.dispose();
-//     _typeController.dispose();
-//     _categoryController.dispose();
-//     super.dispose();
-//   }
-// }

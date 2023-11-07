@@ -46,7 +46,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
       setState(() {
         _filteredTransactions =
             Provider.of<TransactionProvider>(context, listen: false).transactions.where((transaction) {
-          return transaction.category.toLowerCase().contains(_searchController.text.toLowerCase()) ||
+          return transaction.categoryId.toString().contains(_searchController.text.toLowerCase()) ||
               transaction.invoiceNumber.toLowerCase().contains(_searchController.text.toLowerCase());
         }).toList();
       });
@@ -215,7 +215,7 @@ class TransactionListItem extends StatelessWidget {
       child: ListTile(
         leading: const Icon(Icons.attach_money), // Just an example icon
         title: Text(transaction.invoiceNumber),
-        subtitle: Text(transaction.category +
+        subtitle: Text(transaction.categoryId.toString() +
             " " +
             transaction.amount.toString() +
             '\n' +

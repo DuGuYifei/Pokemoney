@@ -1,15 +1,15 @@
 class Category {
   final int? id;
   final String name;
-  final String iconName; // field to hold the icon name/path
+  final String iconPath; // field to hold the icon name/path
 
-  Category({this.id, required this.name, required this.iconName});
+  Category({this.id, required this.name, required this.iconPath});
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'name': name,
-      'iconName': iconName,
+      'iconPath': iconPath,
     };
   }
 
@@ -17,7 +17,7 @@ class Category {
     return Category(
       id: map['id'],
       name: map['name'],
-      iconName: map['iconName'],
+      iconPath: map['iconPath'],
     );
   }
 }

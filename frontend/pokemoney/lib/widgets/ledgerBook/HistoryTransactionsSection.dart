@@ -57,7 +57,7 @@ class HistoryTransactionsSection extends StatelessWidget {
               final formattedDate = DateFormat('yyyy-MM-dd').format(transaction.billingDate);
               return DataRow(cells: [
                 DataCell(Text(transaction.invoiceNumber)),
-                DataCell(Text(transaction.category)),
+                DataCell(Text(transaction.categoryId.toString())),
                 DataCell(Text(formattedDate)),
                 DataCell(Text('\$${transaction.amount.toStringAsFixed(2)}')),
               ]);

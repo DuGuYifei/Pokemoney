@@ -19,7 +19,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -27,7 +27,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -45,7 +45,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -53,7 +53,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -84,7 +84,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -92,7 +92,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -110,7 +110,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -118,7 +118,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -136,7 +136,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -144,7 +144,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -162,7 +162,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -170,7 +170,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -188,7 +188,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -196,7 +196,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -214,7 +214,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -222,7 +222,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -240,7 +240,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -248,7 +248,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -266,7 +266,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -274,7 +274,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -342,7 +342,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -350,7 +350,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -368,7 +368,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -376,7 +376,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -394,7 +394,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -402,7 +402,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -420,7 +420,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',
@@ -428,7 +428,7 @@ final List<Account> accountsList = [
               Transaction(
                 ledgerBookId: 2,
                 invoiceNumber: '51468465',
-                category: 'Jane Cooper',
+                categoryId: 1,
                 billingDate: DateTime(2002, 3, 1),
                 amount: 500.00,
                 type: 'income',

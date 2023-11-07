@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pokemoney/RouteGenerator.dart';
 import 'package:pokemoney/pages/screens/ledgerBook/TransactionProvider.dart';
+import 'package:pokemoney/providers/CategoryProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:pokemoney/pages/screens/ledgerBook/LedgerBookProvider.dart';
-
 
 void main() {
   runApp(const MyApp());
@@ -21,6 +21,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<TransactionProvider>(
           create: (_) => TransactionProvider(),
+        ),
+        ChangeNotifierProvider<CategoryProvider>(
+          create: (_) => CategoryProvider(),
         ),
       ],
       child: MaterialApp(
