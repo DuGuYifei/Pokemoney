@@ -21,20 +21,50 @@ class _TransactionFormState extends State<TransactionForm> {
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _invoiceNumberController = TextEditingController();
   final TextEditingController _typeController = TextEditingController();
-  //final TextEditingController _categoryController = TextEditingController();
 
-    late int _selectedCategoryId;
-    DateTime selectedDate = DateTime.now();
+  late int _selectedCategoryId;
+  DateTime selectedDate = DateTime.now();
+
+  //bool _isCategoriesFetched = false;
+  List<DropdownMenuItem<int>> categoryItems = []; // Store category items here
 
   @override
   void initState() {
     super.initState();
-    _selectedCategoryId = 0;
-    // Fetch categories when the form is first created
-    Future.microtask(() =>
-        Provider.of<CategoryProvider>(context, listen: false).fetchAllCategory());
+    // Initialize category ID to an invalid state (-1 for instance) to indicate not fetched or not selected.
+    _selectedCategoryId = -1;
+    final categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
 
-    // Initialize selectedCategory if needed
+    if (categoryProvider.categories.isEmpty) {
+      categoryProvider.fetchAllCategory().then((_) {
+        // Set default category id if category list is not empty.
+        final categories = categoryProvider.categories;
+        if (categories.isNotEmpty) {
+          setState(() {
+            _selectedCategoryId = categories.first.id!; // Set the first category as default
+            // Build the categoryItems list here
+            categoryItems = categories
+                .map((category) => DropdownMenuItem<int>(
+                      value: category.id,
+                      child: Row(
+                        children: <Widget>[
+                          SvgPicture.asset(
+                            category.iconPath, // The path to the SVG asset
+                            width: 45,
+                            height: 45,
+                          ),
+                          SizedBox(width: 10),
+                          Text(category.name),
+                        ],
+                      ),
+                    ))
+                .toList();
+          });
+        }
+      });
+    }
+    _dateController.text =
+        DateFormat.yMd().format(selectedDate); // Setting the initial value for the date field.
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -83,13 +113,13 @@ class _TransactionFormState extends State<TransactionForm> {
 
   @override
   Widget build(BuildContext context) {
-    final categoryProvider = Provider.of<CategoryProvider>(context);
-    List<DropdownMenuItem<int>> categoryItems = categoryProvider.categories
-        .map((category) => DropdownMenuItem<int>(
-              value: category.id,
-              child: Text(category.name),
-            ))
-        .toList();
+    // Debug print the category items.
+    // This will print the list of DropdownMenuItem<int> objects
+    print('Category Items: $categoryItems');
+
+    // If you want to print the names of the categories only, you can do this:
+    //print('Category Names: ${categoryItems.map((c).toList()}');
+
     return Scaffold(
       appBar: AppBar(title: const Text('Add Transaction')),
       body: Padding(

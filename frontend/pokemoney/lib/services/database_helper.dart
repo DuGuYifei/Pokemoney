@@ -29,6 +29,10 @@ class DBHelper {
       Category(name: 'Other', iconPath: 'assets/category_icons/other_icon.svg'),
     ];
 
+// Check if the table is empty before inserting initial categories
+  var count = Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM categories'));
+  if (count == 0) {
+    // Only insert if the table is empty
     for (var category in initialCategories) {
       await db.insert(
         'categories',
@@ -37,12 +41,14 @@ class DBHelper {
       );
     }
   }
+  }
 
   initDb() async {
-    String path = join(await getDatabasesPath(), 'pokemonay.db');
+    String path = join(await getDatabasesPath(), 'pokemoney.db');
     var theDb = await openDatabase(path, version: 1, onCreate: _onCreate);
     insertInitialCategories(theDb);
     print('Database path: $path');
+  
     return theDb;
   }
 
@@ -69,17 +75,25 @@ class DBHelper {
     FOREIGN KEY (accountId) REFERENCES accounts(id))
 ''');
 
+// Creating the 'categories' table
+    await db.execute('''
+  CREATE TABLE categories(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    iconPath TEXT)
+''');
+
 // Creating the 'transactions' table
     await db.execute('''
   CREATE TABLE transactions(
     id INTEGER PRIMARY KEY, 
     ledgerBookId INTEGER NOT NULL, 
+    categoryId INTEGER NOT NULL, 
     invoiceNumber TEXT NOT NULL, 
     billingDate TEXT NOT NULL, 
     amount REAL NOT NULL, 
     type TEXT NOT NULL, 
-    categoryId INTEGER NOT NULL, 
-    FOREIGN KEY (ledgerBookId) REFERENCES ledger_books(id))
+    FOREIGN KEY (ledgerBookId) REFERENCES ledger_books(id),
     FOREIGN KEY (categoryId) REFERENCES categories(id))
 ''');
 
@@ -95,12 +109,5 @@ class DBHelper {
     FOREIGN KEY (accountId) REFERENCES accounts(id))
 ''');
 
-// Creating the 'categories' table
-    await db.execute('''
-  CREATE TABLE categories(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT,
-    iconPath TEXT)
-''');
   }
 }

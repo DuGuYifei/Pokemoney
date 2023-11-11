@@ -1,12 +1,13 @@
 import 'package:pokemoney/model/barrel.dart';
+
 class Transaction {
   final int? id;
   final int ledgerBookId;
+  final int categoryId; // Reference to a Category ID
   final String invoiceNumber;
   final DateTime billingDate;
   final double amount;
   final String type;
-  final int categoryId; // Reference to a Category ID
 
   Transaction({
     this.id,
@@ -44,25 +45,31 @@ class Transaction {
     return {
       'id': id,
       'ledgerBookId': ledgerBookId,
+      'categoryId': categoryId, // Store the category ID as a foreign key
       'invoiceNumber': invoiceNumber,
       'billingDate': billingDate.toIso8601String(), // Store as ISO8601 String
       'amount': amount,
       'type': type,
-      'categoryId': categoryId, // Store the category ID as a foreign key
     };
   }
 
   // Extract a Transaction object from a Map object
   // Assuming a Category object must be provided separately after fetching from the database.
   factory Transaction.fromMap(Map<String, dynamic> map) {
+    print('Mapping Transaction from: $map'); // Add this line to see what's in the map
+
+    if (map['ledgerBookId'] == null || map['categoryId'] == null) {
+      throw ArgumentError('An essential integer field is null: $map'); // This will now show the offending map
+    }
+
     return Transaction(
-      id: map['id'],
-      ledgerBookId: map['ledgerBookId'],
-      invoiceNumber: map['invoiceNumber'],
-      billingDate: DateTime.parse(map['billingDate']), // Convert back to DateTime
-      amount: map['amount'].toDouble(), // Ensure the amount is a double
-      type: map['type'],
-      categoryId: map['categoryId'], // Use the category ID to link with Category
+      id: map['id'] as int?, // Cast as int? because 'id' is nullable
+      ledgerBookId: map['ledgerBookId'] as int, // Cast as int to ensure non-null value is passed
+      categoryId: map['categoryId'] as int, // Cast as int to ensure non-null value is passed
+      invoiceNumber: map['invoiceNumber'] as String,
+      billingDate: DateTime.parse(map['billingDate'] as String),
+      amount: (map['amount'] as num).toDouble(), // Cast as num first to cover both int and double cases
+      type: map['type'] as String,
     );
   }
 }

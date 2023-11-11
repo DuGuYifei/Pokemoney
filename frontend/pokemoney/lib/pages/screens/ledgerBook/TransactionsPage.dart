@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:pokemoney/model/barrel.dart'; // Import your Transaction model
 import 'package:pokemoney/pages/screens/ledgerBook/EditTransactionPage.dart';
 import 'package:pokemoney/pages/screens/ledgerBook/TransactionProvider.dart'; // Import your TransactionProvider
@@ -210,17 +211,34 @@ class TransactionListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Access the category directly from the provider's cache
+    Category? category =
+        Provider.of<TransactionProvider>(context, listen: false).getCategoryForTransaction(transaction);
+
+    // If the category is null, the provider will fetch and update the UI accordingly.
+    // Hence, you don't need a FutureBuilder if you are managing state with a provider.
+
     // Build a UI for the transaction list item
     return Card(
       child: ListTile(
-        leading: const Icon(Icons.attach_money), // Just an example icon
-        title: Text(transaction.invoiceNumber),
-        subtitle: Text(transaction.categoryId.toString() +
-            " " +
-            transaction.amount.toString() +
-            '\n' +
-            DateFormat('yMMMd').format(transaction.billingDate)),
-        trailing: _buildPopupMenu(context),
+        leading: category != null
+            ? SvgPicture.asset(
+                category.iconPath, // Use the iconPath from the Category object
+                width: 45,
+                height: 45,
+              )
+            : SizedBox(
+                width: 45,
+                height: 45,
+                child: CircularProgressIndicator(), // Show a progress indicator while category is null
+              ),
+        title: Text('${transaction.amount}\$'),
+        subtitle: Text('${transaction.invoiceNumber}'
+            '\n${DateFormat('yMMMd').format(transaction.billingDate)}'),
+        trailing: IconButton(
+          icon: Icon(Icons.delete),
+          onPressed: onTransactionDeleted,
+        ),
       ),
     );
   }
