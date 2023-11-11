@@ -227,7 +227,7 @@ class TransactionListItem extends StatelessWidget {
                 width: 45,
                 height: 45,
               )
-            : SizedBox(
+            : const SizedBox(
                 width: 45,
                 height: 45,
                 child: CircularProgressIndicator(), // Show a progress indicator while category is null
@@ -235,10 +235,7 @@ class TransactionListItem extends StatelessWidget {
         title: Text('${transaction.amount}\$'),
         subtitle: Text('${transaction.invoiceNumber}'
             '\n${DateFormat('yMMMd').format(transaction.billingDate)}'),
-        trailing: IconButton(
-          icon: Icon(Icons.delete),
-          onPressed: onTransactionDeleted,
-        ),
+        trailing: _buildPopupMenu(context),
       ),
     );
   }
