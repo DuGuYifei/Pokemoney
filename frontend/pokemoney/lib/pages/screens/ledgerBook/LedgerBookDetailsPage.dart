@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pokemoney/model/barrel.dart';
+import 'package:pokemoney/pages/screens/ledgerBook/TransactionsChartPage.dart';
 import 'package:pokemoney/widgets/barrel.dart';
 import 'package:pokemoney/constants/AppColors.dart';
 import 'package:pokemoney/widgets/ledgerBook/TransactionForm.dart';
@@ -11,9 +12,9 @@ class LedgerBookDetailsPage extends StatelessWidget {
 
   const LedgerBookDetailsPage(this.ledgerBook, {Key? key}) : super(key: key);
 
-@override
+  @override
   Widget build(BuildContext context) {
-    // As soon as this page is built, fetch all transactions for this ledger book.
+    //As soon as this page is built, fetch all transactions for this ledger book.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<TransactionProvider>(context, listen: false).fetchAllTransactions();
     });
@@ -42,6 +43,12 @@ class LedgerBookDetailsPage extends StatelessWidget {
                   ledgerBook: ledgerBook,
                 ),
                 const SizedBox(height: 10),
+                TextButton(
+                    onPressed: () async {
+                      await Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (context) => TransactionsChartPage()));
+                    },
+                    child: Text("Chart")),
               ],
             );
           },
