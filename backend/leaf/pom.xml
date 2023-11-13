@@ -7,13 +7,14 @@
         <artifactId>backend</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </parent>
+    <groupId>com.pokemoney.leaf</groupId>
     <artifactId>leaf</artifactId>
     <packaging>pom</packaging>
     <version>1.0.1</version>
-    <name>leaf-core-service</name>
     <modules>
         <module>leaf-core</module>
-        <module>leaf-service</module>
+        <module>leaf-service-provider</module>
+        <module>leaf-service-api</module>
     </modules>
     <description>Distributed ID Generate Service</description>
     <developers>

@@ -1,8 +1,8 @@
 package com.pokemoney.leaf.segment.dao.impl;
 
-import com.pokemoney.leaf.segment.model.LeafAlloc;
 import com.pokemoney.leaf.segment.dao.IDAllocDao;
 import com.pokemoney.leaf.segment.dao.IDAllocMapper;
+import com.pokemoney.leaf.segment.model.LeafAlloc;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
@@ -30,7 +30,7 @@ public class IDAllocDaoImpl implements IDAllocDao {
     public List<LeafAlloc> getAllLeafAllocs() {
         SqlSession sqlSession = sqlSessionFactory.openSession(false);
         try {
-            return sqlSession.selectList("com.pokemoney.leaf.segment.dao.IDAllocMapper.getAllLeafAllocs");
+            return sqlSession.selectList("com.pokemoney.leaf.service.dao.segment.IDAllocMapper.getAllLeafAllocs");
         } finally {
             sqlSession.close();
         }
@@ -40,8 +40,8 @@ public class IDAllocDaoImpl implements IDAllocDao {
     public LeafAlloc updateMaxIdAndGetLeafAlloc(String tag) {
         SqlSession sqlSession = sqlSessionFactory.openSession();
         try {
-            sqlSession.update("com.pokemoney.leaf.segment.dao.IDAllocMapper.updateMaxId", tag);
-            LeafAlloc result = sqlSession.selectOne("com.pokemoney.leaf.segment.dao.IDAllocMapper.getLeafAlloc", tag);
+            sqlSession.update("com.pokemoney.leaf.service.dao.segment.IDAllocMapper.updateMaxId", tag);
+            LeafAlloc result = sqlSession.selectOne("com.pokemoney.leaf.service.dao.segment.IDAllocMapper.getLeafAlloc", tag);
             sqlSession.commit();
             return result;
         } finally {
@@ -53,8 +53,8 @@ public class IDAllocDaoImpl implements IDAllocDao {
     public LeafAlloc updateMaxIdByCustomStepAndGetLeafAlloc(LeafAlloc leafAlloc) {
         SqlSession sqlSession = sqlSessionFactory.openSession();
         try {
-            sqlSession.update("com.pokemoney.leaf.segment.dao.IDAllocMapper.updateMaxIdByCustomStep", leafAlloc);
-            LeafAlloc result = sqlSession.selectOne("com.pokemoney.leaf.segment.dao.IDAllocMapper.getLeafAlloc", leafAlloc.getKey());
+            sqlSession.update("com.pokemoney.leaf.service.dao.segment.IDAllocMapper.updateMaxIdByCustomStep", leafAlloc);
+            LeafAlloc result = sqlSession.selectOne("com.pokemoney.leaf.service.dao.segment.IDAllocMapper.getLeafAlloc", leafAlloc.getKey());
             sqlSession.commit();
             return result;
         } finally {

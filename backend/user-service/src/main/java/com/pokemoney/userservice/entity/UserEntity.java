@@ -107,7 +107,6 @@ public class UserEntity implements Serializable {
      * Ban user. In the future, it can be extended for
      * ban reason, ban by whom, ban date, etc.
      */
-    // TODO: delete the user from redis if it is existed
     public void ban() {
         this.setIsBan(true);
     }
