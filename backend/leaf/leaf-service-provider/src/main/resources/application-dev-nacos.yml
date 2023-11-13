@@ -1,0 +1,12 @@
+server:
+  port: 8082
+
+dubbo:
+  registry:
+    address: nacos://localhost:8848
+    group: dubbo-java
+  protocol:
+    name: tri
+    port: 20881
+  application:
+    name: redis-service-provider

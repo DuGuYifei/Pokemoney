@@ -1,9 +1,8 @@
 package com.pokemoney.userservice;
 
+import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 
 /**
@@ -14,9 +13,10 @@ import org.springframework.context.annotation.ComponentScan;
         "com.pokemoney.commons.mail",
         "com.pokemoney.commons.http",
         "com.pokemoney.commons.config",
-        "com.pokemoney.commons.redis",
+        "com.pokemoney.redisservice.api"
 })
-@EnableFeignClients
+@EnableDubbo
+// TODO: 注册为consumer，同时变为provider给verify user token用
 public class UserServiceApplication {
     /**
      * Application main entry point.

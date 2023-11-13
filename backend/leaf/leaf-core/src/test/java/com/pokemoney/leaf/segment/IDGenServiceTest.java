@@ -1,9 +1,9 @@
 package com.pokemoney.leaf.segment;
 
 import com.alibaba.druid.pool.DruidDataSource;
-import com.pokemoney.leaf.common.Result;
 import com.pokemoney.leaf.segment.dao.IDAllocDao;
 import com.pokemoney.leaf.segment.dao.impl.IDAllocDaoImpl;
+import com.pokemoney.leaf.common.Result;
 import com.pokemoney.leaf.IDGen;
 import com.pokemoney.leaf.common.PropertyFactory;
 import org.junit.After;

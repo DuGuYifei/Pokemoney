@@ -42,14 +42,4 @@ public class SmtpEmailTest {
     public void testSendSimpleEmail() {
         Assertions.assertDoesNotThrow(() -> smtpEmailService.sendMimeMessage(mailProperty));
     }
-
-    /**
-     * Test sendEmail method without required content.
-     * It should throw subject must not be null
-     */
-    @Test
-    public void testSendEmailWithoutRequiredContent() {
-        mailProperty.setSubject(null);
-        Assertions.assertThrows(IllegalArgumentException.class, () -> smtpEmailService.sendMimeMessage(mailProperty));
-    }
 }

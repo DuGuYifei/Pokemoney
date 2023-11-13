@@ -3,15 +3,17 @@ package com.pokemoney.userservice.service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.pokemoney.commons.http.dto.ResponseDto;
-import com.pokemoney.commons.http.errors.GenericForbiddenError;
-import com.pokemoney.commons.redis.RedisHashKeyValueDto;
+import com.google.protobuf.InvalidProtocolBufferException;
+import com.pokemoney.commons.proto.Response;
+import com.pokemoney.redisservice.api.*;
+import com.pokemoney.redisservice.api.RedisTriService;
+import com.pokemoney.redis.service.api.exceptions.RedisTriRpcException;
 import com.pokemoney.userservice.Constants;
+import com.pokemoney.userservice.Exceptions.JwtVerifyException;
 import com.pokemoney.userservice.entity.UserEntity;
-import com.pokemoney.userservice.feignclient.RedisClient;
 import com.pokemoney.userservice.vo.JwtInfo;
-import feign.FeignException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -32,19 +34,20 @@ public class JwtService {
     private final Algorithm algorithm;
 
     /**
-     * Redis client.
+     * Redis triple protocol service.
      */
-    private final RedisClient redisClient;
+    @DubboReference
+    private final RedisTriService redisTriService;
 
     /**
      * Constructor.
      *
      * @param secret          Secret.
-     * @param redisClient     Redis client.
+     * @param redisTriService     Redis client.
      */
-    public JwtService(@Value("${jwt.secret}") String secret, RedisClient redisClient) {
+    public JwtService(@Value("${jwt.secret}") String secret, RedisTriService redisTriService) {
         algorithm = Algorithm.HMAC256(secret);
-        this.redisClient = redisClient;
+        this.redisTriService = redisTriService;
     }
 
     /**
@@ -67,7 +70,6 @@ public class JwtService {
      * @param userEntity UserEntity
      * @param jwtId      The id of jwt
      */
-    // TODO: if redis is alive again, after check jwt by algorithm, store jwt status in redis. However, it should use thread pool not block user's request.
     public void storeJwtStatus(String jwt, UserEntity userEntity, String jwtId) {
         // The service should still work when there is no redis, this service can verify jwt. So use try catch.
         try {
@@ -78,10 +80,13 @@ public class JwtService {
             map.put("username", userEntity.getUsername());
             map.put("role", userEntity.getUserRole().getRoleName());
             map.put("permission", userEntity.getServicePermission().toString());
-            redisClient.hSetKeyValue(RedisHashKeyValueDto.builder().key(jwt).value(map).timeout(2592000L) // one month
-                    .prefix(Constants.REDIS_TOKEN_PREFIX).build());
+            redisTriService.hSet(RedisHashKeyValueDto.newBuilder()
+                    .setKey(jwt)
+                    .putAllValue(map)
+                    .setTimeout(2592000L) // one month
+                    .setPrefix(Constants.REDIS_TOKEN_PREFIX).build());
         } catch (Exception e) {
-            log.warn("Failed to send request to set jwt in redis.", e);
+            log.error("Failed to send request to set jwt in redis.", e);
         }
     }
 
@@ -94,51 +99,65 @@ public class JwtService {
      * @param token   The JWT
      * @return {@link JwtInfo} of the userEntity.
      */
-    public JwtInfo verifyUserJwt(String token, Long userId) throws GenericForbiddenError{
+    public JwtInfo verifyUserJwt(String token, Long userId) throws JwtVerifyException.InvalidTokenException, JwtVerifyException.InvalidUserException {
         JwtInfo jwtInfo;
         try {
             jwtInfo = verifyUserJwtByRedis(token, userId);
             if (jwtInfo == null) {
-                throw new GenericForbiddenError("Invalid token");
+                throw new JwtVerifyException.InvalidTokenException();
             }
-        } catch (GenericForbiddenError e) {
+        } catch (JwtVerifyException e) {
             throw e;
         } catch (Exception e) {
             log.warn("Failed to verify token by redis.", e);
-
             // If redis is not alive, check token by JWT algorithm.
             jwtInfo = verifyUserJwtByAlgorithm(token);
         }
-
         return jwtInfo;
     }
 
-    public JwtInfo verifyUserJwtByRedis(String token, Long userId) throws GenericForbiddenError {
+    /**
+     * Verify token by redis.
+     *
+     * @param token token
+     * @param userId userId
+     * @return {@link JwtInfo} of the userEntity.
+     * @throws JwtVerifyException.InvalidUserException InvalidUserException
+     * @throws JwtVerifyException.InvalidTokenException InvalidTokenException
+     */
+    public JwtInfo verifyUserJwtByRedis(String token, Long userId) throws JwtVerifyException.InvalidUserException, JwtVerifyException.InvalidTokenException {
         try {
-            ResponseDto<RedisHashKeyValueDto> responseDto = redisClient.hGetKeyValue(RedisHashKeyValueDto.builder().key(token).prefix(Constants.REDIS_TOKEN_PREFIX).build()).getBody();
-            if (responseDto == null) {
-                return null;
-            }
-            Map<String, String> hashMapInfo = responseDto.getData().getValue();
+            Response response = redisTriService.hGet(RedisHashKeyValueGetRequestDto.newBuilder().setKey(token).setKey(Constants.REDIS_TOKEN_PREFIX).build());
+            RedisHashKeyValueDto redisHashKeyValueDto = response.getData().unpack(RedisHashKeyValueDto.class);
+            Map<String, String> hashMapInfo = redisHashKeyValueDto.getValueMap();
             JwtInfo jwtRedisInfo = new JwtInfo().fromMap(hashMapInfo);
             if (!jwtRedisInfo.getUserId().equals(userId.toString())) {
-                throw new GenericForbiddenError("Invalid user for this token");
+                throw new JwtVerifyException.InvalidUserException();
             }
             return jwtRedisInfo;
-        } catch (FeignException e) {
-            if (e.status() == 404) {
-                throw new GenericForbiddenError("Invalid token");
+        } catch (RedisTriRpcException e) {
+            if (e.getCode() == RedisTriRpcException.KEY_NOT_FOUND) {
+                throw new JwtVerifyException.InvalidTokenException();
             }
+        } catch (InvalidProtocolBufferException e) {
+            throw new RuntimeException(e);
         }
         return null;
     }
 
-    public JwtInfo verifyUserJwtByAlgorithm(String token) throws GenericForbiddenError {
+    /**
+     * Verify token by JWT algorithm.
+     *
+     * @param token token
+     * @return {@link JwtInfo} of the userEntity.
+     * @throws JwtVerifyException.InvalidTokenException InvalidTokenException
+     */
+    public JwtInfo verifyUserJwtByAlgorithm(String token) throws JwtVerifyException.InvalidTokenException {
         DecodedJWT decodedJWT;
         try {
             decodedJWT = JWT.require(algorithm).acceptExpiresAt(5).build().verify(token);
         } catch (Exception e) {
-            throw new GenericForbiddenError("Invalid token");
+            throw new JwtVerifyException.InvalidTokenException();
         }
         return JwtInfo.builder().id(decodedJWT.getId()).userId(decodedJWT.getSubject()).email(decodedJWT.getClaim("email").asString()).username(decodedJWT.getClaim("username").asString()).role(decodedJWT.getClaim("role").asString()).permission(decodedJWT.getAudience().get(0)).build();
     }
