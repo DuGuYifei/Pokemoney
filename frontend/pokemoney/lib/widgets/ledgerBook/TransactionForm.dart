@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
-import 'package:pokemoney/model/barrel.dart';
+import 'package:pokemoney/model/barrel.dart' as pokemoney;
 import 'package:pokemoney/providers/TransactionProvider.dart';
 import 'package:pokemoney/providers/CategoryProvider.dart';
 import 'package:provider/provider.dart';
 
 class TransactionForm extends StatefulWidget {
-  final LedgerBook ledgerBook;
+  final pokemoney.LedgerBook ledgerBook;
 
   const TransactionForm({Key? key, required this.ledgerBook}) : super(key: key);
 
@@ -33,38 +33,45 @@ class _TransactionFormState extends State<TransactionForm> {
     super.initState();
     // Initialize category ID to an invalid state (-1 for instance) to indicate not fetched or not selected.
     _selectedCategoryId = -1;
-    final categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
+    fetchAndUpdateCategories();
 
-    if (categoryProvider.categories.isEmpty) {
-      categoryProvider.fetchAllCategory().then((_) {
-        // Set default category id if category list is not empty.
-        final categories = categoryProvider.categories;
-        if (categories.isNotEmpty) {
-          setState(() {
-            _selectedCategoryId = categories.first.id!; // Set the first category as default
-            // Build the categoryItems list here
-            categoryItems = categories
-                .map((category) => DropdownMenuItem<int>(
-                      value: category.id,
-                      child: Row(
-                        children: <Widget>[
-                          SvgPicture.asset(
-                            category.iconPath, // The path to the SVG asset
-                            width: 45,
-                            height: 45,
-                          ),
-                          SizedBox(width: 10),
-                          Text(category.name),
-                        ],
-                      ),
-                    ))
-                .toList();
-          });
-        }
-      });
-    }
     _dateController.text =
         DateFormat.yMd().format(selectedDate); // Setting the initial value for the date field.
+  }
+
+  void fetchAndUpdateCategories() {
+    final categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
+    if (categoryProvider.categories.isEmpty) {
+      categoryProvider.fetchAllCategory().then((_) {
+        updateCategoryItems(categoryProvider.categories);
+      });
+    } else {
+      updateCategoryItems(categoryProvider.categories);
+    }
+  }
+
+  void updateCategoryItems(List<pokemoney.Category> categories) {
+    if (categories.isNotEmpty) {
+      setState(() {
+        _selectedCategoryId = categories.first.id!;
+        categoryItems = categories
+            .map((category) => DropdownMenuItem<int>(
+                  value: category.id,
+                  child: Row(
+                    children: <Widget>[
+                      SvgPicture.asset(
+                        category.iconPath, // The path to the SVG asset
+                        width: 45,
+                        height: 45,
+                      ),
+                      SizedBox(width: 10),
+                      Text(category.name),
+                    ],
+                  ),
+                ))
+            .toList();
+      });
+    }
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -84,7 +91,7 @@ class _TransactionFormState extends State<TransactionForm> {
 
   void _submitForm(TransactionProvider transactionProvider) {
     if (_formKey.currentState!.validate()) {
-      final Transaction newTransaction = Transaction(
+      final pokemoney.Transaction newTransaction = pokemoney.Transaction(
         ledgerBookId: widget.ledgerBook.id!,
         invoiceNumber: _invoiceNumberController.text,
         billingDate: selectedDate,
@@ -111,26 +118,24 @@ class _TransactionFormState extends State<TransactionForm> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    // Debug print the category items.
-    // This will print the list of DropdownMenuItem<int> objects
-    print('Category Items: $categoryItems');
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    appBar: AppBar(title: const Text('Add Transaction')),
+    body: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Consumer<CategoryProvider>(
+        builder: (context, categoryProvider, child) {
+          // Update the category items based on the current categories in the provider.
+          updateCategoryItems(categoryProvider.categories);
 
-    // If you want to print the names of the categories only, you can do this:
-    //print('Category Names: ${categoryItems.map((c).toList()}');
-
-    return Scaffold(
-      appBar: AppBar(title: const Text('Add Transaction')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Consumer<TransactionProvider>(
-          builder: (context, transactionProvider, child) {
-            return Form(
-              key: _formKey,
-              child: ListView(
-                children: [
-                  TextFormField(
+          return Consumer<TransactionProvider>(
+            builder: (context, transactionProvider, child) {
+              return Form(
+                key: _formKey,
+                child: ListView(
+                  children: [
+TextFormField(
                     controller: _invoiceNumberController,
                     decoration: const InputDecoration(labelText: 'Invoice Number'),
                     validator: (value) {
@@ -180,41 +185,42 @@ class _TransactionFormState extends State<TransactionForm> {
                       }
                       return null;
                     },
-                  ),
-                  DropdownButtonFormField<int>(
-                    value: _selectedCategoryId,
-                    items: categoryItems,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedCategoryId = value!;
-                      });
-                    },
-                    validator: (value) {
-                      if (value == null) {
-                        return 'Please select a category';
-                      }
-                      return null;
-                    },
-                    decoration: const InputDecoration(labelText: 'Category'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => _submitForm(transactionProvider),
-                    child: const Text('Submit'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop(); // Close the dialog
-                    },
-                    child: const Text('Cancel'),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
+                  ),                    DropdownButtonFormField<int>(
+                      value: _selectedCategoryId,
+                      items: categoryItems,
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedCategoryId = value!;
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null) {
+                          return 'Please select a category';
+                        }
+                        return null;
+                      },
+                      decoration: const InputDecoration(labelText: 'Category'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => _submitForm(transactionProvider),
+                      child: const Text('Submit'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                      child: const Text('Cancel'),
+                    ),
+                  ],
+                ),
+              );
+            },
+          );
+        },
       ),
-    );
-  }
+    ),
+  );
+}
 
   @override
   void dispose() {
