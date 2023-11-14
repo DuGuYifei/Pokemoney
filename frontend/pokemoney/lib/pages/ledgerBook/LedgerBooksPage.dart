@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pokemoney/model/barrel.dart';
 import 'package:pokemoney/widgets/barrel.dart';
 import 'package:provider/provider.dart';
-import 'package:pokemoney/pages/screens/ledgerBook/LedgerBookProvider.dart';
+import 'package:pokemoney/providers/LedgerBookProvider.dart';
 
 class LedgerBooksPage extends StatefulWidget {
   const LedgerBooksPage({Key? key}) : super(key: key);

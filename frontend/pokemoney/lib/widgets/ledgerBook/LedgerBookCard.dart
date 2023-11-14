@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pokemoney/model/barrel.dart';
-import 'package:pokemoney/pages/screens/barrel.dart';
+import 'package:pokemoney/pages/barrel.dart';
 
 class LedgerBookCard extends StatelessWidget {
   final LedgerBook _ledgerBook;

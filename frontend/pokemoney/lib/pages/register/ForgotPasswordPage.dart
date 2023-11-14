@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pokemoney/pages/screens/barrel.dart';
+import 'package:pokemoney/pages/barrel.dart';
 import 'package:pokemoney/widgets/barrel.dart';
 import 'package:pokemoney/constants/AppColors.dart';
 

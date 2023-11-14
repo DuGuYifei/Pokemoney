@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pokemoney/RouteGenerator.dart';
-import 'package:pokemoney/pages/screens/ledgerBook/TransactionProvider.dart';
+import 'package:pokemoney/providers/TransactionProvider.dart';
 import 'package:pokemoney/providers/CategoryProvider.dart';
 import 'package:provider/provider.dart';
-import 'package:pokemoney/pages/screens/ledgerBook/LedgerBookProvider.dart';
+import 'package:pokemoney/providers/LedgerBookProvider.dart';
 
 void main() {
   runApp(const MyApp());

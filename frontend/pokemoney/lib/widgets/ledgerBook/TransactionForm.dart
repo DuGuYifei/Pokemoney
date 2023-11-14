@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:pokemoney/model/barrel.dart';
-import 'package:pokemoney/pages/screens/ledgerBook/TransactionProvider.dart';
+import 'package:pokemoney/providers/TransactionProvider.dart';
 import 'package:pokemoney/providers/CategoryProvider.dart';
 import 'package:provider/provider.dart';
 

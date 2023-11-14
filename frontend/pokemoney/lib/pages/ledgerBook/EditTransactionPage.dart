@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:pokemoney/pages/screens/ledgerBook/TransactionProvider.dart'; // Make sure to import your provider
+import 'package:pokemoney/providers/TransactionProvider.dart'; // Make sure to import your provider
 import 'package:pokemoney/model/barrel.dart'; // Make sure to import your Transaction model
 
 class EditTransactionPage extends StatefulWidget {

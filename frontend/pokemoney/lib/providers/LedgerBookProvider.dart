@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:pokemoney/pages/screens/ledgerBook/LedgerBookService.dart';
+import 'package:pokemoney/services/LedgerBookService.dart';
 import 'package:pokemoney/model/barrel.dart';
 
 class LedgerBookProvider with ChangeNotifier {

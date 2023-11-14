@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pokemoney/model/barrel.dart'; // Import your Transaction model
-import 'package:pokemoney/pages/screens/ledgerBook/EditTransactionPage.dart';
-import 'package:pokemoney/pages/screens/ledgerBook/TransactionProvider.dart'; // Import your TransactionProvider
+import 'package:pokemoney/pages/ledgerBook/EditTransactionPage.dart';
+import 'package:pokemoney/providers/TransactionProvider.dart'; // Import your TransactionProvider
 import 'package:provider/provider.dart';
 import 'package:pokemoney/constants/AppColors.dart';
 
@@ -233,8 +233,8 @@ class TransactionListItem extends StatelessWidget {
                 child: CircularProgressIndicator(), // Show a progress indicator while category is null
               ),
         title: Text('${transaction.amount}\$'),
-        subtitle: Text('${transaction.invoiceNumber}'
-            '\n${DateFormat('yMMMd').format(transaction.billingDate)}'),
+        subtitle: Text('Invoice Number: ${transaction.invoiceNumber}'
+            '\nDate: ${DateFormat('yMMMd').format(transaction.billingDate)} \nType: ${transaction.type}'),
         trailing: _buildPopupMenu(context),
       ),
     );

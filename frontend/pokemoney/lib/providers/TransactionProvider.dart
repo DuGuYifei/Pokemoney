@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:pokemoney/pages/screens/ledgerBook/TransactionService.dart';
+import 'package:pokemoney/services/TransactionService.dart';
 import 'package:pokemoney/model/barrel.dart' as pokemoney;
 
 class TransactionProvider with ChangeNotifier {
@@ -28,7 +28,14 @@ class TransactionProvider with ChangeNotifier {
     }
     notifyListeners();
   }
-
+  
+   // Method to fetch transactions for a specific ledger book
+  fetchTransactionsForLedgerBook(int ledgerBookId) async {
+    _transactions = await _transactionService.getTransactionsByLedgerBookId(ledgerBookId);
+    // Fetch and cache categories for these transactions
+    // ... existing category caching logic ...
+    notifyListeners();
+  }
 
   // addTransaction(pokemoney.Transaction transactions) async {
   //   await _transactionService.addTransaction(transactions);

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pokemoney/app.dart';
-import 'package:pokemoney/pages/screens/barrel.dart';
+import 'package:pokemoney/pages/barrel.dart';
 
 class RouteGenerator {
   static const String app = '/';

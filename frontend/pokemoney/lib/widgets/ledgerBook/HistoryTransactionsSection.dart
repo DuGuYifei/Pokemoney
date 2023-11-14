@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:pokemoney/model/barrel.dart';
 import 'package:pokemoney/constants/barrel.dart';
 import 'package:intl/intl.dart';
-import 'package:pokemoney/pages/screens/ledgerBook/TransactionsPage.dart';
+import 'package:pokemoney/pages/ledgerBook/TransactionsPage.dart';
 
 class HistoryTransactionsSection extends StatelessWidget {
   final List<Transaction> transactions;
   final LedgerBook ledgerBook;
   final int limit; // New parameter to control the number of transactions shown
 
-  const HistoryTransactionsSection({super.key, 
+  const HistoryTransactionsSection({
+    super.key,
     required this.transactions,
     required this.ledgerBook,
     this.limit = 8,
@@ -21,6 +22,7 @@ class HistoryTransactionsSection extends StatelessWidget {
     final visibleTransactions = transactions.length > limit ? transactions.sublist(0, limit) : transactions;
 
     return Container(
+      
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Colors.white,

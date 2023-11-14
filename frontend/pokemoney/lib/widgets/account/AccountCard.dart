@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pokemoney/model/Account.dart';
-import 'package:pokemoney/pages/screens/barrel.dart';
+import 'package:pokemoney/pages/barrel.dart';
 import 'package:pokemoney/constants/AppColors.dart';
 
 /// A widget that displays an account card.

@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pokemoney/constants/AppColors.dart';
 import 'package:pokemoney/model/barrel.dart';
-import 'package:pokemoney/pages/screens/barrel.dart';
+import 'package:pokemoney/pages/barrel.dart';
 
 class FundCard extends StatelessWidget {
   final Fund _fund;
@@ -17,7 +17,7 @@ class FundCard extends StatelessWidget {
           ? () => Navigator.of(context).push(MaterialPageRoute(builder: (context) => FundDetailsPage(_fund)))
           : null,
       child: Align(
-        alignment: const AlignmentDirectional(0.0,0.0),
+        alignment: const AlignmentDirectional(0.0, 0.0),
         child: SizedBox(
           width: 403.0,
           height: 220.0,

@@ -1,0 +1,28 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "pokemoney",
+            "cwd": "pokemoney",
+            "request": "launch",
+            "type": "dart"
+        },
+        {
+            "name": "pokemoney (profile mode)",
+            "cwd": "pokemoney",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "profile"
+        },
+        {
+            "name": "pokemoney (release mode)",
+            "cwd": "pokemoney",
+            "request": "launch",
+            "type": "dart",
+            "flutterMode": "release"
+        }
+    ]
+}

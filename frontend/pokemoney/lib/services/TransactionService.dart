@@ -16,6 +16,18 @@ class TransactionService {
     return result.map((map) => pokemoney.Transaction.fromMap(map)).toList();
   }
 
+    // Method to get transactions by LedgerBookId
+  Future<List<pokemoney.Transaction>> getTransactionsByLedgerBookId(int ledgerBookId) async {
+    var dbClient = await _dbHelper.db;
+    var result = await dbClient.query(
+      "transactions",
+      where: "ledgerBookId = ?",
+      whereArgs: [ledgerBookId],
+    );
+    return result.map((map) => pokemoney.Transaction.fromMap(map)).toList();
+  }
+  
+
   Future<int> updateTransaction(pokemoney.Transaction transaction) async {
     var dbClient = await _dbHelper.db;
     return await dbClient.update(

@@ -3,7 +3,7 @@ import 'package:pokemoney/model/barrel.dart';
 import 'package:pokemoney/widgets/barrel.dart';
 import 'package:pokemoney/constants/AppColors.dart';
 import 'package:pokemoney/widgets/ledgerBook/TransactionForm.dart';
-import 'package:pokemoney/pages/screens/ledgerBook/TransactionProvider.dart';
+import 'package:pokemoney/providers/TransactionProvider.dart';
 import 'package:provider/provider.dart';
 
 class LedgerBookDetailsPage extends StatelessWidget {
@@ -12,11 +12,13 @@ class LedgerBookDetailsPage extends StatelessWidget {
   const LedgerBookDetailsPage(this.ledgerBook, {Key? key}) : super(key: key);
 
 @override
-  Widget build(BuildContext context) {
-    // As soon as this page is built, fetch all transactions for this ledger book.
+Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<TransactionProvider>(context, listen: false).fetchAllTransactions();
+      // Fetch transactions for this specific ledger book
+      Provider.of<TransactionProvider>(context, listen: false)
+          .fetchTransactionsForLedgerBook(ledgerBook.id!);
     });
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
