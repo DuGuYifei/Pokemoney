@@ -157,7 +157,9 @@ class TransactionListItem extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {
-                  context.read<TransactionProvider>().deleteTransaction(transaction.id!);
+                  context
+                      .read<TransactionProvider>()
+                      .deleteTransaction(transaction.id!, transaction.ledgerBookId!);
                   Navigator.of(ctx).pop();
                   onTransactionDeleted(); // Call the callback after deletion
                 },
@@ -178,7 +180,7 @@ class TransactionListItem extends StatelessWidget {
             .then((_) {
           // If you need to do something when coming back from the edit page,
           // like refreshing the list, you can call it here.
-          context.read<TransactionProvider>().fetchAllTransactions();
+          //context.read<TransactionProvider>().fetchAllTransactions();
         });
         break;
       // Handle other options here
@@ -214,6 +216,7 @@ class TransactionListItem extends StatelessWidget {
     // Access the category directly from the provider's cache
     Category? category =
         Provider.of<TransactionProvider>(context, listen: false).getCategoryForTransaction(transaction);
+    //print("category path: " + category!.iconPath.toString());
 
     // If the category is null, the provider will fetch and update the UI accordingly.
     // Hence, you don't need a FutureBuilder if you are managing state with a provider.

@@ -1,74 +1,84 @@
 import 'package:flutter/foundation.dart';
 import 'package:pokemoney/services/TransactionService.dart';
+import 'package:pokemoney/services/CategoryService.dart';
 import 'package:pokemoney/model/barrel.dart' as pokemoney;
 
 class TransactionProvider with ChangeNotifier {
   final TransactionService _transactionService = TransactionService();
+  final CategoryService _categoryService = CategoryService();
+
   List<pokemoney.Transaction> _transactions = [];
-// You may want to create a Map to cache categories to avoid repeated database calls.
   Map<int, pokemoney.Category> _categoryCache = {};
 
   List<pokemoney.Transaction> get transactions => _transactions;
 
-  // fetchAllTransactions() async {
-  //   _transactions = await _transactionService.getAllTransactions();
-  //   notifyListeners();
-  // }
-
-  fetchAllTransactions() async {
+  // Fetches all transactions and their associated categories
+  Future<void> fetchAllTransactions() async {
     _transactions = await _transactionService.getAllTransactions();
-    // Fetch category for each transaction here.
+
     for (var transaction in _transactions) {
-      // Use _categoryCache to reduce database hits for already fetched categories.
       if (!_categoryCache.containsKey(transaction.categoryId)) {
-        _categoryCache[transaction.categoryId] =
-            await _transactionService.getCategoryById(transaction.categoryId);
+        try {
+          pokemoney.Category category = await _categoryService.getCategoryById(transaction.categoryId);
+          _categoryCache[transaction.categoryId] = category;
+        } catch (e) {
+          // Handle exceptions, e.g., category not found
+          print('Error fetching category: $e');
+        }
       }
-      // Now each transaction has an associated category in the cache, which you can use.
     }
     notifyListeners();
   }
-  
-   // Method to fetch transactions for a specific ledger book
-  fetchTransactionsForLedgerBook(int ledgerBookId) async {
+
+  // Fetches transactions for a specific ledger book
+  Future<void> fetchTransactionsForLedgerBook(int ledgerBookId) async {
     _transactions = await _transactionService.getTransactionsByLedgerBookId(ledgerBookId);
-    // Fetch and cache categories for these transactions
-    // ... existing category caching logic ...
+
+    for (var transaction in _transactions) {
+      if (!_categoryCache.containsKey(transaction.categoryId)) {
+        try {
+          pokemoney.Category category = await _categoryService.getCategoryById(transaction.categoryId);
+          _categoryCache[transaction.categoryId] = category;
+        } catch (e) {
+          // Handle exceptions, e.g., category not found
+          print('Error fetching category: $e');
+        }
+      }
+    }
     notifyListeners();
   }
 
-  // addTransaction(pokemoney.Transaction transactions) async {
-  //   await _transactionService.addTransaction(transactions);
-  //   fetchAllTransactions();
-  //   print("Transaction added");
-  // }
-
-  addTransaction(pokemoney.Transaction transaction) async {
+  // Adds a new transaction
+  Future<void> addTransaction(pokemoney.Transaction transaction) async {
     await _transactionService.addTransaction(transaction);
-    // Optionally fetch and cache the category for the new transaction as well
-    _categoryCache[transaction.categoryId] =
-        await _transactionService.getCategoryById(transaction.categoryId);
-    fetchAllTransactions();
-    print("Transaction added");
+    if (!_categoryCache.containsKey(transaction.categoryId)) {
+      try {
+        pokemoney.Category category = await _categoryService.getCategoryById(transaction.categoryId);
+        _categoryCache[transaction.categoryId] = category;
+      } catch (e) {
+        // Handle exceptions, e.g., category not found
+        print('Error fetching category: $e');
+      }
+    }
   }
 
-  deleteTransaction(int id) async {
-    await _transactionService.deleteTransaction(id);
-    fetchAllTransactions();
-  }
-
-  updateTransaction(pokemoney.Transaction transaction) async {
+  updateTransaction(pokemoney.Transaction transaction, int ledgerBookId) async {
     await _transactionService.updateTransaction(transaction);
-    fetchAllTransactions(); // Re-fetch the list of transactions after updating
+    fetchTransactionsForLedgerBook(ledgerBookId);
   }
 
-  // Helper method to get category from cache
+  // Deletes a transaction
+  Future<void> deleteTransaction(int transactionId, int ledgerBookId) async {
+    await _transactionService.deleteTransaction(transactionId);
+    fetchTransactionsForLedgerBook(ledgerBookId);
+  }
+
+  // Helper method to get a category from the cache
   pokemoney.Category? getCategoryForTransaction(pokemoney.Transaction transaction) {
     return _categoryCache[transaction.categoryId];
   }
-
-    // Call your database helper method to update the transaction in the SQLite database
-    // Example: DBProvider.db.updateTransaction(transaction);
-
-  // ... other methods and properties
+  
+  pokemoney.Category? getCategoryNameForTransaction(pokemoney.Transaction transaction) {
+    return _categoryCache[transaction.categoryId];
+  }
 }

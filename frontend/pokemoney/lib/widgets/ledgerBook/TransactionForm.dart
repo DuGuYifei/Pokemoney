@@ -107,7 +107,8 @@ class _TransactionFormState extends State<TransactionForm> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Transaction added successfully')),
         );
-        // Then pop back to the previous screen
+        Provider.of<TransactionProvider>(context, listen: false)
+            .fetchTransactionsForLedgerBook(widget.ledgerBook.id!);
         Navigator.of(context).pop();
       }).catchError((error) {
         // Handle any errors here
@@ -118,109 +119,112 @@ class _TransactionFormState extends State<TransactionForm> {
     }
   }
 
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(title: const Text('Add Transaction')),
-    body: Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Consumer<CategoryProvider>(
-        builder: (context, categoryProvider, child) {
-          // Update the category items based on the current categories in the provider.
-          updateCategoryItems(categoryProvider.categories);
-
-          return Consumer<TransactionProvider>(
-            builder: (context, transactionProvider, child) {
-              return Form(
-                key: _formKey,
-                child: ListView(
-                  children: [
-TextFormField(
-                    controller: _invoiceNumberController,
-                    decoration: const InputDecoration(labelText: 'Invoice Number'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter the invoice number';
-                      }
-                      return null;
-                    },
-                  ),
-                  TextFormField(
-                    controller: _dateController,
-                    decoration: InputDecoration(
-                      labelText: 'Billing Date',
-                      suffixIcon: IconButton(
-                        icon: const Icon(Icons.calendar_today),
-                        onPressed: () => _selectDate(context),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Add Transaction')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Consumer<CategoryProvider>(
+          builder: (context, categoryProvider, child) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (categoryItems.isEmpty && categoryProvider.categories.isNotEmpty) {
+                updateCategoryItems(categoryProvider.categories);
+              }
+            });
+            return Consumer<TransactionProvider>(
+              builder: (context, transactionProvider, child) {
+                return Form(
+                  key: _formKey,
+                  child: ListView(
+                    children: [
+                      TextFormField(
+                        controller: _invoiceNumberController,
+                        decoration: const InputDecoration(labelText: 'Invoice Number'),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter the invoice number';
+                          }
+                          return null;
+                        },
                       ),
-                    ),
-                    readOnly: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please select the billing date';
-                      }
-                      return null;
-                    },
+                      TextFormField(
+                        controller: _dateController,
+                        decoration: InputDecoration(
+                          labelText: 'Billing Date',
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.calendar_today),
+                            onPressed: () => _selectDate(context),
+                          ),
+                        ),
+                        readOnly: true,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please select the billing date';
+                          }
+                          return null;
+                        },
+                      ),
+                      TextFormField(
+                        controller: _amountController,
+                        decoration: const InputDecoration(labelText: 'Amount'),
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter the amount';
+                          }
+                          if (double.tryParse(value) == null) {
+                            return 'Please enter a valid number';
+                          }
+                          return null;
+                        },
+                      ),
+                      TextFormField(
+                        controller: _typeController,
+                        decoration: const InputDecoration(labelText: 'Type'),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter the transaction type';
+                          }
+                          return null;
+                        },
+                      ),
+                      DropdownButtonFormField<int>(
+                        value: _selectedCategoryId,
+                        items: categoryItems,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedCategoryId = value!;
+                          });
+                        },
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Please select a category';
+                          }
+                          return null;
+                        },
+                        decoration: const InputDecoration(labelText: 'Category'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => _submitForm(transactionProvider),
+                        child: const Text('Submit'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: const Text('Cancel'),
+                      ),
+                    ],
                   ),
-                  TextFormField(
-                    controller: _amountController,
-                    decoration: const InputDecoration(labelText: 'Amount'),
-                    keyboardType: TextInputType.number,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter the amount';
-                      }
-                      if (double.tryParse(value) == null) {
-                        return 'Please enter a valid number';
-                      }
-                      return null;
-                    },
-                  ),
-                  TextFormField(
-                    controller: _typeController,
-                    decoration: const InputDecoration(labelText: 'Type'),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter the transaction type';
-                      }
-                      return null;
-                    },
-                  ),                    DropdownButtonFormField<int>(
-                      value: _selectedCategoryId,
-                      items: categoryItems,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedCategoryId = value!;
-                        });
-                      },
-                      validator: (value) {
-                        if (value == null) {
-                          return 'Please select a category';
-                        }
-                        return null;
-                      },
-                      decoration: const InputDecoration(labelText: 'Category'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () => _submitForm(transactionProvider),
-                      child: const Text('Submit'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(); // Close the dialog
-                      },
-                      child: const Text('Cancel'),
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-        },
+                );
+              },
+            );
+          },
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   @override
   void dispose() {

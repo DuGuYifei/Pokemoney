@@ -1,4 +1,3 @@
-
 import 'package:pokemoney/services/database_helper.dart';
 import 'package:pokemoney/model/barrel.dart';
 
@@ -15,6 +14,23 @@ class CategoryService {
     var dbClient = await _dbHelper.db;
     var result = await dbClient.query("categories");
     return result.map((map) => Category.fromMap(map)).toList();
+  }
+
+  Future<Category> getCategoryById(int categoryId) async {
+    var dbClient = await _dbHelper.db;
+    List<Map<String, dynamic>> maps = await dbClient.query(
+      'categories', // The name of the categories table
+      where: 'id = ?',
+      whereArgs: [categoryId],
+    );
+
+    if (maps.isNotEmpty) {
+      // If a category is found, return it as a Category object
+      return Category.fromMap(maps.first);
+    } else {
+      // If no category is found, throw an exception or handle it accordingly
+      throw Exception('Category not found for id $categoryId');
+    }
   }
 
   Future<int> updateCategory(Category category) async {

@@ -11,12 +11,11 @@ class LedgerBookDetailsPage extends StatelessWidget {
 
   const LedgerBookDetailsPage(this.ledgerBook, {Key? key}) : super(key: key);
 
-@override
-Widget build(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Fetch transactions for this specific ledger book
-      Provider.of<TransactionProvider>(context, listen: false)
-          .fetchTransactionsForLedgerBook(ledgerBook.id!);
+      Provider.of<TransactionProvider>(context, listen: false).fetchTransactionsForLedgerBook(ledgerBook.id!);
     });
 
     return Scaffold(
@@ -56,8 +55,7 @@ Widget build(BuildContext context) {
                 builder: (context) => TransactionForm(ledgerBook: ledgerBook),
               ),
             );
-            // You can optionally call `fetchAllTransactions` here to refresh after coming back from the form
-            // Provider.of<TransactionProvider>(context, listen: false).fetchAllTransactions();
+            context.read<TransactionProvider>().fetchTransactionsForLedgerBook(ledgerBook.id!);
           },
           icon: const Icon(Icons.add),
           label: const Text('Transactions')),
