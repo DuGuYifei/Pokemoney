@@ -20,8 +20,9 @@ class _TransactionFormState extends State<TransactionForm> {
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _invoiceNumberController = TextEditingController();
-  final TextEditingController _typeController = TextEditingController();
 
+  late String _selectedType; // default value
+  final TextEditingController _customTypeController = TextEditingController();
   late int _selectedCategoryId;
   DateTime selectedDate = DateTime.now();
 
@@ -33,6 +34,7 @@ class _TransactionFormState extends State<TransactionForm> {
     super.initState();
     // Initialize category ID to an invalid state (-1 for instance) to indicate not fetched or not selected.
     _selectedCategoryId = -1;
+    _selectedType = 'Expense';
     fetchAndUpdateCategories();
 
     _dateController.text =
@@ -96,7 +98,7 @@ class _TransactionFormState extends State<TransactionForm> {
         invoiceNumber: _invoiceNumberController.text,
         billingDate: selectedDate,
         amount: double.parse(_amountController.text),
-        type: _typeController.text,
+        type: _selectedType == 'Other' ? _customTypeController.text : _selectedType,
         categoryId: _selectedCategoryId, // Use the category ID as a foreign key
       );
 
@@ -179,16 +181,43 @@ class _TransactionFormState extends State<TransactionForm> {
                           return null;
                         },
                       ),
-                      TextFormField(
-                        controller: _typeController,
-                        decoration: const InputDecoration(labelText: 'Type'),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter the transaction type';
-                          }
-                          return null;
+
+                      // TextFormField(
+                      //   controller: _typeController,
+                      //   decoration: const InputDecoration(labelText: 'Type'),
+                      //   validator: (value) {
+                      //     if (value == null || value.isEmpty) {
+                      //       return 'Please enter the transaction type';
+                      //     }
+                      //     return null;
+                      //   },
+                      // ),
+                      DropdownButtonFormField<String>(
+                        value: _selectedType,
+                        items: ['Expense', 'Income', 'Other']
+                            .map((type) => DropdownMenuItem<String>(
+                                  value: type,
+                                  child: Text(type),
+                                ))
+                            .toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedType = value!;
+                          });
                         },
+                        decoration: const InputDecoration(labelText: 'Type'),
                       ),
+                      if (_selectedType == 'Other') // Conditional Text Field
+                        TextFormField(
+                          controller: _customTypeController,
+                          decoration: const InputDecoration(labelText: 'Custom Type'),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a type';
+                            }
+                            return null;
+                          },
+                        ),
                       DropdownButtonFormField<int>(
                         value: _selectedCategoryId,
                         items: categoryItems,
@@ -231,7 +260,7 @@ class _TransactionFormState extends State<TransactionForm> {
     _dateController.dispose();
     _amountController.dispose();
     _invoiceNumberController.dispose();
-    _typeController.dispose();
+    _customTypeController.dispose();
     super.dispose();
   }
 }

@@ -65,7 +65,26 @@ class HistoryTransactionsSection extends StatelessWidget {
                 DataCell(Text(transaction.invoiceNumber)),
                 DataCell(Text(category?.name.toUpperCase() ?? 'Unknown')),
                 DataCell(Text(formattedDate)),
-                DataCell(Text('\$${transaction.amount.toStringAsFixed(2)}')),
+                DataCell(
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                    decoration: BoxDecoration(
+                      color: transaction.type == 'Expense' ? Colors.red[100] : Colors.green[100],
+                      borderRadius: BorderRadius.circular(4.0),
+                      border: Border.all(
+                        color: transaction.type == 'Expense' ? Colors.red : Colors.green,
+                        width: 1.0,
+                      ),
+                    ),
+                    child: Text(
+                      '\$${transaction.amount.toStringAsFixed(2)}',
+                      style: TextStyle(
+                        color: transaction.type == 'Expense' ? Colors.red : Colors.green,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
               ]);
             }).toList(),
           ),
