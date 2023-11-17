@@ -6,8 +6,8 @@ CREATE TABLE t_users
     `password`           VARCHAR(64) NOT NULL COMMENT '',
     `email`              VARCHAR(50) NOT NULL COMMENT '',
     `is_ban`             TINYINT(1)  NOT NULL COMMENT '',
-    `register_date`      TIMESTAMP   NOT NULL COMMENT '',
-    `last_login_date`    TIMESTAMP   NOT NULL COMMENT '',
+    `register_date`      DateTime    NOT NULL COMMENT '',
+    `last_login_date`    DateTime   NOT NULL COMMENT '',
     `user_role`          TINYINT(1)  NOT NULL COMMENT '',
     `service_permission` VARCHAR(50) NOT NULL DEFAULT 1 COMMENT '',
     PRIMARY KEY (id)

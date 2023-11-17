@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="error" monitorInterval="600">
     <properties>
-        <property name="LOG_HOME">logs/user-service</property>
+        <property name="LOG_HOME">logs/hadoop-client-api</property>
     </properties>
     <Appenders>
         <!--*******************Console Log**********************-->
