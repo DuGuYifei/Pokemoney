@@ -16,7 +16,7 @@
 	<description>backend of pokemoney which supply cloud service</description>
 	<modules>
 		<module>user-service</module>
-		<module>hadoop-service</module>
+		<module>hadoop</module>
 		<module>leaf</module>
         <module>commons</module>
         <module>redis</module>

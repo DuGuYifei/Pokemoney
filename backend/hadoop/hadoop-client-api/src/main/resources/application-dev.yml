@@ -1,0 +1,8 @@
+server:
+  port: 8084
+
+spring:
+  graphql:
+    graphiql:
+      enabled: true
+      path: /api/v1/hadoop/client-api/graphiql

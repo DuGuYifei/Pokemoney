@@ -4,7 +4,7 @@ import com.pokemoney.commons.proto.Response;
 import com.pokemoney.commons.http.errors.GenericForbiddenError;
 import com.pokemoney.commons.http.errors.GenericInternalServerError;
 import com.pokemoney.leaf.service.api.*;
-import com.pokemoney.redisservice.api.*;
+import com.pokemoney.redis.service.api.*;
 import com.pokemoney.redis.service.api.exceptions.RedisTriRpcException;
 import com.pokemoney.userservice.Constants;
 import com.pokemoney.userservice.dto.RequestLoginDto;
