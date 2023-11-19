@@ -12,11 +12,17 @@ class LedgerBooksPage extends StatefulWidget {
 }
 
 class _LedgerBooksPageState extends State<LedgerBooksPage> {
+  bool _isLoading = true;
+
   @override
   void initState() {
     super.initState();
-    // Fetch ledger entries when the page is initialized
-    context.read<LedgerBookProvider>().fetchAllLedgerBooks();
+    fetchLedgerBooks();
+  }
+
+  void fetchLedgerBooks() async {
+    await context.read<LedgerBookProvider>().fetchAllLedgerBooks();
+    setState(() => _isLoading = false);
   }
 
   _showForm(BuildContext context) async {
@@ -57,14 +63,14 @@ class _LedgerBooksPageState extends State<LedgerBooksPage> {
                         ),
                         TextFormField(
                           controller: balanceController,
-                          decoration: const InputDecoration(labelText: "Balance"),
+                          decoration: const InputDecoration(labelText: "Initial Balance"),
                           keyboardType: TextInputType.number,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Balance is required';
+                              return 'Initial Balance is required';
                             }
                             if (double.tryParse(value) == null) {
-                              return 'Balance has to be a number';
+                              return 'Initial Balance has to be a number';
                             }
                             return null;
                           },
@@ -103,9 +109,8 @@ class _LedgerBooksPageState extends State<LedgerBooksPage> {
                             accountId: int.parse(accountIdController.text),
                             title: titleController.text,
                             description: descriptionController.text,
-                            balance: double.parse(balanceController.text),
+                            initialBalance: double.parse(balanceController.text),
                             creationDate: DateTime.now(),
-                            transactions: [],
                           );
 
                           context.read<LedgerBookProvider>().addLedgerBook(newLedgerBook);
@@ -124,68 +129,65 @@ class _LedgerBooksPageState extends State<LedgerBooksPage> {
 
   @override
   Widget build(BuildContext context) {
-    // List<Widget> fundsCards = accountsList
-    //     .expand((account) => account.ledgerBooks.map((ledgerBook) =>
-    //         LedgerBookCard(ledgerBook, 'assets/backgorund_credit/small_background_creditcard.png', true)))
-    //     .toList();
     return Scaffold(
-      body: Consumer<LedgerBookProvider>(
-        builder: (context, ledgerProvider, child) {
-          if (ledgerProvider.ledgerBooks.isEmpty) {
-            return const Center(child: Text('No ledger books yet.'));
-          }
+      body: _isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Consumer<LedgerBookProvider>(
+              builder: (context, ledgerProvider, child) {
+                if (ledgerProvider.ledgerBooks.isEmpty) {
+                  return const Center(child: Text('No ledger books yet.'));
+                }
 
-          return GridView.builder(
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2, // Specifies the number of columns
-              childAspectRatio: 0.7, // You might need to adjust this to fit your cards properly
-              mainAxisSpacing: 20, // Adjust spacing as needed
-              crossAxisSpacing: 20, // Adjust spacing as needed
-            ),
-            itemCount: ledgerProvider.ledgerBooks.length,
-            itemBuilder: (context, index) {
-              final ledgerBook = ledgerProvider.ledgerBooks[index];
-              return Column(
-                children: [
-                  LedgerBookCard(
-                    ledgerBook,
-                    'assets/backgorund_credit/small_background_creditcard.png',
-                    true,
+                return GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2, // Specifies the number of columns
+                    childAspectRatio: 0.7, // You might need to adjust this to fit your cards properly
+                    mainAxisSpacing: 20, // Adjust spacing as needed
+                    crossAxisSpacing: 20, // Adjust spacing as needed
                   ),
-                  // Optional: Add a delete button under each card.
-                  TextButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder: (ctx) => AlertDialog(
-                          title: const Text("Delete Confirmation"),
-                          content: const Text("Are you sure you want to delete this ledger book?"),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(ctx).pop();
-                              },
-                              child: const Text("Cancel"),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                ledgerProvider.deleteLedgerBook(ledgerBook.id!);
-                                Navigator.of(ctx).pop();
-                              },
-                              child: const Text("Delete"),
-                            ),
-                          ],
+                  itemCount: ledgerProvider.ledgerBooks.length,
+                  itemBuilder: (context, index) {
+                    final ledgerBook = ledgerProvider.ledgerBooks[index];
+                    return Column(
+                      children: [
+                        LedgerBookCard(
+                          ledgerBook,
+                          'assets/backgorund_credit/small_background_creditcard.png',
+                          true,
                         ),
-                      );
-                    },
-                    child: const Text('Delete'),
-                  )
-                ],
-              );
-            },
-          );
-        },
-      ),
+                        TextButton(
+                          onPressed: () {
+                            showDialog(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                title: const Text("Delete Confirmation"),
+                                content: const Text("Are you sure you want to delete this ledger book?"),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(ctx).pop();
+                                    },
+                                    child: const Text("Cancel"),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      ledgerProvider.deleteLedgerBook(ledgerBook.id!);
+                                      Navigator.of(ctx).pop();
+                                    },
+                                    child: const Text("Delete"),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          child: const Text('Delete'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showForm(context),
         child: const Icon(Icons.add),

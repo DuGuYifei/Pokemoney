@@ -30,25 +30,28 @@ class DBHelper {
     ];
 
 // Check if the table is empty before inserting initial categories
-  var count = Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM categories'));
-  if (count == 0) {
-    // Only insert if the table is empty
-    for (var category in initialCategories) {
-      await db.insert(
-        'categories',
-        category.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.ignore,
-      );
+    var count = Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM categories'));
+    if (count == 0) {
+      // Only insert if the table is empty
+      for (var category in initialCategories) {
+        await db.insert(
+          'categories',
+          category.toMap(),
+          conflictAlgorithm: ConflictAlgorithm.ignore,
+        );
+      }
     }
-  }
   }
 
   initDb() async {
     String path = join(await getDatabasesPath(), 'pokemoney.db');
-    var theDb = await openDatabase(path, version: 1, onCreate: _onCreate);
+    var theDb = await openDatabase(
+      path, version: 2, onCreate: _onCreate,
+      onUpgrade: _onUpgrade, // Provide the onUpgrade method
+    );
     insertInitialCategories(theDb);
     print('Database path: $path');
-  
+
     return theDb;
   }
 
@@ -108,6 +111,34 @@ class DBHelper {
     type TEXT NOT NULL, 
     FOREIGN KEY (accountId) REFERENCES accounts(id))
 ''');
+  }
 
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < newVersion) {
+      // Create a new table without the 'balance' column
+      await db.execute('''
+        CREATE TABLE new_ledger_books(
+          id INTEGER PRIMARY KEY,
+          accountId INTEGER NOT NULL,
+          title TEXT NOT NULL,
+          description TEXT,
+          initialBalance REAL NOT NULL DEFAULT 0, 
+          creationDate TEXT NOT NULL,
+          FOREIGN KEY (accountId) REFERENCES accounts(id))
+      ''');
+
+      // Copy data from the old table to the new table
+      await db.execute('''
+        INSERT INTO new_ledger_books(id, accountId, title, description, creationDate, initialBalance)
+        SELECT id, accountId, title, description, creationDate, balance FROM ledger_books
+      ''');
+
+      // Drop the old table
+      await db.execute('DROP TABLE ledger_books');
+
+      // Rename the new table to the old table's name
+      await db.execute('ALTER TABLE new_ledger_books RENAME TO ledger_books');
+    }
+    // Handle any other version changes if necessary
   }
 }

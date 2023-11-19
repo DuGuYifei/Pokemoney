@@ -20,8 +20,13 @@ class HistoryTransactionsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+// Sort the transactions by billingDate
+    List<Transaction> sortedTransactions = List.from(transactions)
+      ..sort((a, b) => b.billingDate.compareTo(a.billingDate)); // Descending order
+
     // If there are more transactions than the limit, only take up to the limit
-    final visibleTransactions = transactions.length > limit ? transactions.sublist(0, limit) : transactions;
+    final visibleTransactions =
+        sortedTransactions.length > limit ? sortedTransactions.sublist(0, limit) : sortedTransactions;
 
     final transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
 
@@ -67,19 +72,19 @@ class HistoryTransactionsSection extends StatelessWidget {
                 DataCell(Text(formattedDate)),
                 DataCell(
                   Container(
-                    padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                    padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
                     decoration: BoxDecoration(
-                      color: transaction.type == 'Expense' ? Colors.red[100] : Colors.green[100],
+                      color: transaction.type == 'Income' ? Colors.green[100] : Colors.red[100],
                       borderRadius: BorderRadius.circular(4.0),
                       border: Border.all(
-                        color: transaction.type == 'Expense' ? Colors.red : Colors.green,
+                        color: transaction.type == 'Income' ? Colors.green : Colors.red,
                         width: 1.0,
                       ),
                     ),
                     child: Text(
                       '\$${transaction.amount.toStringAsFixed(2)}',
                       style: TextStyle(
-                        color: transaction.type == 'Expense' ? Colors.red : Colors.green,
+                        color: transaction.type == 'Income' ? Colors.green : Colors.red,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

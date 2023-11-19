@@ -13,58 +13,60 @@ final List<Account> accountsList = [
             accountId: 1,
             title: "January",
             description: "January Expenses",
-            balance: 1500.0,
+            initialBalance: 1500.0,
             creationDate: DateTime(2005, 5, 15),
-            transactions: [
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              // Add more transactions as needed
-            ]),
+                        // transactions: [
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   // Add more transactions as needed
+            // ]),
+        ),
         LedgerBook(
             id: 2,
             accountId: 1,
             title: "February",
             description: "February Expenses",
-            balance: 1200.0,
+            initialBalance: 1200.0,
             creationDate: DateTime(2005, 5, 15),
-            transactions: [
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              // Add more transactions as needed
-            ]),
+                        // transactions: [
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   // Add more transactions as needed
+            // ]),
+        ),
       ],
       alerts: [],
       funds: [
         Fund(id: 1, balance: 200.0, name: "school", creationDate: DateTime(2002, 1, 3), type: 'Personal'),
-        Fund(id: 2, balance: 400.0, name: "work", creationDate: DateTime(2005, 5, 15), type: 'Shared')
+        Fund(id: 2, balance: 200.0, name: "work", creationDate: DateTime(2005, 5, 15), type: 'Shared')
       ]),
   Account(
       id: 2,
@@ -78,209 +80,217 @@ final List<Account> accountsList = [
             accountId: 1,
             title: "January",
             description: "January Expenses",
-            balance: 1500.0,
+            initialBalance: 1500.0,
             creationDate: DateTime(2005, 5, 15),
-            transactions: [
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              // Add more transactions as needed
-            ]),
+                        // transactions: [
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   // Add more transactions as needed
+            // ]),
+        ),
         LedgerBook(
             id: 2,
             accountId: 1,
             title: "February",
             description: "February Expenses",
-            balance: 1200.0,
+            initialBalance: 1200.0,
             creationDate: DateTime(2005, 5, 15),
-            transactions: [
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              // Add more transactions as needed
-            ]),
+                        // transactions: [
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   // Add more transactions as needed
+            // ]),
+        ),
         LedgerBook(
             id: 1,
             accountId: 1,
             title: "January",
             description: "January Expenses",
-            balance: 1500.0,
+            initialBalance: 1500.0,
             creationDate: DateTime(2005, 5, 15),
-            transactions: [
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              // Add more transactions as needed
-            ]),
+                        // transactions: [
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   // Add more transactions as needed
+            // ]),
+        ),
         LedgerBook(
             id: 2,
             accountId: 1,
             title: "February",
             description: "February Expenses",
-            balance: 1200.0,
+            initialBalance: 1200.0,
             creationDate: DateTime(2005, 5, 15),
-            transactions: [
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              // Add more transactions as needed
-            ]),
+                        // transactions: [
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   // Add more transactions as needed
+            // ]),
+        ),
         LedgerBook(
             id: 1,
             accountId: 1,
             title: "January",
             description: "January Expenses",
-            balance: 1500.0,
+            initialBalance: 1500.0,
             creationDate: DateTime(2005, 5, 15),
-            transactions: [
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              // Add more transactions as needed
-            ]),
+                        // transactions: [
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   // Add more transactions as needed
+            // ]),
+        ),
         LedgerBook(
             id: 2,
             accountId: 1,
             title: "February",
             description: "February Expenses",
-            balance: 1200.0,
+            initialBalance: 1200.0,
             creationDate: DateTime(2005, 5, 15),
-            transactions: [
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              // Add more transactions as needed
-            ]),
+                        // transactions: [
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   // Add more transactions as needed
+            // ]),
+        ),
         LedgerBook(
             id: 1,
             accountId: 1,
             title: "January",
             description: "January Expenses",
-            balance: 1500.0,
+            initialBalance: 1500.0,
             creationDate: DateTime(2005, 5, 15),
-            transactions: [
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              // Add more transactions as needed
-            ]),
+                        // transactions: [
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   // Add more transactions as needed
+            // ]),
+        ),
         LedgerBook(
             id: 2,
             accountId: 1,
             title: "February",
             description: "February Expenses",
-            balance: 1200.0,
+            initialBalance: 1200.0,
             creationDate: DateTime(2005, 5, 15),
-            transactions: [
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              // Add more transactions as needed
-            ]),
+                        // transactions: [
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   // Add more transactions as needed
+            // ]),
+        ),
       ],
       alerts: [
         Alert(
@@ -322,7 +332,7 @@ final List<Account> accountsList = [
       ],
       funds: [
         Fund(id: 1, balance: 200.0, name: "school", creationDate: DateTime(2002, 1, 3), type: 'Personal'),
-        Fund(id: 2, balance: 400.0, name: "work", creationDate: DateTime(2005, 5, 15), type: 'Shared')
+        Fund(id: 2, balance: 200.0, name: "work", creationDate: DateTime(2005, 5, 15), type: 'Shared')
       ]),
   Account(
       id: 3,
@@ -336,105 +346,109 @@ final List<Account> accountsList = [
             accountId: 1,
             title: "Work",
             description: "work Expenses",
-            balance: 1146.0,
+            initialBalance: 1146.0,
             creationDate: DateTime(2005, 5, 15),
-            transactions: [
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              // Add more transactions as needed
-            ]),
+                        // transactions: [
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   // Add more transactions as needed
+            // ]),
+        ),
         LedgerBook(
             id: 2,
             accountId: 1,
             title: "Home",
             description: "Home Expenses",
-            balance: 900.0,
+            initialBalance: 900.0,
             creationDate: DateTime(2005, 5, 15),
-            transactions: [
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              // Add more transactions as needed
-            ]),
+            // transactions: [
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   // Add more transactions as needed
+            // ]),
+        ),
         LedgerBook(
             id: 1,
             accountId: 1,
             title: "Work",
             description: "work Expenses",
-            balance: 1146.0,
+            initialBalance: 1146.0,
             creationDate: DateTime(2005, 5, 15),
-            transactions: [
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              // Add more transactions as needed
-            ]),
+                        // transactions: [
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   // Add more transactions as needed
+            // ]),
+        ),
         LedgerBook(
             id: 2,
             accountId: 1,
             title: "Home",
             description: "Home Expenses",
-            balance: 900.0,
+            initialBalance: 900.0,
             creationDate: DateTime(2005, 5, 15),
-            transactions: [
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              Transaction(
-                ledgerBookId: 2,
-                invoiceNumber: '51468465',
-                categoryId: 1,
-                billingDate: DateTime(2002, 3, 1),
-                amount: 500.00,
-                type: 'income',
-              ),
-              // Add more transactions as needed
-            ]),
+                        // transactions: [
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   Transaction(
+            //     ledgerBookId: 2,
+            //     invoiceNumber: '51468465',
+            //     categoryId: 1,
+            //     billingDate: DateTime(2002, 3, 1),
+            //     amount: 500.00,
+            //     type: 'income',
+            //   ),
+            //   // Add more transactions as needed
+            // ]),
+        ),
       ],
       alerts: [
         Alert(
@@ -500,6 +514,6 @@ final List<Account> accountsList = [
       ],
       funds: [
         Fund(id: 1, balance: 200.0, name: "school", creationDate: DateTime(2002, 1, 3), type: 'Personal'),
-        Fund(id: 2, balance: 400.0, name: "work", creationDate: DateTime(2005, 5, 15), type: 'Shared')
+        Fund(id: 2, balance: 200.0, name: "work", creationDate: DateTime(2005, 5, 15), type: 'Shared')
       ]),
 ];

@@ -16,7 +16,7 @@ class TransactionService {
     return result.map((map) => pokemoney.Transaction.fromMap(map)).toList();
   }
 
-    // Method to get transactions by LedgerBookId
+  // Method to get transactions by LedgerBookId
   Future<List<pokemoney.Transaction>> getTransactionsByLedgerBookId(int ledgerBookId) async {
     var dbClient = await _dbHelper.db;
     var result = await dbClient.query(
@@ -26,7 +26,6 @@ class TransactionService {
     );
     return result.map((map) => pokemoney.Transaction.fromMap(map)).toList();
   }
-  
 
   Future<int> updateTransaction(pokemoney.Transaction transaction) async {
     var dbClient = await _dbHelper.db;
@@ -57,5 +56,18 @@ class TransactionService {
     } else {
       throw Exception('Category not found for id $categoryId');
     }
+  }
+
+  Future<double> getTotalBalanceForLedgerBook(int ledgerBookId) async {
+    var dbClient = await DBHelper().db;
+    var result = await dbClient.rawQuery('''
+    SELECT SUM(CASE WHEN type='Income' THEN amount ELSE -amount END) as total
+    FROM transactions
+    WHERE ledgerBookId = ?
+  ''', [ledgerBookId]);
+
+    // Explicitly cast the result to 'num' and then to 'double'
+    num total = result.first['total'] as num? ?? 0.0;
+    return total.toDouble();
   }
 }

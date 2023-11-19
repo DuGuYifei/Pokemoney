@@ -4,6 +4,7 @@ import 'package:pokemoney/widgets/barrel.dart';
 import 'package:pokemoney/constants/AppColors.dart';
 import 'package:pokemoney/widgets/ledgerBook/TransactionForm.dart';
 import 'package:pokemoney/providers/TransactionProvider.dart';
+import 'package:pokemoney/providers/LedgerBookProvider.dart';
 import 'package:provider/provider.dart';
 
 class LedgerBookDetailsPage extends StatelessWidget {
@@ -13,11 +14,11 @@ class LedgerBookDetailsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Fetch ledger book details and transactions when the page is built
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Fetch transactions for this specific ledger book
+      Provider.of<LedgerBookProvider>(context, listen: false).fetchLedgerBookDetails(ledgerBook.id!);
       Provider.of<TransactionProvider>(context, listen: false).fetchTransactionsForLedgerBook(ledgerBook.id!);
     });
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -55,7 +56,10 @@ class LedgerBookDetailsPage extends StatelessWidget {
                 builder: (context) => TransactionForm(ledgerBook: ledgerBook),
               ),
             );
-            context.read<TransactionProvider>().fetchTransactionsForLedgerBook(ledgerBook.id!);
+            // Refresh ledger book details and transactions after adding a transaction
+            Provider.of<LedgerBookProvider>(context, listen: false).fetchLedgerBookDetails(ledgerBook.id!);
+            Provider.of<TransactionProvider>(context, listen: false)
+                .fetchTransactionsForLedgerBook(ledgerBook.id!);
           },
           icon: const Icon(Icons.add),
           label: const Text('Transactions')),

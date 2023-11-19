@@ -55,6 +55,7 @@ class TransactionProvider with ChangeNotifier {
       try {
         pokemoney.Category category = await _categoryService.getCategoryById(transaction.categoryId);
         _categoryCache[transaction.categoryId] = category;
+        _transactionService.getTotalBalanceForLedgerBook(transaction.ledgerBookId);
       } catch (e) {
         // Handle exceptions, e.g., category not found
         print('Error fetching category: $e');
@@ -73,11 +74,15 @@ class TransactionProvider with ChangeNotifier {
     fetchTransactionsForLedgerBook(ledgerBookId);
   }
 
+  Future<void> getTotalBalanceForLedgerBook(int ledgerBookId) async {
+    await _transactionService.getTotalBalanceForLedgerBook(ledgerBookId);
+  }
+
   // Helper method to get a category from the cache
   pokemoney.Category? getCategoryForTransaction(pokemoney.Transaction transaction) {
     return _categoryCache[transaction.categoryId];
   }
-  
+
   pokemoney.Category? getCategoryNameForTransaction(pokemoney.Transaction transaction) {
     return _categoryCache[transaction.categoryId];
   }

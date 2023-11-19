@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:pokemoney/model/barrel.dart'; // Import your Transaction model
+import 'package:pokemoney/model/barrel.dart';
 import 'package:pokemoney/pages/ledgerBook/EditTransactionPage.dart';
-import 'package:pokemoney/providers/TransactionProvider.dart'; // Import your TransactionProvider
+import 'package:pokemoney/providers/TransactionProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:pokemoney/constants/AppColors.dart';
 
@@ -20,6 +20,10 @@ class _TransactionsPageState extends State<TransactionsPage> {
   late ScrollController _scrollController;
   final TextEditingController _searchController = TextEditingController();
   List<Transaction> _filteredTransactions = [];
+  String _selectedCategory = 'All'; // Default value for category filter
+  bool _sortAscending = true; // Default value for sorting order
+
+  List<String> _categories = ['All', 'Restaurant', 'Transportation', 'Rent']; // Example categories
 
   @override
   void initState() {
@@ -54,6 +58,37 @@ class _TransactionsPageState extends State<TransactionsPage> {
     }
   }
 
+  // void _applyFilterAndSort() {
+  //   // Get a reference to TransactionProvider
+  //   var transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
+
+  //   var transactions = transactionProvider.transactions;
+
+  //   // Filter transactions by selected category
+  //   if (_selectedCategory != 'All') {
+  //     transactions = transactions.where((transaction) {
+  //       String categoryName = transactionProvider.getCategoryNameForTransaction(transaction)?.name ?? '';
+  //       return categoryName == _selectedCategory;
+  //     }).toList();
+  //   }
+
+  //   // Sort transactions
+  //   transactions.sort((a, b) =>
+  //       _sortAscending ? a.billingDate.compareTo(b.billingDate) : b.billingDate.compareTo(a.billingDate));
+
+  //   // Apply search filter
+  //   if (_searchController.text.isNotEmpty) {
+  //     transactions = transactions.where((transaction) {
+  //       return transaction.categoryId.toString().contains(_searchController.text.toLowerCase()) ||
+  //           transaction.invoiceNumber.toLowerCase().contains(_searchController.text.toLowerCase());
+  //     }).toList();
+  //   }
+
+  //   setState(() {
+  //     _filteredTransactions = transactions;
+  //   });
+  // }
+
   @override
   Widget build(BuildContext context) {
     // Here we'll use the Consumer widget to listen to TransactionProvider
@@ -68,6 +103,32 @@ class _TransactionsPageState extends State<TransactionsPage> {
       body: Container(
         child: Column(
           children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                DropdownButton(
+                  value: _selectedCategory,
+                  items: _categories.map((String category) {
+                    return DropdownMenuItem(value: category, child: Text(category));
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedCategory = newValue!;
+                      //_applyFilterAndSort();
+                    });
+                  },
+                ),
+                IconButton(
+                  icon: Icon(_sortAscending ? Icons.arrow_upward : Icons.arrow_downward),
+                  onPressed: () {
+                    setState(() {
+                      _sortAscending = !_sortAscending;
+                      //_applyFilterAndSort();
+                    });
+                  },
+                ),
+              ],
+            ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
@@ -235,7 +296,24 @@ class TransactionListItem extends StatelessWidget {
                 height: 45,
                 child: CircularProgressIndicator(), // Show a progress indicator while category is null
               ),
-        title: Text('${transaction.amount}\$'),
+        title: Container(
+          padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
+          decoration: BoxDecoration(
+            color: transaction.type == 'Income' ? Colors.green[100] : Colors.red[100],
+            borderRadius: BorderRadius.circular(4.0),
+            border: Border.all(
+              color: transaction.type == 'Income' ? Colors.green : Colors.red,
+              width: 1.0,
+            ),
+          ),
+          child: Text(
+            '\$${transaction.amount.toStringAsFixed(2)}',
+            style: TextStyle(
+              color: transaction.type == 'Income' ? Colors.green : Colors.red,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
         subtitle: Text('Invoice Number: ${transaction.invoiceNumber}'
             '\nDate: ${DateFormat('yMMMd').format(transaction.billingDate)} \nType: ${transaction.type}'),
         trailing: _buildPopupMenu(context),

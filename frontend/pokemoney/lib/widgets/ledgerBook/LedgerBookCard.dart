@@ -11,6 +11,9 @@ class LedgerBookCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String balanceText = _ledgerBook.currentBalance != null
+        ? '\$${_ledgerBook.currentBalance.toStringAsFixed(2)}'
+        : 'Loading...';
     return GestureDetector(
       onTap: isClickable
           ? () => Navigator.of(context)
@@ -33,7 +36,7 @@ class LedgerBookCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.only(top: 16, left: 20, bottom: 15),
+                padding: const EdgeInsets.only(top: 16, left: 20, bottom: 10),
                 child: Column(
                   children: [
                     const Text(
@@ -58,7 +61,7 @@ class LedgerBookCard extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 20, bottom: 20),
+                padding: const EdgeInsets.only(left: 20, bottom: 10),
                 child: Column(
                   children: [
                     const Text(
@@ -71,7 +74,7 @@ class LedgerBookCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '\$${_ledgerBook.balance.toString()}',
+                      balanceText,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -83,15 +86,40 @@ class LedgerBookCard extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(top: 16, left: 20, bottom: 20),
+                padding: const EdgeInsets.only(left: 20, bottom: 10),
+                child: Column(
+                  children: [
+                    const Text(
+                      'Initial Balance',
+                      style: TextStyle(
+                        fontFamily: 'Cera Pro',
+                        color: Color(0x7FFFFFFF),
+                        fontSize: 15.0,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Text(
+                      '\$${_ledgerBook.initialBalance.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontFamily: 'Manrope',
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 20),
                 child: Column(
                   children: [
                     const Text(
                       'Creation Date',
                       style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 11,
-                        fontFamily: 'Manrope',
+                        fontFamily: 'Cera Pro',
+                        color: Color(0x7FFFFFFF),
+                        fontSize: 15.0,
                         fontWeight: FontWeight.w500,
                       ),
                     ),

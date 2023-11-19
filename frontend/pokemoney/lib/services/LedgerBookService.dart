@@ -18,11 +18,58 @@ class LedgerBookService {
 
   Future<int> updateLedgerBook(LedgerBook ledgerBook) async {
     var dbClient = await _dbHelper.db;
-    return await dbClient.update("ledger_books", ledgerBook.toMap(), where: "id = ?", whereArgs: [ledgerBook.id]);
+    return await dbClient
+        .update("ledger_books", ledgerBook.toMap(), where: "id = ?", whereArgs: [ledgerBook.id]);
   }
 
   Future<int> deleteLedgerBook(int id) async {
     var dbClient = await _dbHelper.db;
     return await dbClient.delete("ledger_books", where: "id = ?", whereArgs: [id]);
   }
+
+  Future<LedgerBook> getLedgerBookById(int ledgerBookId) async {
+    var dbClient = await _dbHelper.db;
+    List<Map> maps = await dbClient.query(
+      "ledger_books",
+      columns: ['id', 'accountId', 'title', 'description', 'initialBalance', 'creationDate'],
+      where: 'id = ?',
+      whereArgs: [ledgerBookId],
+    );
+
+    if (maps.isNotEmpty) {
+      return LedgerBook.fromMap(maps.first.cast<String, dynamic>());
+    }
+
+    throw Exception('LedgerBook with id $ledgerBookId not found');
+  }
+  // Future<void> recalculateAndStoreBalance(int ledgerBookId) async {
+  //   var dbClient = await _dbHelper.db;
+
+  //   // Efficiently calculate the sum of all transactions for this ledger book
+  //   var sumResult = await dbClient.rawQuery('''
+  //     SELECT SUM(CASE WHEN type='Income' THEN amount ELSE -amount END) as total
+  //     FROM transactions
+  //     WHERE ledgerBookId = ?
+  //   ''', [ledgerBookId]);
+
+  //   double transactionsSum = sumResult.first["total"] ?? 0.0;
+
+  //   // Fetch the initial balance if necessary
+  //   var ledgerResult = await dbClient.query(
+  //     'ledger_books',
+  //     columns: ['initial_balance'],
+  //     where: 'id = ?',
+  //     whereArgs: [ledgerBookId],
+  //   );
+  //   double initialBalance = ledgerResult.first["initial_balance"] ?? 0.0;
+
+  //   // Update the ledger book's balance
+  //   double newBalance = initialBalance + transactionsSum;
+  //   await dbClient.update(
+  //     'ledger_books',
+  //     {'balance': newBalance},
+  //     where: 'id = ?',
+  //     whereArgs: [ledgerBookId],
+  //   );
+  // }
 }
