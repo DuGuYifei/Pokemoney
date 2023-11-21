@@ -27,13 +27,19 @@ class DBHelper {
       Category(name: 'Intertainment', iconPath: 'assets/category_icons/intertainment_icon.svg'),
       Category(name: 'Saving', iconPath: 'assets/category_icons/saving_icon.svg'),
       Category(name: 'Other', iconPath: 'assets/category_icons/other_icon.svg'),
+      Category(name: 'Job', iconPath: 'assets/category_icons/job_icon.svg'),
     ];
 
-// Check if the table is empty before inserting initial categories
-    var count = Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM categories'));
-    if (count == 0) {
-      // Only insert if the table is empty
-      for (var category in initialCategories) {
+    for (var category in initialCategories) {
+      // Check if this category already exists
+      var result = await db.query(
+        'categories',
+        where: 'name = ?',
+        whereArgs: [category.name],
+      );
+
+      // If the category does not exist, insert it
+      if (result.isEmpty) {
         await db.insert(
           'categories',
           category.toMap(),
@@ -46,7 +52,7 @@ class DBHelper {
   initDb() async {
     String path = join(await getDatabasesPath(), 'pokemoney.db');
     var theDb = await openDatabase(
-      path, version: 2, onCreate: _onCreate,
+      path, version: 1, onCreate: _onCreate,
       onUpgrade: _onUpgrade, // Provide the onUpgrade method
     );
     insertInitialCategories(theDb);
@@ -69,13 +75,13 @@ class DBHelper {
 // Creating the 'ledger_books' table
     await db.execute('''
   CREATE TABLE ledger_books(
-    id INTEGER PRIMARY KEY, 
-    accountId INTEGER NOT NULL, 
-    title TEXT NOT NULL, 
-    description TEXT, 
-    balance REAL NOT NULL, 
-    creationDate TEXT NOT NULL, 
-    FOREIGN KEY (accountId) REFERENCES accounts(id))
+    id INTEGER PRIMARY KEY,
+          accountId INTEGER NOT NULL,
+          title TEXT NOT NULL,
+          description TEXT,
+          initialBalance REAL NOT NULL DEFAULT 0, 
+          creationDate TEXT NOT NULL,
+          FOREIGN KEY (accountId) REFERENCES accounts(id))
 ''');
 
 // Creating the 'categories' table
@@ -114,7 +120,7 @@ class DBHelper {
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    if (oldVersion < newVersion) {
+    if (oldVersion < 2) {
       // Create a new table without the 'balance' column
       await db.execute('''
         CREATE TABLE new_ledger_books(

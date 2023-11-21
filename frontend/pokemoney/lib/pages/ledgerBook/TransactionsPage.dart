@@ -114,7 +114,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                   onChanged: (String? newValue) {
                     setState(() {
                       _selectedCategory = newValue!;
-                      //_applyFilterAndSort();
+                      //_applyFilterAndSort()
                     });
                   },
                 ),

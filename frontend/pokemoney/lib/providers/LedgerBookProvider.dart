@@ -39,9 +39,15 @@ class LedgerBookProvider with ChangeNotifier {
     double transactionTotal = await _transactionService.getTotalBalanceForLedgerBook(ledgerBookId);
     ledgerBook.currentBalance = ledgerBook.initialBalance + transactionTotal;
 
-    // Update the local state
-    // You might want to store the fetched ledger book in a field or a map
-    _ledgerBooks[ledgerBookId] = ledgerBook;
+    // Find the ledger book in the list and update it
+    int index = _ledgerBooks.indexWhere((lb) => lb.id == ledgerBookId);
+    if (index != -1) {
+      // Update existing ledger book
+      _ledgerBooks[index] = ledgerBook;
+    } else {
+      // Append new ledger book if not in the list
+      _ledgerBooks.add(ledgerBook);
+    }
 
     notifyListeners();
   }

@@ -1,11 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:pokemoney/services/TransactionService.dart';
+import 'package:pokemoney/providers/LedgerBookProvider.dart';
 import 'package:pokemoney/services/CategoryService.dart';
 import 'package:pokemoney/model/barrel.dart' as pokemoney;
 
 class TransactionProvider with ChangeNotifier {
   final TransactionService _transactionService = TransactionService();
   final CategoryService _categoryService = CategoryService();
+  final LedgerBookProvider _ledgerBookProvider = LedgerBookProvider();
 
   List<pokemoney.Transaction> _transactions = [];
   Map<int, pokemoney.Category> _categoryCache = {};
@@ -66,6 +68,7 @@ class TransactionProvider with ChangeNotifier {
   updateTransaction(pokemoney.Transaction transaction, int ledgerBookId) async {
     await _transactionService.updateTransaction(transaction);
     fetchTransactionsForLedgerBook(ledgerBookId);
+    await _ledgerBookProvider.fetchLedgerBookDetails(ledgerBookId);
   }
 
   // Deletes a transaction

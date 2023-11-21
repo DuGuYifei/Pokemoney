@@ -7,22 +7,47 @@ import 'package:pokemoney/providers/TransactionProvider.dart';
 import 'package:pokemoney/providers/LedgerBookProvider.dart';
 import 'package:provider/provider.dart';
 
-class LedgerBookDetailsPage extends StatelessWidget {
+class LedgerBookDetailsPage extends StatefulWidget {
   final LedgerBook ledgerBook;
 
   const LedgerBookDetailsPage(this.ledgerBook, {Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    // Fetch ledger book details and transactions when the page is built
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<LedgerBookProvider>(context, listen: false).fetchLedgerBookDetails(ledgerBook.id!);
-      Provider.of<TransactionProvider>(context, listen: false).fetchTransactionsForLedgerBook(ledgerBook.id!);
+  State<LedgerBookDetailsPage> createState() => _LedgerBookDetailsPageState();
+}
+
+class _LedgerBookDetailsPageState extends State<LedgerBookDetailsPage> {
+  late LedgerBook _currentLedgerBook;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentLedgerBook = widget.ledgerBook;
+    _fetchData();
+  }
+
+  void _fetchData() {
+    var ledgerBookProvider = Provider.of<LedgerBookProvider>(context, listen: false);
+    var transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
+
+    ledgerBookProvider.fetchLedgerBookDetails(_currentLedgerBook.id!).then((_) {
+      setState(() {
+        _currentLedgerBook = ledgerBookProvider.ledgerBooks.firstWhere(
+          (lb) => lb.id == _currentLedgerBook.id,
+          orElse: () => _currentLedgerBook,
+        );
+      });
     });
+
+    transactionProvider.fetchTransactionsForLedgerBook(_currentLedgerBook.id!);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          ledgerBook.title,
+          _currentLedgerBook.title,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -31,35 +56,29 @@ class LedgerBookDetailsPage extends StatelessWidget {
       backgroundColor: AppColors.surface,
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Consumer<TransactionProvider>(
-          builder: (context, provider, child) {
-            return ListView(
-              children: [
-                LedgerBookCard(ledgerBook, 'assets/backgorund_credit/small_background_creditcard.png', false),
-                const SizedBox(height: 10),
-                const CollaboratorSection(),
-                const SizedBox(height: 10),
-                HistoryTransactionsSection(
-                  transactions: provider.transactions, // Here we use the transactions from the provider
-                  ledgerBook: ledgerBook,
-                ),
-                const SizedBox(height: 10),
-              ],
-            );
-          },
+        child: ListView(
+          children: [
+            LedgerBookCard(
+                _currentLedgerBook, 'assets/backgorund_credit/small_background_creditcard.png', false),
+            const SizedBox(height: 10),
+            const CollaboratorSection(),
+            const SizedBox(height: 10),
+            HistoryTransactionsSection(
+              transactions: Provider.of<TransactionProvider>(context).transactions,
+              ledgerBook: widget.ledgerBook,
+            ),
+            const SizedBox(height: 10),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
           onPressed: () async {
             await Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => TransactionForm(ledgerBook: ledgerBook),
+                builder: (context) => TransactionForm(ledgerBook: widget.ledgerBook),
               ),
             );
-            // Refresh ledger book details and transactions after adding a transaction
-            Provider.of<LedgerBookProvider>(context, listen: false).fetchLedgerBookDetails(ledgerBook.id!);
-            Provider.of<TransactionProvider>(context, listen: false)
-                .fetchTransactionsForLedgerBook(ledgerBook.id!);
+            _fetchData();
           },
           icon: const Icon(Icons.add),
           label: const Text('Transactions')),
