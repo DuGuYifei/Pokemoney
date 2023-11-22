@@ -8,7 +8,7 @@ import 'package:pokemoney/constants/barrel.dart';
 /// It showcases the ledger book details, and provides a "View all" option
 /// if there are more ledger books than the set limit to display.
 class LedgerOwnedContainer extends StatelessWidget {
-  final Account account;
+  final User account;
 
   // Number of ledger books to display.
   static const int NUMBER_OF_LEDGER_TO_SHOW = 3;
@@ -35,20 +35,20 @@ class LedgerOwnedContainer extends StatelessWidget {
       ),
       child: Column(children: [
         _buildHeader(),
-        SizedBox(
-          height: HEIGHT_OF_CONTAINER,
-          child: ListView.builder(
-            physics: const BouncingScrollPhysics(),
-            itemCount: NUMBER_OF_LEDGER_TO_SHOW + 1,
-            itemBuilder: (context, index) {
-              if (index == NUMBER_OF_LEDGER_TO_SHOW) {
-                return _buildSpecialTile();
-              }
-              // Otherwise, return the alert item
-              return _buildLedgerItem(account.ledgerBooks[index], context);
-            },
-          ),
-        )
+        //  SizedBox(
+        //   height: HEIGHT_OF_CONTAINER,
+        //   child: ListView.builder(
+        //     physics: const BouncingScrollPhysics(),
+        //     itemCount: NUMBER_OF_LEDGER_TO_SHOW + 1,
+        //     itemBuilder: (context, index) {
+        //       if (index == NUMBER_OF_LEDGER_TO_SHOW) {
+        //         return _buildSpecialTile();
+        //       }
+        //       // Otherwise, return the alert item
+        //       return _buildLedgerItem(account.ledgerBooks[index], context);
+        //     },
+        //   ),
+        // )
       ]),
     );
   }
@@ -121,15 +121,15 @@ class LedgerOwnedContainer extends StatelessWidget {
 
   /// Constructs and returns a special tile indicating the remaining ledger books.
 
-  Widget _buildSpecialTile() {
-    int remainingLedgerBooks = account.ledgerBooks.length - NUMBER_OF_LEDGER_TO_SHOW;
-    if (remainingLedgerBooks < 0) remainingLedgerBooks = 0;
+  // Widget _buildSpecialTile() {
+  //   int remainingLedgerBooks = account.ledgerBooks.length - NUMBER_OF_LEDGER_TO_SHOW;
+  //   if (remainingLedgerBooks < 0) remainingLedgerBooks = 0;
 
-    return ListTile(
-      title: Text("+ $remainingLedgerBooks more Ledger books"),
-      onTap: () {
-        // Implement your action here
-      },
-    );
-  }
+  //   return ListTile(
+  //     title: Text("+ $remainingLedgerBooks more Ledger books"),
+  //     onTap: () {
+  //       // Implement your action here
+  //     },
+  //   );
+  // }
 }

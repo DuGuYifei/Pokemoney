@@ -13,8 +13,8 @@ import 'package:pokemoney/constants/barrel.dart';
 /// This container shows a maximum of [NUMBER_OF_ALERTS_TO_SHOW] alerts and provides
 /// a mechanism to view all the alerts if required.
 class AlertsContainer extends StatelessWidget {
-  /// The [Account] associated with this widget.
-  final Account account;
+  /// The [User] associated with this widget.
+  final User account;
 
   /// A constant that defines the number of alerts to display.
   static const int NUMBER_OF_ALERTS_TO_SHOW = 5;
@@ -45,21 +45,21 @@ class AlertsContainer extends StatelessWidget {
       child: Column(
         children: [
           _buildHeader(),
-          SizedBox(
-            height: HIGHT_OF_CONTAINER,
-            child: ListView.builder(
-              physics: const BouncingScrollPhysics(),
-              itemCount: NUMBER_OF_ALERTS_TO_SHOW + 1, // Add 1 for the special tile
-              itemBuilder: (context, index) {
-                // If it's the last item, return the special tile
-                if (index == NUMBER_OF_ALERTS_TO_SHOW) {
-                  return _buildSpecialTile();
-                }
-                // Otherwise, return the alert item
-                return _buildAlertItem(account.alerts[index]);
-              },
-            ),
-          ),
+          // SizedBox(
+          //   height: HIGHT_OF_CONTAINER,
+          //   child: ListView.builder(
+          //     physics: const BouncingScrollPhysics(),
+          //     itemCount: NUMBER_OF_ALERTS_TO_SHOW + 1, // Add 1 for the special tile
+          //     itemBuilder: (context, index) {
+          //       // If it's the last item, return the special tile
+          //       if (index == NUMBER_OF_ALERTS_TO_SHOW) {
+          //         return _buildSpecialTile();
+          //       }
+          //       // Otherwise, return the alert item
+          //       return _buildAlertItem(account.alerts[index]);
+          //     },
+          //   ),
+          // ),
         ],
       ),
     );
@@ -117,15 +117,15 @@ class AlertsContainer extends StatelessWidget {
   ///
   /// If there are more alerts in the account than [NUMBER_OF_ALERTS_TO_SHOW],
   /// this tile indicates how many more alerts are present.
-  Widget _buildSpecialTile() {
-    int remainingAlerts = account.alerts.length - NUMBER_OF_ALERTS_TO_SHOW;
-    if (remainingAlerts < 0) remainingAlerts = 0;
+  // Widget _buildSpecialTile() {
+  //   int remainingAlerts = account.alerts.length - NUMBER_OF_ALERTS_TO_SHOW;
+  //   if (remainingAlerts < 0) remainingAlerts = 0;
 
-    return ListTile(
-      title: Text("+ $remainingAlerts more alerts"),
-      onTap: () {
-        // Implement your action here
-      },
-    );
-  }
+  //   return ListTile(
+  //     title: Text("+ $remainingAlerts more alerts"),
+  //     onTap: () {
+  //       // Implement your action here
+  //     },
+  //   );
+  // }
 }

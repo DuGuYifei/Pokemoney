@@ -15,8 +15,7 @@ class LedgerBookProvider with ChangeNotifier {
     _ledgerBooks = await _ledgerBookService.getAllLedgerBooks();
     for (var ledgerBook in _ledgerBooks) {
       double transactionTotal = await _transactionService.getTotalBalanceForLedgerBook(ledgerBook.id!);
-      ledgerBook.currentBalance =
-          ledgerBook.initialBalance + transactionTotal; // Assuming a property for current balance
+      ledgerBook.currentBalance = transactionTotal; // Assuming a property for current balance
     }
     notifyListeners();
   }
@@ -37,7 +36,7 @@ class LedgerBookProvider with ChangeNotifier {
 
     // Calculate the current balance
     double transactionTotal = await _transactionService.getTotalBalanceForLedgerBook(ledgerBookId);
-    ledgerBook.currentBalance = ledgerBook.initialBalance + transactionTotal;
+    ledgerBook.currentBalance = transactionTotal;
 
     // Find the ledger book in the list and update it
     int index = _ledgerBooks.indexWhere((lb) => lb.id == ledgerBookId);

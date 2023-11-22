@@ -28,9 +28,9 @@ class _LedgerBooksPageState extends State<LedgerBooksPage> {
   _showForm(BuildContext context) async {
     final formKey = GlobalKey<FormState>();
     final titleController = TextEditingController();
-    final descriptionController = TextEditingController();
-    final balanceController = TextEditingController();
-    final accountIdController = TextEditingController();
+    final budgetController = TextEditingController();
+
+    budgetController.text = '1000000';
 
     await showDialog(
         context: context,
@@ -40,7 +40,7 @@ class _LedgerBooksPageState extends State<LedgerBooksPage> {
               constraints: const BoxConstraints(maxWidth: 400, maxHeight: 700), // Set your constraints here
               child: SingleChildScrollView(
                 child: AlertDialog(
-                  title: const Text('Add Transaction'),
+                  title: const Text('Add ledger book'),
                   content: Form(
                     key: formKey,
                     child: Column(
@@ -57,34 +57,15 @@ class _LedgerBooksPageState extends State<LedgerBooksPage> {
                           },
                         ),
                         TextFormField(
-                          controller: descriptionController,
-                          decoration: const InputDecoration(labelText: "Description"),
-                          // Add validation logic if needed
-                        ),
-                        TextFormField(
-                          controller: balanceController,
-                          decoration: const InputDecoration(labelText: "Initial Balance"),
+                          controller: budgetController,
+                          decoration: const InputDecoration(labelText: "Budget"),
                           keyboardType: TextInputType.number,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Initial Balance is required';
+                              return 'Budeget is required';
                             }
                             if (double.tryParse(value) == null) {
-                              return 'Initial Balance has to be a number';
-                            }
-                            return null;
-                          },
-                        ),
-                        TextFormField(
-                          controller: accountIdController,
-                          decoration: const InputDecoration(labelText: "Account ID"),
-                          keyboardType: TextInputType.number,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Account ID is required';
-                            }
-                            if (int.tryParse(value) == null) {
-                              return 'Account ID has to be an integer';
+                              return 'Budeget has to be a number';
                             }
                             return null;
                           },
@@ -106,13 +87,14 @@ class _LedgerBooksPageState extends State<LedgerBooksPage> {
 
                           // Use the saved values to create a new LedgerBook instance and add it
                           var newLedgerBook = LedgerBook(
-                            accountId: int.parse(accountIdController.text),
                             title: titleController.text,
-                            description: descriptionController.text,
-                            initialBalance: double.parse(balanceController.text),
+                            budget: double.parse(budgetController.text),
                             creationDate: DateTime.now(),
+                            owner: 1, // TODO: Change this to the logged in user's ID
+                            editors: '1', // TODO: Change this to the logged in user's ID
+                            updateAt: DateTime.now(),
+                            delFlag: 0,
                           );
-
                           context.read<LedgerBookProvider>().addLedgerBook(newLedgerBook);
                           Navigator.of(context).pop();
                         }

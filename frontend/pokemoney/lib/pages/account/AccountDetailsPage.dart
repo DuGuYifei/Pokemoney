@@ -9,7 +9,7 @@ import 'package:pokemoney/widgets/barrel.dart';
 /// a detailed view with the `HeaderAccountCard`, `LedgerOwnedContainer`,
 /// and `AlertsContainer` related to the account.
 class AccountDetailsPage extends StatelessWidget {
-  final Account account;
+  final User account;
 
   /// Creates an [AccountDetailsPage] with a given [account].
   ///

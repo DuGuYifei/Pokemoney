@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pokemoney/model/Account.dart';
+import 'package:pokemoney/model/User.dart';
 import 'package:pokemoney/pages/barrel.dart';
 import 'package:pokemoney/constants/AppColors.dart';
 
@@ -10,7 +10,7 @@ import 'package:pokemoney/constants/AppColors.dart';
 /// such as logging out or accessing settings.
 class AccountCard extends StatelessWidget {
   /// The [Account] object associated with this widget.
-  final Account _account;
+  final User _account;
 
   /// Constructs an [AccountCard] widget.
   ///
@@ -43,7 +43,7 @@ class AccountCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(_account.accountName, style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
-        Text(_account.type, style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.w500)),
+        Text(_account.email, style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.w500)),
       ],
     );
   }

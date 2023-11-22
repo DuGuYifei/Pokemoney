@@ -6,20 +6,20 @@ class CategoryService {
 
   Future<int> addCategory(Category category) async {
     var dbClient = await _dbHelper.db;
-    int res = await dbClient.insert("categories", category.toMap());
+    int res = await dbClient.insert("t_categories", category.toMap());
     return res;
   }
 
   Future<List<Category>> getAllCategory() async {
     var dbClient = await _dbHelper.db;
-    var result = await dbClient.query("categories");
+    var result = await dbClient.query("t_categories");
     return result.map((map) => Category.fromMap(map)).toList();
   }
 
   Future<Category> getCategoryById(int categoryId) async {
     var dbClient = await _dbHelper.db;
     List<Map<String, dynamic>> maps = await dbClient.query(
-      'categories', // The name of the categories table
+      't_categories', // The name of the t_categories table
       where: 'id = ?',
       whereArgs: [categoryId],
     );
@@ -35,11 +35,11 @@ class CategoryService {
 
   Future<int> updateCategory(Category category) async {
     var dbClient = await _dbHelper.db;
-    return await dbClient.update("categories", category.toMap(), where: "id = ?", whereArgs: [category.id]);
+    return await dbClient.update("t_categories", category.toMap(), where: "id = ?", whereArgs: [category.id]);
   }
 
   Future<int> deleteCategory(int id) async {
     var dbClient = await _dbHelper.db;
-    return await dbClient.delete("categories", where: "id = ?", whereArgs: [id]);
+    return await dbClient.delete("t_categories", where: "id = ?", whereArgs: [id]);
   }
 }

@@ -65,7 +65,7 @@ class LedgerBookCard extends StatelessWidget {
                 child: Column(
                   children: [
                     const Text(
-                      'Balance',
+                      'Total',
                       style: TextStyle(
                         fontFamily: 'Cera Pro',
                         color: Color(0x7FFFFFFF),
@@ -90,7 +90,7 @@ class LedgerBookCard extends StatelessWidget {
                 child: Column(
                   children: [
                     const Text(
-                      'Initial Balance',
+                      'Budget',
                       style: TextStyle(
                         fontFamily: 'Cera Pro',
                         color: Color(0x7FFFFFFF),
@@ -99,7 +99,7 @@ class LedgerBookCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '\$${_ledgerBook.initialBalance.toStringAsFixed(2)}',
+                      '\$${_ledgerBook.budget.toStringAsFixed(2)}',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,

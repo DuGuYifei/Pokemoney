@@ -9,7 +9,7 @@ import 'package:pokemoney/constants/AppColors.dart';
 class HeaderAccountCard extends StatelessWidget {
   /// Represents the account details.
   /// It requires an instance of `Account`.
-  final Account account;
+  final User account;
 
   /// Constructor for `HeaderAccountCard`.
   ///
@@ -97,7 +97,7 @@ class HeaderAccountCard extends StatelessWidget {
             style:
                 const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
         const SizedBox(height: 3.0),
-        Text(account.type,
+        Text(account.email,
             style:
                 const TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600)),
       ],

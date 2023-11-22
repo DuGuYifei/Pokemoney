@@ -6,21 +6,21 @@ class TransactionService {
 
   Future<int> addTransaction(pokemoney.Transaction transaction) async {
     var dbClient = await _dbHelper.db;
-    int res = await dbClient.insert("transactions", transaction.toMap());
+    int res = await dbClient.insert("t_transactions", transaction.toMap());
     return res;
   }
 
   Future<List<pokemoney.Transaction>> getAllTransactions() async {
     var dbClient = await _dbHelper.db;
-    var result = await dbClient.query("transactions");
+    var result = await dbClient.query("t_transactions");
     return result.map((map) => pokemoney.Transaction.fromMap(map)).toList();
   }
 
-  // Method to get transactions by LedgerBookId
+  // Method to get t_transactions by LedgerBookId
   Future<List<pokemoney.Transaction>> getTransactionsByLedgerBookId(int ledgerBookId) async {
     var dbClient = await _dbHelper.db;
     var result = await dbClient.query(
-      "transactions",
+      "t_transactions",
       where: "ledgerBookId = ?",
       whereArgs: [ledgerBookId],
     );
@@ -30,7 +30,7 @@ class TransactionService {
   Future<int> updateTransaction(pokemoney.Transaction transaction) async {
     var dbClient = await _dbHelper.db;
     return await dbClient.update(
-      "transactions",
+      "t_transactions",
       transaction.toMap(),
       where: "id = ?",
       whereArgs: [transaction.id],
@@ -39,13 +39,13 @@ class TransactionService {
 
   Future<int> deleteTransaction(int id) async {
     var dbClient = await _dbHelper.db;
-    return await dbClient.delete("transactions", where: "id = ?", whereArgs: [id]);
+    return await dbClient.delete("t_transactions", where: "id = ?", whereArgs: [id]);
   }
 
   Future<pokemoney.Category> getCategoryById(int categoryId) async {
     var dbClient = await _dbHelper.db;
     List<Map> maps = await dbClient.query(
-      "categories",
+      "t_categories",
       columns: ["id", "name", "iconPath"],
       where: "id = ?",
       whereArgs: [categoryId],
@@ -62,7 +62,7 @@ class TransactionService {
     var dbClient = await DBHelper().db;
     var result = await dbClient.rawQuery('''
     SELECT SUM(CASE WHEN type='Income' THEN amount ELSE -amount END) as total
-    FROM transactions
+    FROM t_transactions
     WHERE ledgerBookId = ?
   ''', [ledgerBookId]);
 

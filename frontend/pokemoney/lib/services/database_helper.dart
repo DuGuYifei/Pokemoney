@@ -33,7 +33,7 @@ class DBHelper {
     for (var category in initialCategories) {
       // Check if this category already exists
       var result = await db.query(
-        'categories',
+        't_categories',
         where: 'name = ?',
         whereArgs: [category.name],
       );
@@ -41,7 +41,7 @@ class DBHelper {
       // If the category does not exist, insert it
       if (result.isEmpty) {
         await db.insert(
-          'categories',
+          't_categories',
           category.toMap(),
           conflictAlgorithm: ConflictAlgorithm.ignore,
         );
@@ -62,61 +62,69 @@ class DBHelper {
   }
 
   void _onCreate(Database db, int version) async {
-    // Creating the 'accounts' table
+    // Create the 't_users' table
     await db.execute('''
-  CREATE TABLE accounts(
-    id INTEGER PRIMARY KEY, 
-    accountName TEXT NOT NULL, 
-    type TEXT NOT NULL, 
-    pictureUrl TEXT, 
-    headerPicture TEXT)
-''');
+      CREATE TABLE t_users(
+        id INTEGER PRIMARY KEY, 
+        userName TEXT NOT NULL,
+        email TEXT NOT NULL,
+        pictureUrl TEXT, 
+        headerPicture TEXT)
+    ''');
 
-// Creating the 'ledger_books' table
+    // Create the 't_ledger_books' table
     await db.execute('''
-  CREATE TABLE ledger_books(
-    id INTEGER PRIMARY KEY,
-          accountId INTEGER NOT NULL,
-          title TEXT NOT NULL,
-          description TEXT,
-          initialBalance REAL NOT NULL DEFAULT 0, 
-          creationDate TEXT NOT NULL,
-          FOREIGN KEY (accountId) REFERENCES accounts(id))
-''');
+      CREATE TABLE t_ledger_books(
+        id INTEGER PRIMARY KEY,
+        title TEXT NOT NULL,
+        budget REAL DEFAULT 1000000,
+        owner INTEGER NOT NULL,
+        editors TEXT NOT NULL,
+        createAt TEXT NOT NULL,
+        updateAt TEXT NOT NULL,
+        delFlag INTEGER NOT NULL,
+        FOREIGN KEY (owner) REFERENCES t_users(id))
+    ''');
 
-// Creating the 'categories' table
+    // Create the 't_categories' table
     await db.execute('''
-  CREATE TABLE categories(
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT,
-    iconPath TEXT)
-''');
+      CREATE TABLE t_categories(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        iconPath TEXT)
+    ''');
 
-// Creating the 'transactions' table
+    // Create the 't_funds' table
     await db.execute('''
-  CREATE TABLE transactions(
-    id INTEGER PRIMARY KEY, 
-    ledgerBookId INTEGER NOT NULL, 
-    categoryId INTEGER NOT NULL, 
-    invoiceNumber TEXT NOT NULL, 
-    billingDate TEXT NOT NULL, 
-    amount REAL NOT NULL, 
-    type TEXT NOT NULL, 
-    FOREIGN KEY (ledgerBookId) REFERENCES ledger_books(id),
-    FOREIGN KEY (categoryId) REFERENCES categories(id))
-''');
+      CREATE TABLE t_funds(
+        id INTEGER PRIMARY KEY, 
+        name TEXT NOT NULL, 
+        balance REAL NOT NULL, 
+        creationDate TEXT NOT NULL, 
+        owner INTEGER NOT NULL,
+        editors TEXT NOT NULL,
+        updateAt TEXT NOT NULL,
+        delFlag INTEGER NOT NULL,
+        FOREIGN KEY (owner) REFERENCES t_users(id))
+    ''');
 
-// Creating the 'funds' table
+    // Create the 't_transactions' table
     await db.execute('''
-  CREATE TABLE funds(
-    id INTEGER PRIMARY KEY, 
-    accountId INTEGER NOT NULL, 
-    balance REAL NOT NULL, 
-    name TEXT NOT NULL, 
-    creationDate TEXT NOT NULL, 
-    type TEXT NOT NULL, 
-    FOREIGN KEY (accountId) REFERENCES accounts(id))
-''');
+      CREATE TABLE t_transactions(
+        id INTEGER PRIMARY KEY, 
+        ledgerBookId INTEGER NOT NULL, 
+        categoryId INTEGER NOT NULL, 
+        fundId INTEGER NOT NULL, 
+        billingDate TEXT NOT NULL, 
+        invoiceNumber TEXT NOT NULL, 
+        amount REAL NOT NULL, 
+        type TEXT NOT NULL, 
+        relevantEntity TEXT DEFAULT NULL, 
+        comment TEXT DEFAULT NULL, 
+        FOREIGN KEY (fundId) REFERENCES t_funds(id),
+        FOREIGN KEY (ledgerBookId) REFERENCES t_ledger_books(id),
+        FOREIGN KEY (categoryId) REFERENCES t_categories(id))
+    ''');
   }
 
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {

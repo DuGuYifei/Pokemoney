@@ -95,6 +95,7 @@ class _TransactionFormState extends State<TransactionForm> {
     if (_formKey.currentState!.validate()) {
       final pokemoney.Transaction newTransaction = pokemoney.Transaction(
         ledgerBookId: widget.ledgerBook.id!,
+        fundId: 1, // TODO: Replace with actual fund ID
         invoiceNumber: _invoiceNumberController.text,
         billingDate: selectedDate,
         amount: double.parse(_amountController.text),

@@ -3,9 +3,9 @@ import 'package:pokemoney/model/barrel.dart';
 import 'package:pokemoney/widgets/barrel.dart';
 
 class AlertsPage extends StatelessWidget {
-  final Account account;
+  final User user;
 
-  const AlertsPage({super.key, required this.account});
+  const AlertsPage({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,7 @@ class AlertsPage extends StatelessWidget {
         title: const Text('All Alerts'),
       ),
       body: SingleChildScrollView(
-        child: AlertsContainer(account),
+        child: AlertsContainer(user),
       ), // set showAll to true to display all alerts
     );
   }
