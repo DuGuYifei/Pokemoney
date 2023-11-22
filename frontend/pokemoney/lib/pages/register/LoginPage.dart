@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:pokemoney/widgets/barrel.dart';
 import 'package:pokemoney/pages/barrel.dart';
 import 'package:pokemoney/constants/AppColors.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
@@ -10,7 +12,30 @@ class LoginPage extends StatelessWidget {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
 
-  void signUserIn() {}
+  Future<void> signUserIn(BuildContext context) async {
+    var username = usernameController.text;
+    var password = passwordController.text;
+
+    try {
+      var response = await http.post(
+        Uri.parse('YOUR_BACKEND_LOGIN_ENDPOINT'),
+        body: json.encode({'username': username, 'password': password}),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        // Handle successful login
+        var data = json.decode(response.body);
+        // Use the data as needed, e.g., navigate to home page, store user data, etc.
+      } else {
+        // Handle login failure
+        // Show error message
+      }
+    } catch (e) {
+      // Handle network or other errors
+      // Show error message
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,10 +116,7 @@ class LoginPage extends StatelessWidget {
 
           //sign in button
           CustomButton(
-            onPressed: () {
-              // Navigate to another page or perform desired action
-              Navigator.of(context).pushNamed(RouteGenerator.homePage);
-            },
+            onPressed: () => signUserIn(context),
             textButton: 'Login',
           ),
 
