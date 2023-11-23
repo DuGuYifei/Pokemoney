@@ -9,3 +9,14 @@ Functionalties to handle in front-end:
 - The View all buttom in the AccountDetailsPage, LederOwnedCard
 - clicking on the ListTile that will direct you to the ledger book that is pointing to in the AccountDetailsPage, LederOwnedCard
 - clicking on the ListTile that will direct you to the alert that is pointing to in the AccountDetailsPage, AlertCard
+
+
+URGENT
+# Create database (each table create two and add one column deletFlage) DONE
+# Adding fund CURD > a transaction choose from a fund; DONE
+# Loging and regest comunication with backend
+# Sync
+
+LATER
+# Viuslation
+# Send request to scan bill

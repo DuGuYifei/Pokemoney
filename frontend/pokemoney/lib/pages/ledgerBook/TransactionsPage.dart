@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pokemoney/model/barrel.dart';
 import 'package:pokemoney/pages/ledgerBook/EditTransactionPage.dart';
+import 'package:pokemoney/providers/FundProvider.dart';
 import 'package:pokemoney/providers/TransactionProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:pokemoney/constants/AppColors.dart';
@@ -277,12 +278,9 @@ class TransactionListItem extends StatelessWidget {
     // Access the category directly from the provider's cache
     Category? category =
         Provider.of<TransactionProvider>(context, listen: false).getCategoryForTransaction(transaction);
-    //print("category path: " + category!.iconPath.toString());
 
-    // If the category is null, the provider will fetch and update the UI accordingly.
-    // Hence, you don't need a FutureBuilder if you are managing state with a provider.
+    Fund? fund = Provider.of<TransactionProvider>(context, listen: false).getFundForTransaction(transaction);
 
-    // Build a UI for the transaction list item
     return Card(
       child: ListTile(
         leading: category != null
@@ -315,7 +313,9 @@ class TransactionListItem extends StatelessWidget {
           ),
         ),
         subtitle: Text('Invoice Number: ${transaction.invoiceNumber}'
-            '\nDate: ${DateFormat('yMMMd').format(transaction.billingDate)} \nType: ${transaction.type}'),
+            '\nDate: ${DateFormat('yMMMd').format(transaction.billingDate)}'
+            '\nType: ${transaction.type}'
+            '\nFund: ${fund != null ? fund.name : ' fund is null'}'),
         trailing: _buildPopupMenu(context),
       ),
     );

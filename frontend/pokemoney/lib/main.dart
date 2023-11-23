@@ -23,8 +23,11 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<LedgerBookProvider>(
           create: (_) => LedgerBookProvider(),
         ),
-        ChangeNotifierProvider<TransactionProvider>(
-          create: (_) => TransactionProvider(),
+      // Using ChangeNotifierProxyProvider to inject FundProvider into TransactionProvider
+        ChangeNotifierProxyProvider<FundProvider, TransactionProvider>(
+          create: (BuildContext context) => TransactionProvider(),
+          update: (BuildContext context, FundProvider fundProvider, TransactionProvider? transactionProvider) =>
+              transactionProvider!..updateFundProvider(fundProvider),
         ),
         ChangeNotifierProvider<CategoryProvider>(
           create: (_) => CategoryProvider(),

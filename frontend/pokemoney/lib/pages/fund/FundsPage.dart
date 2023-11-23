@@ -92,7 +92,6 @@ class _FundsPageState extends State<FundsPage> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
       body: Consumer<FundProvider>(
         builder: (context, fundProvider, child) => fundProvider.funds.isEmpty

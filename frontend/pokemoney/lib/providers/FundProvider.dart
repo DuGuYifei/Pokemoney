@@ -53,4 +53,47 @@ class FundProvider with ChangeNotifier {
     }
     notifyListeners();
   }
+
+  Future<void> updateFund(Fund fund) async {
+    try {
+      await _fundService.updateFund(fund);
+      await fetchAllFunds();
+      _error = null;
+    } catch (e) {
+      _error = 'Failed to update fund: ${e.toString()}';
+      notifyListeners(); // Notify listeners even if update fails
+    }
+  }
+
+  // Updates the fund balance both in the database and the provider
+  Future<void> updateFundBalance(int fundId, double amount, bool isIncome) async {
+    try {
+      // Update the balance in the database
+      await _fundService.updateFundBalance(fundId, amount, isIncome);
+
+      // Fetch the updated fund to reflect the new balance
+      Fund updatedFund = await _fundService.getFundById(fundId);
+
+      // Update the local list of funds
+      int index = _funds.indexWhere((fund) => fund.id == fundId);
+      if (index != -1) {
+        _funds[index] = updatedFund;
+        await fetchAllFunds();
+        notifyListeners();
+      }
+    } catch (e) {
+      // Handle exceptions
+      print('Error updating fund: $e');
+    }
+  }
+
+  // get a fund by id
+  Future<Fund> getFundById(int fundId) async {
+    try {
+      Fund fund = await _fundService.getFundById(fundId);
+      return fund;
+    } catch (e) {
+      throw Exception('Fund with id $fundId not found');
+    }
+  }
 }
