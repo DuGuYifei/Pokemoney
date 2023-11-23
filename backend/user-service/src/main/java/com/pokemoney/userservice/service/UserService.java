@@ -1,11 +1,10 @@
 package com.pokemoney.userservice.service;
 
-import com.pokemoney.commons.proto.Response;
 import com.pokemoney.commons.http.errors.GenericForbiddenError;
 import com.pokemoney.commons.http.errors.GenericInternalServerError;
 import com.pokemoney.leaf.service.api.*;
 import com.pokemoney.redis.service.api.*;
-import com.pokemoney.redis.service.api.exceptions.RedisTriRpcException;
+import com.pokemoney.redis.service.api.exceptions.RedisRpcException;
 import com.pokemoney.userservice.Constants;
 import com.pokemoney.userservice.dto.RequestLoginDto;
 import com.pokemoney.userservice.dto.RequestRegisterCommonUserDto;
@@ -17,10 +16,13 @@ import com.pokemoney.userservice.utils.CodeGenerator;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.apache.dubbo.rpc.RpcException;
+import org.apache.dubbo.rpc.StatusRpcException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.math.BigInteger;
+import java.util.concurrent.ExecutionException;
 
 /**
  * User business logic service.
@@ -38,19 +40,19 @@ public class UserService {
     /**
      * Leaf triple protocol service.
      */
-    @DubboReference
+    @DubboReference(version = "1.0.0", protocol = "tri", group = "leaf", timeout = 10000)
     private final LeafTriService leafTriService;
 
     /**
      * Redis triple protocol service.
      */
-    @DubboReference
+    @DubboReference(version = "1.0.0", protocol = "tri", group = "redis", timeout = 10000)
     private final RedisTriService redisTriService;
 
     /**
      * Constructor.
      *
-     * @param userRepository Repository of t_users table.
+     * @param userRepository        Repository of t_users table.
      */
     public UserService(UserRepository userRepository, LeafTriService leafTriService, RedisTriService redisTriService) {
         this.userRepository = userRepository;
@@ -62,9 +64,10 @@ public class UserService {
      * Save userEntity.
      *
      * @param userEntity UserEntity.
+     * @return UserEntity saved.
      */
-    public void save(UserEntity userEntity) {
-        userRepository.save(userEntity);
+    public UserEntity save(UserEntity userEntity) {
+        return userRepository.save(userEntity);
     }
 
     /**
@@ -93,13 +96,14 @@ public class UserService {
      * @param requestRegisterCommonUserDto RegisterUserDto contains user information from user.
      * @param roleEntity user role
      * @param permission the big integer of permission which each bit means one service
+     * @return UserEntity created.
      */
-    public void createUser(RequestRegisterCommonUserDto requestRegisterCommonUserDto, RoleEntity roleEntity, BigInteger permission) {
+    public UserEntity createUser(RequestRegisterCommonUserDto requestRegisterCommonUserDto, RoleEntity roleEntity, BigInteger permission) {
         LeafResponseDto leafResponseDto = leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(Constants.USER_IN_LEAF_KEY).build());
-        String segmentIdStr = leafResponseDto.getId();
-        Long segmentId = Long.parseLong(segmentIdStr);
-        UserEntity userEntity = UserEntity.fromRegisterUserDto(requestRegisterCommonUserDto, segmentId, roleEntity, permission);
-        save(userEntity);
+        String snowflakeIdStr = leafResponseDto.getId();
+        Long snowflakeId = Long.parseLong(snowflakeIdStr);
+        UserEntity userEntity = UserEntity.fromRegisterUserDto(requestRegisterCommonUserDto, snowflakeId, roleEntity, permission);
+        return save(userEntity);
     }
 
     /**
@@ -185,8 +189,9 @@ public class UserService {
      * Verify the registration code.
      *
      * @param requestRegisterCommonUserDto The {@link RequestRegisterCommonUserDto} to be verified.
-     * @throws GenericForbiddenError If verification code expired or not correct,
-     *                               or email or username already exists.
+     * @throws GenericForbiddenError If verification code not exist or expired,
+     *                              or not correct,
+     *                              or email or username already exists.
      */
     public void verifyRegister(RequestRegisterCommonUserDto requestRegisterCommonUserDto) throws GenericForbiddenError {
         // check username and email not exist
@@ -204,23 +209,26 @@ public class UserService {
                 .build();
 
         String verificationCode;
-        Response responseFromRedis;
+        RedisResponseDto responseFromRedis;
 
         // Get verification code from redis
         try {
             responseFromRedis = redisTriService.get(redisKeyValueGetRequestDto);
-            verificationCode = String.valueOf(responseFromRedis.getStatus());
-        } catch (RedisTriRpcException e) {
-            if (e.getCode() == RedisTriRpcException.KEY_NOT_FOUND) {
-                throw new GenericForbiddenError("Verification code expired or not exist. Please re-register.");
-            } else {
-                throw new RuntimeException(e);
+            verificationCode = responseFromRedis.getData().getValue();
+            if (!verificationCode.equals(requestRegisterCommonUserDto.getVerificationCode())) {
+                throw new GenericForbiddenError("Verification code not match.");
             }
+        } catch (RpcException e) {
+            if (e.getCause() instanceof ExecutionException executionException) {
+                if (executionException.getCause() instanceof StatusRpcException statusRpcException) {
+                    if (RedisRpcException.KEY_NOT_FOUND.equals(statusRpcException.getStatus())) {
+                        throw new GenericForbiddenError("Verification code not exist or expired.");
+                    }
+                }
+            }
+            throw new RuntimeException("Failed to get verification code from redis.", e);
         } catch (Exception e) {
             throw new RuntimeException("Failed to get verification code from redis.", e);
-        }
-        if (!verificationCode.equals(requestRegisterCommonUserDto.getVerificationCode())) {
-            throw new GenericForbiddenError("Verification code not match.");
         }
     }
 }

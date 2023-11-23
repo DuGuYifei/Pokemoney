@@ -23,7 +23,7 @@
     </tr>
     </thead>
     <tbody>
-    <#if data?exists>
+    <#if data??>
         <#list data?keys as key>
             <tr>
                 <td>${key}</td>

@@ -2,13 +2,15 @@ package com.pokemoney.userservice.service;
 
 import com.pokemoney.commons.http.errors.GenericForbiddenError;
 import com.pokemoney.commons.http.errors.GenericNotFoundError;
+import com.pokemoney.leaf.service.api.LeafGetRequestDto;
+import com.pokemoney.leaf.service.api.LeafTriService;
 import com.pokemoney.userservice.Constants;
 import com.pokemoney.userservice.dto.RequestPermissionDto;
 import com.pokemoney.userservice.entity.PermissionEntity;
-import com.pokemoney.userservice.feignclient.LeafClient;
 import com.pokemoney.userservice.repository.PermissionRepository;
 import com.pokemoney.userservice.vo.JwtInfo;
 import lombok.Getter;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -33,19 +35,21 @@ public class PermissionService {
     private final PermissionRepository permissionRepository;
 
     /**
-     * The leaf feign client.
+     * Leaf triple protocol service.
      */
-    private final LeafClient leafClient;
+    @DubboReference(version = "1.0.0", protocol = "tri", group = "leaf", timeout = 10000)
+    private final LeafTriService leafTriService;
 
     /**
      * Constructor.
      *
      * @param permissionRepository Repository of t_permissions table.
+     * @param leafTriService      Leaf triple protocol service.
      */
-    public PermissionService(PermissionRepository permissionRepository, LeafClient leafClient) {
+    public PermissionService(PermissionRepository permissionRepository, LeafTriService leafTriService) {
         this.permissionRepository = permissionRepository;
+        this.leafTriService = leafTriService;
         initPermissionMap();
-        this.leafClient = leafClient;
     }
 
     /**
@@ -60,6 +64,11 @@ public class PermissionService {
         if (value != null) {
             return value;
         }
+        initPermissionMap();
+        value = permissionBitMap.get(serviceName);
+        if (value != null) {
+            return value;
+        }
         throw new RuntimeException("Permission not found");
     }
 
@@ -69,7 +78,8 @@ public class PermissionService {
      * @param requestPermissionDto Add permission dto.
      */
     public void savePermission(RequestPermissionDto requestPermissionDto) {
-        Integer id = Integer.parseInt(leafClient.getSegmentId(Constants.USER_PERMISSION_IN_LEAF_KEY));
+        LeafGetRequestDto leafGetRequestDto = LeafGetRequestDto.newBuilder().setKey(Constants.USER_PERMISSION_IN_LEAF_KEY).build();
+        Integer id = Integer.parseInt(leafTriService.getSegmentId(leafGetRequestDto).getId());
         permissionRepository.save(PermissionEntity.builder().id(id).permissionBit(requestPermissionDto.getPermissionBit()).serviceName(requestPermissionDto.getServiceName()).build());
         permissionBitMap.put(requestPermissionDto.getServiceName(), requestPermissionDto.getPermissionBit());
     }
@@ -94,7 +104,7 @@ public class PermissionService {
      */
     public void verifyPermissionByJwtInfo(JwtInfo jwtInfo, String service) throws GenericForbiddenError, GenericNotFoundError {
         BigInteger servicePermission = new BigInteger(jwtInfo.getPermission());
-        Integer serviceBit = permissionBitMap.get(service);
+        Integer serviceBit = getPermissionBit(service);
         if (serviceBit == null) {
             throw new GenericNotFoundError("Invalid service.");
         }

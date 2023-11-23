@@ -50,7 +50,7 @@ public class SnowflakeZookeeperHolder {
 
     public boolean init() {
         try {
-            CuratorFramework curator = createWithOptions(connectionString, new RetryUntilElapsed(1000, 4), this.zkConnectTimeout, 6000);
+            CuratorFramework curator = createWithOptions(connectionString, new RetryUntilElapsed(1000, 4), this.zkConnectTimeout, 10000);
             curator.start();
             Stat stat = curator.checkExists().forPath(PATH_FOREVER);
             if (stat == null) {

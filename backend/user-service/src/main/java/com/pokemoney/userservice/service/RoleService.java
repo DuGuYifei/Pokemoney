@@ -1,13 +1,15 @@
 package com.pokemoney.userservice.service;
 
 import com.pokemoney.commons.http.errors.GenericForbiddenError;
+import com.pokemoney.leaf.service.api.LeafGetRequestDto;
+import com.pokemoney.leaf.service.api.LeafTriService;
 import com.pokemoney.userservice.Constants;
 import com.pokemoney.userservice.dto.RequestRoleDto;
 import com.pokemoney.userservice.entity.RoleEntity;
-import com.pokemoney.userservice.feignclient.LeafClient;
 import com.pokemoney.userservice.repository.RoleRepository;
 import com.pokemoney.userservice.vo.JwtInfo;
 import lombok.Getter;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -31,19 +33,20 @@ public class RoleService {
     private final RoleRepository roleRepository;
 
     /**
-     * The leaf feign client.
+     * Leaf triple protocol service.
      */
-    private final LeafClient leafClient;
+    @DubboReference(version = "1.0.0", protocol = "tri", group = "leaf", timeout = 10000)
+    private final LeafTriService leafTriService;
 
     /**
      * Constructor.
      *
-     * @param roleRepository Repository of t_roles table.
-     * @param leafClient    The leaf feign client.
+     * @param roleRepository Repository of t_roles table..
+     * @param leafTriService Leaf triple protocol service.
      */
-    public RoleService(RoleRepository roleRepository, LeafClient leafClient) {
+    public RoleService(RoleRepository roleRepository, LeafTriService leafTriService) {
         this.roleRepository = roleRepository;
-        this.leafClient = leafClient;
+        this.leafTriService = leafTriService;
         initRoleMap();
     }
 
@@ -60,6 +63,11 @@ public class RoleService {
         if (roleEntity != null) {
             return roleEntity;
         }
+        initRoleMap();
+        roleEntity = roleMap.get(roleName);
+        if (roleEntity != null) {
+            return roleEntity;
+        }
         throw new RuntimeException("Role not found");
     }
 
@@ -69,7 +77,10 @@ public class RoleService {
      * @param requestRoleDto Role dto.
      */
     public RoleEntity saveRole(RequestRoleDto requestRoleDto) {
-        Integer id = Integer.parseInt(leafClient.getSegmentId(Constants.USER_ROLE_IN_LEAF_KEY));
+        LeafGetRequestDto leafGetRequestDto = LeafGetRequestDto.newBuilder()
+                .setKey(Constants.USER_ROLE_IN_LEAF_KEY)
+                .build();
+        Integer id = Integer.parseInt(leafTriService.getSegmentId(leafGetRequestDto).getId());
         RoleEntity roleEntity = RoleEntity.builder()
                 .id(id)
                 .roleName(requestRoleDto.getRoleName())
@@ -96,6 +107,9 @@ public class RoleService {
      */
     public void verifyRole(JwtInfo jwtInfo, String requiredRoleLevelName) throws GenericForbiddenError {
         RoleEntity roleEntity = getRole(jwtInfo.getRole());
+        if (roleEntity == null) {
+            throw new GenericForbiddenError("No role found for this user.");
+        }
         RoleEntity requiredRoleEntity = getRole(requiredRoleLevelName);
         if (roleEntity.getPermissionLevel() < requiredRoleEntity.getPermissionLevel()) {
             throw new GenericForbiddenError("No permission to access this service.");

@@ -1,0 +1,45 @@
+server:
+    port: 8081
+
+dubbo:
+    registry:
+        address: nacos://localhost:8848
+        group: dubbo-java
+    protocol:
+        name: tri
+        port: 20900
+    application:
+        name: user-service-provider
+        qos-port: 22221
+    config-center:
+        address: nacos://localhost:8848
+        group: dubbo-java
+    metadata-report:
+        address: nacos://localhost:8848
+        group: dubbo-java
+    provider:
+        load-balance: p2c
+
+spring:
+    datasource:
+        url: jdbc:h2:mem:test_db
+        driverClassName: org.h2.Driver
+        username: admin
+        password: admin
+    jpa:
+        database-platform: org.hibernate.dialect.H2Dialect
+        generate-ddl: true
+        hibernate.ddl-auto: update
+        open-in-view: false
+    h2.console.enabled: true
+    mail:
+        host: smtp.gmail.com
+        port: 587
+        username: chnduguyifei
+        password: annysvynnlqnatrf
+        properties:
+            mail.smtp:
+                auth: true
+                starttls:
+                    enable: true
+                    required: true

@@ -13,7 +13,8 @@ import org.springframework.context.annotation.ComponentScan;
         "com.pokemoney.commons.mail",
         "com.pokemoney.commons.http",
         "com.pokemoney.commons.config",
-        "com.pokemoney.redis.service.api"
+        "com.pokemoney.redis.service.api",
+        "com.pokemoney.leaf.service.api"
 })
 @EnableDubbo
 // TODO: 注册为consumer，同时变为provider给verify user token用

@@ -11,7 +11,7 @@ import org.springframework.context.annotation.ComponentScan;
  */
 @SpringBootApplication
 @EnableDubbo
-@ComponentScan(basePackages = {"com.pokemoney.redisservice", "com.pokemoney.redisservice.api", "com.pokemoney.commons.http", "com.pokemoney.commons.config"})
+@ComponentScan(basePackages = {"com.pokemoney.redis.service", "com.pokemoney.redis.service.api", "com.pokemoney.commons.http", "com.pokemoney.commons.config"})
 public class RedisServiceApplication {
     /**
      * Application main entry point.

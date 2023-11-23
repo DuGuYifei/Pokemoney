@@ -83,15 +83,15 @@ public class UserEntity implements Serializable {
      * Create a user from RegisterUserDto
      *
      * @param requestRegisterCommonUserDto RegisterUserDto contains user information from user.
-     * @param segmentId              Segment id.
+     * @param snowflakeId              snowflake id.
      * @param roleEntity            RoleEntity object of user role.
      * @return UserEntity object of user entity (NOT from persistent storage).
      */
-    public static UserEntity fromRegisterUserDto(RequestRegisterCommonUserDto requestRegisterCommonUserDto, Long segmentId, RoleEntity roleEntity, BigInteger permission) {
+    public static UserEntity fromRegisterUserDto(RequestRegisterCommonUserDto requestRegisterCommonUserDto, Long snowflakeId, RoleEntity roleEntity, BigInteger permission) {
         String hashedPassword = BCrypt.hashpw(requestRegisterCommonUserDto.getPassword(), BCrypt.gensalt());
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         return UserEntity.builder()
-                .id(segmentId)
+                .id(snowflakeId)
                 .username(requestRegisterCommonUserDto.getUsername())
                 .password(hashedPassword)
                 .email(requestRegisterCommonUserDto.getEmail())
@@ -126,7 +126,6 @@ public class UserEntity implements Serializable {
      * @return true if the password is correct
      */
     public Boolean verifyPassword(String password){
-        System.out.println(password + " " + this.getPassword());
         return BCrypt.checkpw(password, this.getPassword());
     }
 }

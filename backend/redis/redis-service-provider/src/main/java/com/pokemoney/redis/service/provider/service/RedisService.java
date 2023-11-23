@@ -1,10 +1,11 @@
 package com.pokemoney.redis.service.provider.service;
 
-import com.pokemoney.redisservice.api.exceptions.RedisTriRpcException;
-import com.pokemoney.redisservice.api.*;
+import com.pokemoney.redis.service.api.exceptions.RedisRpcException;
+import com.pokemoney.redis.service.api.*;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.rpc.RpcException;
+import org.apache.dubbo.rpc.StatusRpcException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -74,16 +75,13 @@ public class RedisService {
      */
     public RedisKeyValueDto getByDto(RedisKeyValueGetRequestDto redisKeyValueGetRequestDto){
         String key = redisKeyValueGetRequestDto.getPrefix() + redisKeyValueGetRequestDto.getKey();
-        Long remainTime = redisTemplate.getExpire(key);
-        long returnTimeout = remainTime == null ? -2L : remainTime;
-        if (remainTime != null) {
-            if (remainTime == -2L) {
-                throw new RedisTriRpcException(RedisTriRpcException.KEY_NOT_FOUND, "Key not found.");
-            }
-        }
         Object value = redisTemplate.opsForValue().get(key);
         if (value == null) {
-            throw new RedisTriRpcException(RedisTriRpcException.KEY_NOT_FOUND, "Key not found.");
+            throw new StatusRpcException(RedisRpcException.KEY_NOT_FOUND);
+        }
+        Long returnTimeout = redisTemplate.getExpire(key);
+        if (returnTimeout == null) {
+            returnTimeout = -2L;
         }
         return RedisKeyValueDto.newBuilder()
                 .setKey(redisKeyValueGetRequestDto.getKey())
@@ -120,21 +118,20 @@ public class RedisService {
      */
     public RedisHashKeyValueDto hGetByDto(RedisHashKeyValueGetRequestDto redisHashKeyValueGetRequestDto) {
         String key = redisHashKeyValueGetRequestDto.getPrefix() + redisHashKeyValueGetRequestDto.getKey();
-        Long remainTime = redisTemplate.getExpire(key);
-        if (remainTime != null) {
-            if (remainTime == -2L) {
-                throw new RedisTriRpcException(RedisTriRpcException.KEY_NOT_FOUND, "Key not found.");
-            }
-        }
+
         Map<Object, Object> value = redisTemplate.opsForHash().entries(key);
         Map<String, String> valueMap = new HashMap<>();
         for (Map.Entry<Object, Object> entry : value.entrySet()) {
             valueMap.put((String) entry.getKey(), (String) entry.getValue());
         }
+        Long remainTime = redisTemplate.getExpire(key);
+        if (remainTime == null) {
+            remainTime = -2L;
+        }
         return RedisHashKeyValueDto.newBuilder()
                 .setKey(redisHashKeyValueGetRequestDto.getKey())
                 .putAllValue(valueMap)
-                .setTimeout(remainTime == null ? -2L : remainTime)
+                .setTimeout(remainTime)
                 .setPrefix(redisHashKeyValueGetRequestDto.getPrefix())
                 .build();
     }

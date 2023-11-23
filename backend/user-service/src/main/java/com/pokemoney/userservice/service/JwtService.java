@@ -3,23 +3,26 @@ package com.pokemoney.userservice.service;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.google.protobuf.InvalidProtocolBufferException;
-import com.pokemoney.commons.proto.Response;
+import com.pokemoney.commons.http.errors.GenericForbiddenError;
 import com.pokemoney.redis.service.api.*;
 import com.pokemoney.redis.service.api.RedisTriService;
-import com.pokemoney.redis.service.api.exceptions.RedisTriRpcException;
+import com.pokemoney.redis.service.api.exceptions.RedisRpcException;
 import com.pokemoney.userservice.Constants;
 import com.pokemoney.userservice.Exceptions.JwtVerifyException;
 import com.pokemoney.userservice.entity.UserEntity;
 import com.pokemoney.userservice.vo.JwtInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.apache.dubbo.rpc.RpcException;
+import org.apache.dubbo.rpc.StatusRpcException;
+import org.apache.dubbo.rpc.TriRpcStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 /**
  * JSON Web Token service.
@@ -36,7 +39,7 @@ public class JwtService {
     /**
      * Redis triple protocol service.
      */
-    @DubboReference
+    @DubboReference(version = "1.0.0", protocol = "tri", group = "redis", timeout = 10000)
     private final RedisTriService redisTriService;
 
     /**
@@ -127,22 +130,24 @@ public class JwtService {
      */
     public JwtInfo verifyUserJwtByRedis(String token, Long userId) throws JwtVerifyException.InvalidUserException, JwtVerifyException.InvalidTokenException {
         try {
-            Response response = redisTriService.hGet(RedisHashKeyValueGetRequestDto.newBuilder().setKey(token).setKey(Constants.REDIS_TOKEN_PREFIX).build());
-            RedisHashKeyValueDto redisHashKeyValueDto = response.getData().unpack(RedisHashKeyValueDto.class);
+            RedisResponseDto response = redisTriService.hGet(RedisHashKeyValueGetRequestDto.newBuilder().setKey(token).setKey(Constants.REDIS_TOKEN_PREFIX).build());
+            RedisHashKeyValueDto redisHashKeyValueDto = response.getHashData();
             Map<String, String> hashMapInfo = redisHashKeyValueDto.getValueMap();
             JwtInfo jwtRedisInfo = new JwtInfo().fromMap(hashMapInfo);
             if (!jwtRedisInfo.getUserId().equals(userId.toString())) {
                 throw new JwtVerifyException.InvalidUserException();
             }
             return jwtRedisInfo;
-        } catch (RedisTriRpcException e) {
-            if (e.getCode() == RedisTriRpcException.KEY_NOT_FOUND) {
-                throw new JwtVerifyException.InvalidTokenException();
+        } catch (RpcException e) {
+            if (e.getCause() instanceof ExecutionException executionException) {
+                if (executionException.getCause() instanceof StatusRpcException statusRpcException) {
+                    if (RedisRpcException.KEY_NOT_FOUND.equals(statusRpcException.getStatus())) {
+                        throw new JwtVerifyException.InvalidTokenException();
+                    }
+                }
             }
-        } catch (InvalidProtocolBufferException e) {
             throw new RuntimeException(e);
         }
-        return null;
     }
 
     /**

@@ -17,10 +17,12 @@ import com.pokemoney.userservice.service.JwtService;
 import com.pokemoney.userservice.service.PermissionService;
 import com.pokemoney.userservice.service.RoleService;
 import com.pokemoney.userservice.service.UserService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -81,7 +83,7 @@ public class UserController {
      * @throws GenericInternalServerError If failed in internal server.
      */
     @PostMapping("/register-try")
-    public ResponseEntity<ResponseDto<RequestRegisterCommonUserDto>> tryRegister(@Validated(TryRegisterValidationGroup.class) RequestRegisterCommonUserDto requestRegisterCommonUserDto) throws GenericInternalServerError, GenericForbiddenError {
+    public ResponseEntity<ResponseDto<RequestRegisterCommonUserDto>> tryRegister(@Validated(TryRegisterValidationGroup.class) @RequestBody RequestRegisterCommonUserDto requestRegisterCommonUserDto) throws GenericInternalServerError, GenericForbiddenError {
         String verificationCode = userService.tryRegister(requestRegisterCommonUserDto);
 
         MailProperty mailProperty = MailProperty.builder()
@@ -108,34 +110,37 @@ public class UserController {
 
     /**
      * Verify the registration, and register common user.
+     * Add token in the header authorization. Bearer jwt.
      *
      * @param requestRegisterCommonUserDto The {@link RequestRegisterCommonUserDto} to be registered.
-     * @return The {@link RequestRegisterCommonUserDto} of the result.
-     * @throws GenericForbiddenError If verification code expired,
+     * @return The {@link ResponseLoginDto} of the result.
+     * @throws GenericForbiddenError If verification code not exist or expired,
      *                              or not correct,
      *                              or email or username already exists.
      */
     @PostMapping("/register-verify")
-    public ResponseEntity<ResponseDto<RequestRegisterCommonUserDto>> verifyCommonUserRegister(@Validated(RegisterValidationGroup.class) RequestRegisterCommonUserDto requestRegisterCommonUserDto) throws GenericForbiddenError {
+    public ResponseEntity<ResponseDto<ResponseLoginDto>> verifyCommonUserRegister(@Validated(RegisterValidationGroup.class) @RequestBody RequestRegisterCommonUserDto requestRegisterCommonUserDto, HttpServletResponse response) throws GenericForbiddenError {
         userService.verifyRegister(requestRegisterCommonUserDto);
 
         // save user
         RoleEntity roleEntity = roleService.getRole("user");
         BigInteger permission = BigInteger.ONE.shiftLeft(permissionService.getPermissionBit("basic"));
-
-        userService.createUser(requestRegisterCommonUserDto, roleEntity, permission);
-
+        UserEntity userEntity = userService.createUser(requestRegisterCommonUserDto, roleEntity, permission);
         requestRegisterCommonUserDto.setPassword("*");
         requestRegisterCommonUserDto.setVerificationCode(null);
-        ResponseDto<RequestRegisterCommonUserDto> responseSuccessDto = ResponseDto.<RequestRegisterCommonUserDto>builder()
+        ResponseDto<ResponseLoginDto> responseSuccessDto = ResponseDto.<ResponseLoginDto>builder()
                 .status(1)
                 .message("Register successfully.")
-                .data(requestRegisterCommonUserDto)
+                .data(ResponseLoginDto.builder().id(userEntity.getId()).username(userEntity.getUsername()).email(userEntity.getEmail()).build())
                 .build();
+        UUID id = UUID.randomUUID();
+        String jwt = jwtService.generateJwt(userEntity, id.toString());
+        jwtService.storeJwtStatus(jwt, userEntity, id.toString());
+        response.setHeader("Authorization", "Bearer " + jwt);
         return ResponseEntity.ok(responseSuccessDto);
     }
 
-    /**
+    /**m----------------
      * Login.
      *
      * @param requestLoginDto The {@link RequestLoginDto} to be verified.
@@ -143,15 +148,15 @@ public class UserController {
      * @throws GenericForbiddenError If login forbid.
      */
     @PostMapping("/login")
-    public ResponseEntity<ResponseDto<ResponseLoginDto>> login(@Validated RequestLoginDto requestLoginDto) throws GenericForbiddenError {
+    public ResponseEntity<ResponseDto<ResponseLoginDto>> login(@Validated @RequestBody RequestLoginDto requestLoginDto, HttpServletResponse response) throws GenericForbiddenError {
         RequestVerifyLoginDto requestVerifyLoginDto = userService.generateVerifyLoginDto(requestLoginDto);
         UserEntity userEntity = userService.verifyLogin(requestVerifyLoginDto);
 
         UUID id = UUID.randomUUID();
         String jwt = jwtService.generateJwt(userEntity, id.toString());
         jwtService.storeJwtStatus(jwt, userEntity, id.toString());
-
-        ResponseLoginDto responseLoginDto = ResponseLoginDto.builder().id(userEntity.getId()).jwt(jwt).build();
+        response.setHeader("Authorization", "Bearer " + jwt);
+        ResponseLoginDto responseLoginDto = ResponseLoginDto.builder().id(userEntity.getId()).username(userEntity.getUsername()).email(userEntity.getEmail()).build();
         ResponseDto<ResponseLoginDto> responseSuccessDto = ResponseDto.<ResponseLoginDto>builder()
                 .status(1)
                 .message("Login successfully.")

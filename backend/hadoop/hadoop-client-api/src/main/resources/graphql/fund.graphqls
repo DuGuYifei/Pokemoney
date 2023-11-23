@@ -3,16 +3,16 @@ type Fund {
     name: String!
     balance: Float!
     owner: String!
-    editors: [String]!
+    editors: [Editor]!
     createAt: String!
     updateAt: String!
+    operationId: String!
 }
 
 input AddFundInput {
     name: String!
     balance: Float!
-    owner: String!
-    editors: [String]!
+    owner: ID!
     updateAt: String!
 }
 
@@ -21,7 +21,7 @@ input UpdateFundInput {
     name: String
     balance: Float
     owner: String
-    editors: [String]
+    editors: [UpdateEditorInput]!
     updateAt: String!
 }
 
@@ -29,7 +29,7 @@ input FundFilter {
     minBalance: Float
     maxBalance: Float
     owner: String
-    editors: [String]
+    editors: [ID]
     minCreateAt: String
     maxCreateAt: String
     minUpdatedAt: String
@@ -42,7 +42,7 @@ extend type Query {
 }
 
 extend type Mutation {
-    addFunds(funds: [AddFundInput]!): [Fund]!
-    updateFunds(funds: [UpdateFundInput]!): [Fund]!
-    deleteFunds(fundIds: [ID]!): Boolean!
+    addFunds(operationId: ID!, funds: [AddFundInput]!): [Fund]!
+    updateFunds(operationId: ID!, funds: [UpdateFundInput]!): [Fund]!
+    deleteFunds(operationId: ID!, fundIds: [ID]!): [Fund]!
 }

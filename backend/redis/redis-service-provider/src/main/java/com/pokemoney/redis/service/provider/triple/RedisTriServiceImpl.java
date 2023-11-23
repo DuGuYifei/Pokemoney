@@ -1,8 +1,7 @@
 package com.pokemoney.redis.service.provider.triple;
 
-import com.google.protobuf.Any;
-import com.pokemoney.commons.proto.Response;
-import com.pokemoney.redisservice.api.*;
+import com.pokemoney.commons.proto.ResponseCommonPart;
+import com.pokemoney.redis.service.api.*;
 import com.pokemoney.redis.service.provider.service.RedisService;
 import org.apache.dubbo.config.annotation.DubboService;
 
@@ -28,61 +27,96 @@ public class RedisTriServiceImpl implements RedisTriService {
      * delete value.
      *
      * @param request {@link RedisDelRequestDto}
-     * @return {@link Response}
+     * @return {@link RedisResponseDto}
      */
     @Override
-    public Response del(RedisDelRequestDto request) {
+    public RedisResponseDto del(RedisDelRequestDto request) {
         redisService.del(request);
-        return Response.newBuilder().setMessage("Delete successfully.").setStatus(1).build();
+        return RedisResponseDto.newBuilder()
+                .setResponseCommonPart(
+                        ResponseCommonPart.newBuilder()
+                                .setMessage("Delete successfully.")
+                                .setStatus(1)
+                                .build()
+                )
+                .build();
     }
 
     /**
      * set string value.
      *
      * @param request {@link RedisKeyValueDto}
-     * @return {@link Response}, data should be {@link RedisKeyValueDto}
+     * @return {@link RedisResponseDto}, data should be {@link RedisKeyValueDto}
      */
     @Override
-    public Response set(RedisKeyValueDto request) {
+    public RedisResponseDto set(RedisKeyValueDto request) {
         redisService.setByDto(request);
-        return Response.newBuilder().setMessage("Set successfully.").setStatus(1).build();
+        return RedisResponseDto.newBuilder()
+                .setResponseCommonPart(
+                        ResponseCommonPart.newBuilder()
+                                .setMessage("Set successfully.")
+                                .setStatus(1)
+                                .build()
+                )
+                .build();
     }
 
     /**
      * get string value.
      *
      * @param request {@link RedisKeyValueGetRequestDto}
-     * @return {@link Response}, data should be {@link RedisKeyValueDto}
+     * @return {@link RedisResponseDto}, data should be {@link RedisKeyValueDto}
      */
     @Override
-    public Response get(RedisKeyValueGetRequestDto request) {
+    public RedisResponseDto get(RedisKeyValueGetRequestDto request) {
         RedisKeyValueDto redisKeyValueDto = redisService.getByDto(request);
-        Any anyData = Any.pack(redisKeyValueDto);
-        return Response.newBuilder().setMessage("Get successfully.").setData(anyData).setStatus(1).build();
+        return RedisResponseDto.newBuilder()
+                .setResponseCommonPart(
+                        ResponseCommonPart.newBuilder()
+                                .setMessage("Get successfully.")
+                                .setStatus(1)
+                                .build()
+                )
+                .setData(redisKeyValueDto)
+                .build();
     }
 
     /**
      * set hash value.
      *
      * @param request {@link RedisHashKeyValueDto}
-     * @return {@link Response}
+     * @return {@link RedisResponseDto}
      */
     @Override
-    public Response hSet(RedisHashKeyValueDto request) {
+    public RedisResponseDto hSet(RedisHashKeyValueDto request) {
         redisService.hSetByDto(request);
-        return Response.newBuilder().setMessage("HSet successfully.").setStatus(1).build();
+        return RedisResponseDto.newBuilder()
+                .setResponseCommonPart(
+                        ResponseCommonPart.newBuilder()
+                                .setMessage("HSet successfully.")
+                                .setStatus(1)
+                                .build()
+                )
+                .build();
     }
 
     /**
      * get hash value.
      *
      * @param request {@link RedisHashKeyValueGetRequestDto}
-     * @return {@link Response}, data should be {@link RedisHashKeyValueDto}
+     * @return {@link RedisResponseDto}, data should be {@link RedisHashKeyValueDto}
      */
     @Override
-    public Response hGet(RedisHashKeyValueGetRequestDto request) {
+    public RedisResponseDto hGet(RedisHashKeyValueGetRequestDto request) {
         RedisHashKeyValueDto redisHashKeyValueDto = redisService.hGetByDto(request);
-        Any anyData = Any.pack(redisHashKeyValueDto);
-        return Response.newBuilder().setMessage("HGet successfully.").setData(anyData).setStatus(1).build();
+        return RedisResponseDto.newBuilder()
+                .setResponseCommonPart(
+                        ResponseCommonPart.newBuilder()
+                                .setMessage("HGet successfully.")
+                                .setStatus(1)
+                                .build()
+                )
+                .setHashData(redisHashKeyValueDto)
+                .build();
     }
 }

@@ -8,7 +8,9 @@ type Transaction {
     categoryId: Int!
     SubcategoryId: String!
     ledgerId: String!
+    happenAt: String!
     updatedAt: String!
+    operationId: String!
 }
 
 input AddTransactionInput {
@@ -20,6 +22,7 @@ input AddTransactionInput {
     categoryId: Int!
     SubcategoryId: String!
     ledgerId: String!
+    happenAt: String!
     updatedAt: String!
 }
 
@@ -33,6 +36,7 @@ input UpdateTransactionInput {
     categoryId: Int
     SubcategoryId: String
     ledgerId: String
+    happenAt: String!
     updatedAt: String!
 }
 
@@ -45,6 +49,8 @@ input TransactionFilter {
     categoryIds: [Int]
     subcategoryIds: [String]
     ledgerIds: [String]
+    minHappenAt: String
+    maxHappenAt: String
     minUpdatedAt: String
     maxUpdatedAt: String
 }
@@ -55,7 +61,7 @@ extend type Query {
 }
 
 extend type Mutation {
-    delTransactions(transactionIds: [ID]!): Boolean!
-    addTransactions(transactions: [AddTransactionInput]!): [Transaction]!
-    updateTransactions(transactions: [UpdateTransactionInput]!): [Transaction]!
+    delTransactions(operationId: ID!, transactionIds: [ID]!): [Transaction]!
+    addTransactions(operationId: ID!, transactions: [AddTransactionInput]!): [Transaction]!
+    updateTransactions(operationId: ID!, transactions: [UpdateTransactionInput]!): [Transaction]!
 }

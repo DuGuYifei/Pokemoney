@@ -7,6 +7,15 @@ dubbo:
     group: dubbo-java
   protocol:
     name: tri
-    port: 20881
+    port: 20890
   application:
-    name: redis-service-provider
+    name: leaf-service-provider
+    qos-port: 22222
+  config-center:
+    address: nacos://localhost:8848
+    group: dubbo-java
+  metadata-report:
+    address: nacos://localhost:8848
+    group: dubbo-java
+  provider:
+    load-balance: p2c

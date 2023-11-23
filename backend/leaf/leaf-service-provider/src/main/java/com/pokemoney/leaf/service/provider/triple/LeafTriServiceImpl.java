@@ -1,6 +1,5 @@
 package com.pokemoney.leaf.service.provider.triple;
 
-import com.pokemoney.commons.proto.Response;
 import com.pokemoney.leaf.service.api.LeafGetRequestDto;
 import com.pokemoney.leaf.service.api.LeafTriService;
 import com.pokemoney.leaf.service.api.LeafResponseDto;
@@ -50,7 +49,7 @@ public class LeafTriServiceImpl implements LeafTriService {
      * Get segment id.
      *
      * @param request {@link LeafGetRequestDto}
-     * @return {@link Response}
+     * @return {@link LeafResponseDto}
      */
     @Override
     public LeafResponseDto getSegmentId(LeafGetRequestDto request) {
@@ -63,7 +62,7 @@ public class LeafTriServiceImpl implements LeafTriService {
      * Get snowflake id.
      *
      * @param request {@link LeafGetRequestDto}
-     * @return {@link Response}
+     * @return {@link LeafResponseDto}
      */
     @Override
     public LeafResponseDto getSnowflakeId(LeafGetRequestDto request) {
@@ -77,7 +76,7 @@ public class LeafTriServiceImpl implements LeafTriService {
      *
      * @param key {@link String}
      * @param id  {@link Result}
-     * @return {@link Response}
+     * @return String
      */
     private String get(@PathVariable("key") String key, Result id) {
         Result result;

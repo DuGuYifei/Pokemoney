@@ -10,6 +10,15 @@ dubbo:
     port: 20880
   application:
     name: redis-service-provider
+    qos-port: 22223
+  config-center:
+    address: nacos://localhost:8848
+    group: dubbo-java
+  metadata-report:
+    address: nacos://localhost:8848
+    group: dubbo-java
+  provider:
+    load-balance: p2c
 
 spring.data.redis:
   host: localhost

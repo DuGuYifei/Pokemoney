@@ -15,9 +15,15 @@ public class ResponseLoginDto {
      */
     @NonNull
     private Long id;
+
     /**
-     * The JWT for user.
+     * The user name.
      */
     @NonNull
-    private String jwt;
+    private String username;
+
+    /**
+     * The user email.
+     */
+    private String email;
 }

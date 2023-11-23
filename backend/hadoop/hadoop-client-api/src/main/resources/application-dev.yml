@@ -6,3 +6,6 @@ spring:
     graphiql:
       enabled: true
       path: /api/v1/hadoop/client-api/graphiql
+  datasource:
+    url: jdbc:phoenix:192.168.1.106:2181
+    driver-class-name: org.apache.phoenix.jdbc.PhoenixDriver

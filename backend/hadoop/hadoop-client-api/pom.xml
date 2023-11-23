@@ -20,6 +20,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.pokemoney.hadoop</groupId>
             <artifactId>hadoop-core</artifactId>
             <version>0.0.1-SNAPSHOT</version>

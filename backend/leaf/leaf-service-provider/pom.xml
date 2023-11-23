@@ -14,14 +14,24 @@
     <description>Leaf HTTP Server</description>
     <dependencies>
         <dependency>
+            <groupId>com.pokemoney.leaf.service</groupId>
+            <artifactId>leaf-service-api</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+        <dependency>
             <groupId>com.alibaba.nacos</groupId>
             <artifactId>nacos-client</artifactId>
             <version>${nacos.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.pokemoney.leaf.service</groupId>
-            <artifactId>leaf-service-api</artifactId>
-            <version>1.0.1</version>
+            <groupId>org.apache.dubbo</groupId>
+            <artifactId>dubbo-spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

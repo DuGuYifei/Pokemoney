@@ -12,12 +12,10 @@ type UserInfo {
 
 type FundInfo {
     funds: [ID]
-    delFunds: [ID]
 }
 
 type LedgerInfo {
     ledgers: [ID]
-    delLedgers: [ID]
 }
 
 type AppInfo {
@@ -55,7 +53,7 @@ input DeleteSubCategoryInput {
     subCategoryId: ID!
 }
 
-type Mutation {
+extend type Mutation {
     addSubCategories(subCategories: [AddSubCategoryInput]!): [SubCategory]!
     updateSubCategories(subCategories: [UpdateSubCategoryInput]!): [SubCategory]!
     deleteSubCategories(subCategories: [DeleteSubCategoryInput]!): [SubCategory]!

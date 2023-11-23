@@ -1,0 +1,17 @@
+type Editor {
+    userId: ID!
+    email: String!
+    name: String!
+}
+
+input AddEditorInput {
+    email: String!
+}
+
+input RemoveEditorInput {
+    email: String!
+}
+
+extend type Mutation {
+    addFundEditor(editor: AddEditorInput!, fundId: ID!): Fund!
+}

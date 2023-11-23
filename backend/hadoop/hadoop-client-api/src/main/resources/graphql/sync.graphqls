@@ -1,0 +1,26 @@
+type SyncReturn {
+    Fund: [Fund]!
+    Ledger: [Ledger]!
+    Transaction: [Transaction]!
+    Category: [Category]!
+    User: User!
+}
+
+
+
+type Mutation {
+    syncAll(
+        addFund: [AddFundInput]!,
+        updateFund: [UpdateFundInput]!,
+        deleteFund: [ID]!,
+        addLedger: [AddLedgerInput]!,
+        updateLedger: [UpdateLedgerInput]!,
+        deleteLedger: [ID]!,
+        addTransaction: [AddTransactionInput]!,
+        updateTransaction: [UpdateTransactionInput]!,
+        deleteTransaction: [ID]!,
+        addSubCategories: [AddSubCategoryInput]!,
+        updateSubCategories: [UpdateSubCategoryInput]!,
+        deleteSubCategories: [ID]!
+    ): SyncReturn!
+}

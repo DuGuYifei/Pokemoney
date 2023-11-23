@@ -3,9 +3,10 @@ type Ledger {
     name: String!
     budget: Float
     owner: String!
-    editors: [String]!
+    editors: [Editor]!
     createAt: String!
     updateAt: String!
+    operationId: ID!
 }
 
 input AddLedgerInput {
@@ -21,7 +22,8 @@ input UpdateLedgerInput {
     name: String
     budget: Float
     owner: String
-    editors: [String]
+    editors: [RemoveEditorInput]!
+    addEditors: [AddEditorInput]!
     updateAt: String!
 }
 
@@ -42,7 +44,7 @@ extend type Query {
 }
 
 extend type Mutation {
-    addLedgers(ledgers: [AddLedgerInput]!): [Ledger]!
-    updateLedgers(ledgers: [UpdateLedgerInput]!): [Ledger]!
-    deleteLedgers(ledgerIds: [ID]!): Boolean!
+    addLedgers(operationId: ID!, ledgers: [AddLedgerInput]!): [Ledger]!
+    updateLedgers(operationId: ID!, ledgers: [UpdateLedgerInput]!): [Ledger]!
+    deleteLedgers(operationId: ID!, ledgerIds: [ID]!): Boolean!
 }
