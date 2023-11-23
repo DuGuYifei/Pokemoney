@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pokemoney/RouteGenerator.dart';
+import 'package:pokemoney/providers/FundProvider.dart';
 import 'package:pokemoney/providers/TransactionProvider.dart';
 import 'package:pokemoney/providers/CategoryProvider.dart';
-import 'package:provider/provider.dart';
 import 'package:pokemoney/providers/LedgerBookProvider.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,6 +17,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider<FundProvider>(
+          create: (_) => FundProvider(),
+        ),
         ChangeNotifierProvider<LedgerBookProvider>(
           create: (_) => LedgerBookProvider(),
         ),

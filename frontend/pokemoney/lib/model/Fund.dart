@@ -1,20 +1,18 @@
 class Fund {
-  int id;
+  int? id;
   String name;
   double balance;
   DateTime creationDate;
-  String type;
   int owner; // New field
   String editors; // New field
   DateTime updateAt; // New field
   int delFlag; // New field
 
   Fund({
-    required this.id,
+    this.id,
     required this.name,
     required this.balance,
     required this.creationDate,
-    required this.type,
     required this.owner,
     required this.editors,
     required this.updateAt,
@@ -40,7 +38,6 @@ class Fund {
       name: map['name'],
       balance: map['balance'],
       creationDate: DateTime.parse(map['creationDate']),
-      type: map['type'],
       owner: map['owner'],
       editors: map['editors'],
       updateAt: DateTime.parse(map['updateAt']),
