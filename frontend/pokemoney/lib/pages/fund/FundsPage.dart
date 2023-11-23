@@ -12,6 +12,17 @@ class FundsPage extends StatefulWidget {
 }
 
 class _FundsPageState extends State<FundsPage> {
+  @override
+  void initState() {
+    super.initState();
+    fetchFunds();
+  }
+
+  // Fetches all funds from the provider and updates the loading state
+  void fetchFunds() async {
+    await context.read<FundProvider>().fetchAllFunds();
+  }
+
   // Shows a form dialog for adding a new fund
   Future<void> _showForm(BuildContext context) async {
     final formKey = GlobalKey<FormState>();

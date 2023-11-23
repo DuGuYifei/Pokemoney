@@ -89,7 +89,7 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
 
     // Use the transaction provider to update the transaction
     Provider.of<TransactionProvider>(context, listen: false)
-        .updateTransaction(updatedTransaction, updatedTransaction.ledgerBookId)
+        .updateTransaction(updatedTransaction)
         .then((_) {
       Navigator.of(context).pop(); // Dismiss the page when the update is complete
     }).catchError((error) {

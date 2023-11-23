@@ -17,37 +17,23 @@ class LedgerBookDetailsPage extends StatefulWidget {
 }
 
 class _LedgerBookDetailsPageState extends State<LedgerBookDetailsPage> {
-  late LedgerBook _currentLedgerBook;
-
-  @override
-  void initState() {
-    super.initState();
-    _currentLedgerBook = widget.ledgerBook;
-    _fetchData();
-  }
-
-  void _fetchData() {
-    var ledgerBookProvider = Provider.of<LedgerBookProvider>(context, listen: false);
-    var transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
-
-    ledgerBookProvider.fetchLedgerBookDetails(_currentLedgerBook.id!).then((_) {
-      setState(() {
-        _currentLedgerBook = ledgerBookProvider.ledgerBooks.firstWhere(
-          (lb) => lb.id == _currentLedgerBook.id,
-          orElse: () => _currentLedgerBook,
-        );
-      });
-    });
-
-    transactionProvider.fetchTransactionsForLedgerBook(_currentLedgerBook.id!);
-  }
-
+ 
   @override
   Widget build(BuildContext context) {
+    // Watching providers
+    final ledgerBookProvider = context.watch<LedgerBookProvider>();
+    final transactionProvider = context.watch<TransactionProvider>();
+
+    // Retrieve the updated ledger book or fallback to the one passed in the widget
+    LedgerBook currentLedgerBook = ledgerBookProvider.ledgerBooks.firstWhere(
+      (lb) => lb.id == widget.ledgerBook.id,
+      orElse: () => widget.ledgerBook,
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          _currentLedgerBook.title,
+          currentLedgerBook.title,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -59,13 +45,13 @@ class _LedgerBookDetailsPageState extends State<LedgerBookDetailsPage> {
         child: ListView(
           children: [
             LedgerBookCard(
-                _currentLedgerBook, 'assets/backgorund_credit/small_background_creditcard.png', false),
+                currentLedgerBook, 'assets/backgorund_credit/small_background_creditcard.png', false),
             const SizedBox(height: 10),
             const CollaboratorSection(),
             const SizedBox(height: 10),
             HistoryTransactionsSection(
-              transactions: Provider.of<TransactionProvider>(context).transactions,
-              ledgerBook: widget.ledgerBook,
+              transactions: transactionProvider.transactions,
+              ledgerBook: currentLedgerBook,
             ),
             const SizedBox(height: 10),
           ],
@@ -78,7 +64,6 @@ class _LedgerBookDetailsPageState extends State<LedgerBookDetailsPage> {
                 builder: (context) => TransactionForm(ledgerBook: widget.ledgerBook),
               ),
             );
-            _fetchData();
           },
           icon: const Icon(Icons.add),
           label: const Text('Transactions')),

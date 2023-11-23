@@ -11,18 +11,19 @@ class TransactionProvider with ChangeNotifier {
   final TransactionService _transactionService = TransactionService();
   final CategoryService _categoryService = CategoryService();
   final FundService _fundService = FundService(); // FundService instance
-  final LedgerBookProvider _ledgerBookProvider = LedgerBookProvider();
   FundProvider? _fundProvider;
+  LedgerBookProvider? _ledgerBookProvider;
 
- // Constructor takes an initial FundProvider, which can be null
-  TransactionProvider([this._fundProvider]);
+  // Constructor takes an initial FundProvider, which can be null
+  TransactionProvider({FundProvider? fundProvider, LedgerBookProvider? ledgerBookProvider})
+      : _fundProvider = fundProvider,
+        _ledgerBookProvider = ledgerBookProvider;
 
-  // Method to update the FundProvider instance
-  void updateFundProvider(FundProvider newFundProvider) {
-    _fundProvider = newFundProvider;
-
-    // Optional: If you need to do something right after updating the FundProvider,
-    // such as fetching new data, you can add that logic here.
+  void updateProviders(FundProvider fundProvider, LedgerBookProvider ledgerBookProvider) {
+    _fundProvider = fundProvider;
+    _ledgerBookProvider = ledgerBookProvider;
+    // Optional: Perform any initialization or data fetching here
+    notifyListeners();
   }
 
   List<pokemoney.Transaction> _transactions = [];
@@ -55,8 +56,10 @@ class TransactionProvider with ChangeNotifier {
   Future<void> addTransaction(pokemoney.Transaction transaction) async {
     await _transactionService.addTransaction(transaction);
     await _fetchCategoryAndFund(transaction);
-    _transactionService.getTotalBalanceForLedgerBook(transaction.ledgerBookId);
 
+    if (_ledgerBookProvider != null) {
+      await _ledgerBookProvider!.fetchLedgerBookDetails(transaction.ledgerBookId);
+    }
     // Determine if the transaction is an income or expense
     bool isIncome = transaction.type.toLowerCase() == 'income';
 
@@ -66,17 +69,25 @@ class TransactionProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  updateTransaction(pokemoney.Transaction transaction, int ledgerBookId) async {
+  updateTransaction(pokemoney.Transaction transaction) async {
     await _transactionService.updateTransaction(transaction);
-    fetchTransactionsForLedgerBook(ledgerBookId);
-    await _ledgerBookProvider.fetchLedgerBookDetails(ledgerBookId);
+
+    fetchTransactionsForLedgerBook(transaction.ledgerBookId);
+
+    if (_ledgerBookProvider != null) {
+      await _ledgerBookProvider!.fetchLedgerBookDetails(transaction.ledgerBookId);
+    }
+
     notifyListeners();
   }
 
   // Deletes a transaction
-  Future<void> deleteTransaction(int transactionId, int ledgerBookId) async {
-    await _transactionService.deleteTransaction(transactionId);
-    fetchTransactionsForLedgerBook(ledgerBookId);
+  Future<void> deleteTransaction(pokemoney.Transaction transaction) async {
+    await _transactionService.deleteTransaction(transaction.id!);
+    fetchTransactionsForLedgerBook(transaction.ledgerBookId);
+    if (_ledgerBookProvider != null) {
+      await _ledgerBookProvider!.fetchLedgerBookDetails(transaction.ledgerBookId);
+    }
     notifyListeners();
   }
 

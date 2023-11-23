@@ -221,7 +221,7 @@ class TransactionListItem extends StatelessWidget {
                 onPressed: () {
                   context
                       .read<TransactionProvider>()
-                      .deleteTransaction(transaction.id!, transaction.ledgerBookId!);
+                      .deleteTransaction(transaction);
                   Navigator.of(ctx).pop();
                   onTransactionDeleted(); // Call the callback after deletion
                 },
