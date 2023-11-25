@@ -1,0 +1,40 @@
+# ==========================================
+# send invitation
+type invitationResponse {
+    success: Boolean!
+    message: String
+}
+
+extend type Mutation {
+    inviteFundEditor(editor: AddEditorInput!, fundId: ID!): invitationResponse!
+    removeFundEditor(editor: RemoveEditorInput!, fundId: ID!): invitationResponse!
+    inviteLedgerEditor(editor: AddEditorInput!, ledgerId: ID!): invitationResponse!
+    removeLedgerEditor(editor: RemoveEditorInput!, ledgerId: ID!): invitationResponse!
+}
+
+# ==========================================
+# accept invitation
+type LedgerInvitation {
+    id: ID!
+    invitedBy: Editor!
+    ledgerId: ID!
+}
+
+type FundInvitation {
+    id: ID!
+    invitedBy: Editor!
+    fundId: ID!
+}
+
+type acceptLedgerInvitationResponse {
+    ledger: Ledger!
+}
+
+type acceptFundInvitationResponse {
+    fund: Fund!
+}
+
+extend type Mutation {
+    acceptLedgerInvitation(invitationId: ID!): acceptLedgerInvitationResponse!
+    acceptFundInvitation(invitationId: ID!): acceptFundInvitationResponse!
+}

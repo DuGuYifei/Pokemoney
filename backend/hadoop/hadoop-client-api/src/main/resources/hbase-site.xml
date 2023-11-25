@@ -65,7 +65,7 @@
   </property>
   <property>
     <name>hbase.zookeeper.quorum</name>
-    <value>192.168.1.106</value>
+    <value>43.131.33.18</value>
   </property>
   <property>
     <name>phoenix.schema.isNamespaceMappingEnabled</name>

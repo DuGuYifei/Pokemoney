@@ -1,53 +1,50 @@
 package com.pokemoney.hadoop.hbase.dto.fund;
 
+
+import com.pokemoney.hadoop.hbase.dto.editor.EditorDto;
 import lombok.*;
 
+import java.util.Date;
+import java.util.List;
+
 /**
- * General Fund DTO
+ * fund DTO
  */
 @Data
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class FundDto {
+public class Fund {
     /**
-     * The field name mapping to column name.
-     */
-    public static final String[] FIELD_NAME_MAPPING = {
-            "fundId", "fund_info.fund_id",
-            "name", "fund_info.name",
-            "balance", "fund_info.balance",
-            "owner", "fund_info.owner",
-            "editors", "fund_info.editors",
-            "createAt", "fund_info.create_at",
-            "updateAt", "update_info.update_at"
-    };
-    /**
-     * Fund ID.
+     * fund ID.
      */
     private Long fundId;
     /**
-     * Fund name.
+     * fund name.
      */
     private String name;
     /**
-     * Fund balance.
+     * balance of fund.
      */
     private Float balance;
     /**
-     * Fund editors.
+     * user id of the owner of fund.
      */
-    private String[] editors;
+    private Long owner;
     /**
-     * Fund owner.
+     * editors of the editors of fund.
      */
-    private String owner;
+    private List<EditorDto> editors;
     /**
-     * Fund create at. Milliseconds since epoch 1970-01-01 00:00:00 UTC.
+     * create time.
      */
-    private Long createAt;
+    private Date createAt;
     /**
-     * Fund update at. Milliseconds since epoch 1970-01-01 00:00:00 UTC.
+     * update time.
      */
-    private Long updateAt;
+    private Date updateAt;
+    /**
+     * delete flag.
+     */
+    private Integer delFlag;
 }

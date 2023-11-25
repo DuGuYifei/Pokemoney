@@ -1,43 +1,16 @@
 type Transaction {
-    transactionId: String!
+    transactionId: ID!
     money: Float!
     typeId: Int!
     relevantEntity: String!
     comment: String
     fundId: String!
     categoryId: Int!
-    SubcategoryId: String!
+    subcategoryId: String!
     ledgerId: String!
     happenAt: String!
     updatedAt: String!
-    operationId: String!
-}
-
-input AddTransactionInput {
-    money: Float!
-    typeId: Int!
-    relevantEntity: String!
-    comment: String
-    fundId: String!
-    categoryId: Int!
-    SubcategoryId: String!
-    ledgerId: String!
-    happenAt: String!
-    updatedAt: String!
-}
-
-input UpdateTransactionInput {
-    transactionId: String!
-    money: Float
-    typeId: Int
-    relevantEntity: String
-    comment: String
-    fundId: String
-    categoryId: Int
-    SubcategoryId: String
-    ledgerId: String
-    happenAt: String!
-    updatedAt: String!
+    delFlag: Int!
 }
 
 input TransactionFilter {
@@ -53,15 +26,10 @@ input TransactionFilter {
     maxHappenAt: String
     minUpdatedAt: String
     maxUpdatedAt: String
+    delFlag: Int
 }
 
 extend type Query {
     getTransaction(transactionId: ID!): Transaction!
     getTransactions(filter: TransactionFilter!): [Transaction]!
-}
-
-extend type Mutation {
-    delTransactions(operationId: ID!, transactionIds: [ID]!): [Transaction]!
-    addTransactions(operationId: ID!, transactions: [AddTransactionInput]!): [Transaction]!
-    updateTransactions(operationId: ID!, transactions: [UpdateTransactionInput]!): [Transaction]!
 }

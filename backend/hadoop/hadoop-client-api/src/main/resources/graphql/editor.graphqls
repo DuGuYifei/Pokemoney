@@ -9,9 +9,5 @@ input AddEditorInput {
 }
 
 input RemoveEditorInput {
-    email: String!
-}
-
-extend type Mutation {
-    addFundEditor(editor: AddEditorInput!, fundId: ID!): Fund!
+    userId: ID!
 }

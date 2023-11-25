@@ -1,0 +1,1 @@
+package com.pokemoney.hadoop.hbase.dto.sync;

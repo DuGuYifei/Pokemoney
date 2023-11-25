@@ -3,13 +3,13 @@ package com.pokemoney.hadoop.hbase.dto.category;
 import lombok.*;
 
 /**
- * user DTO
+ * editor DTO
  */
 @Data
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class UserDto {
+public class EditorDto {
     /**
      * user ID.
      */
@@ -22,16 +22,4 @@ public class UserDto {
      * name
      */
     private String name;
-    /**
-     * fund info
-     */
-    private UserFundInfoDto fundInfo;
-    /**
-     * Ledger book info
-     */
-    private UserLedgerBookInfoDto ledgerBookInfo;
-    /**
-     * App info
-     */
-    private UserAppInfoDto appInfo;
 }

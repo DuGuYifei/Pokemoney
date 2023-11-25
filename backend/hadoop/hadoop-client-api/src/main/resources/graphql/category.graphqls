@@ -1,0 +1,13 @@
+type Category {
+    categoryId: ID!
+    categoryName: String!
+    delFlag: Int!
+}
+
+type Subcategory {
+    subcategoryId: ID!
+    categoryId: ID!
+    subcategoryName: String!
+    updateAt: String!
+    delFlag: Int!
+}

@@ -140,7 +140,7 @@ public class UserController {
         return ResponseEntity.ok(responseSuccessDto);
     }
 
-    /**m----------------
+    /**
      * Login.
      *
      * @param requestLoginDto The {@link RequestLoginDto} to be verified.

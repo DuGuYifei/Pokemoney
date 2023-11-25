@@ -2,49 +2,26 @@ type Ledger {
     ledgerId: ID!
     name: String!
     budget: Float
-    owner: String!
+    owner: ID!
     editors: [Editor]!
     createAt: String!
     updateAt: String!
-    operationId: ID!
-}
-
-input AddLedgerInput {
-    name: String!
-    budget: Float
-    owner: String!
-    editors: [String]!
-    updateAt: String!
-}
-
-input UpdateLedgerInput {
-    ledgerId: ID!
-    name: String
-    budget: Float
-    owner: String
-    editors: [RemoveEditorInput]!
-    addEditors: [AddEditorInput]!
-    updateAt: String!
+    delFlag: Int!
 }
 
 input LedgerFilter {
     minBudget: Float
     maxBudget: Float
-    owner: String
-    editors: [String]
+    owner: ID
+    editors: [ID]
     minCreateAt: String
     maxCreateAt: String
     minUpdateAt: String
     maxUpdateAt: String
+    delFlag: Int
 }
 
 extend type Query {
     getLedger(ledgerId: ID!): Ledger!
     getLedgers(filter: LedgerFilter): [Ledger]!
-}
-
-extend type Mutation {
-    addLedgers(operationId: ID!, ledgers: [AddLedgerInput]!): [Ledger]!
-    updateLedgers(operationId: ID!, ledgers: [UpdateLedgerInput]!): [Ledger]!
-    deleteLedgers(operationId: ID!, ledgerIds: [ID]!): Boolean!
 }

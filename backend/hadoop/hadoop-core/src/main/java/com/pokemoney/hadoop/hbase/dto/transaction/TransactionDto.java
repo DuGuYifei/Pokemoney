@@ -1,9 +1,9 @@
-package com.pokemoney.hadoop.hbase.dto.transaction;
+package com.pokemoney.hadoop.hbase.dto.category;
 
 import lombok.*;
 
 /**
- * General transaction DTO.
+ * ledger book DTO
  */
 @Data
 @Builder
@@ -11,50 +11,47 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TransactionDto {
     /**
-     * The transaction id.
+     * transaction ID.
      */
     private Long transactionId;
     /**
-     * The transaction money.
+     * amount of this transaction.
      */
     private Float money;
     /**
-     * The transaction type id.
+     * type ID of this transaction.
      */
     private Integer typeId;
     /**
-     * The transaction relevant entity.
+     * relevant entity of this transaction.
      */
     private String relevantEntity;
     /**
-     * The transaction comment.
+     * comment of this transaction.
      */
     private String comment;
     /**
-     * The transaction fund id.
+     * fund ID of this transaction.
      */
-    private Long fundId;
+    private String fundId;
     /**
-     * The transaction category id.
+     * category ID of this transaction.
      */
     private Integer categoryId;
     /**
-     * The transaction subcategory id.
+     * subcategory ID of this transaction.
      */
-    private Long subcategoryId;
+    private String subcategoryId;
     /**
-     * The transaction ledger id.
+     * ledger book ID of this transaction.
      */
-    private Long ledgerId;
+    private String ledgerId;
     /**
-     * The transaction happen at. Milliseconds since epoch 1970-01-01 00:00:00 UTC.
+     * happen time of this transaction.
      */
     private String happenAt;
     /**
-     * The transaction updated at. Milliseconds since epoch 1970-01-01 00:00:00 UTC.
+     * update time of this transaction.
      */
     private String updatedAt;
-    /**
-     *
-     */
 }
