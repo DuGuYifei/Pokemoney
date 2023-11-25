@@ -84,7 +84,7 @@ class _TransactionFormState extends State<TransactionForm> {
     }
   }
 
-  // Updates category dropdown items based on available categories
+  // Updates funds dropdown items based on available funds
   void _updateFundItems(List<pokemoney.Fund> funds) {
     if (funds.isNotEmpty) {
       setState(() {

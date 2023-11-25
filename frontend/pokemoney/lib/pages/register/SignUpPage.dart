@@ -97,29 +97,76 @@ class _SignUpPageState extends State<SignUpPage> {
                 child: ConstrainedBox(
               constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.9),
               child: Column(children: [
+                //logo
+                const CustomSquareTile(
+                  imagePath: 'assets/logo_login.png',
+                  borderRadius: 60,
+                  imageHeight: 275,
+                  paddingImage: 0.0,
+                ),
+
+                const SizedBox(height: 5),
+
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 48.0), // Adjust the left padding as needed
+                    child: Column(
+                      children: [
+                        Text(
+                          'Sign-Up',
+                          style: TextStyle(
+                            color: AppColors.textPrimary,
+                            fontSize: 30.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                //username textfiled;
                 CustomTextField(
                   headerText: 'Username',
                   controller: usernameController,
                   labelText: 'Your username',
                   obscureText: false,
                 ),
+
+                const SizedBox(height: 10),
+
+                //Email textfield
                 CustomTextField(
                   headerText: 'Email',
                   controller: emailController,
                   labelText: 'Your Email',
                   obscureText: false,
                 ),
+
+                const SizedBox(height: 15),
+
+                //password textfield
                 CustomTextField(
                   headerText: 'Password',
                   controller: passwordController,
                   labelText: 'Password',
                   obscureText: true,
                 ),
+
+                const SizedBox(height: 10),
+
+                //confirm password textfield
                 CustomTextField(
                   controller: confirmPasswordController,
                   labelText: 'Confirm password',
                   obscureText: true,
                 ),
+
+                const SizedBox(height: 10),
+
                 Row(
                   children: [
                     const SizedBox(
@@ -148,6 +195,8 @@ class _SignUpPageState extends State<SignUpPage> {
                         clickableText: 'terms and conditions')
                   ],
                 ),
+
+                const SizedBox(height: 15),
                 CustomButton(
                   onPressed: agree && !isLoading ? () => signUserUp() : null,
                   textButton: 'Sign-up',
