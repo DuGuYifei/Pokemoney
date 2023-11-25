@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pokemoney/constants/AppColors.dart';
-import 'package:pokemoney/pages/barrel.dart';
 import 'package:pokemoney/widgets/barrel.dart';
 import 'package:provider/provider.dart';
 import 'package:pokemoney/providers/AuthProvider.dart';
@@ -26,6 +25,7 @@ class _SignUpPageState extends State<SignUpPage> {
     String email = emailController.text;
     String password = passwordController.text;
     String confirmPassword = confirmPasswordController.text;
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     // Check if any field is empty
     if (username.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
@@ -45,8 +45,6 @@ class _SignUpPageState extends State<SignUpPage> {
       return;
     }
 
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-
     try {
       await authProvider.startSignUp(username, email, password);
 
@@ -54,7 +52,11 @@ class _SignUpPageState extends State<SignUpPage> {
         _showDialog(authProvider.errorMessage!);
       } else {
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => VerificationPage(username: username,email: email,password: password,),
+          builder: (context) => VerificationPage(
+            username: username,
+            email: email,
+            password: password,
+          ),
         ));
       }
     } catch (error) {
@@ -67,11 +69,11 @@ class _SignUpPageState extends State<SignUpPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Sign-Up Failed'),
+        title: const Text('Sign-Up Failed'),
         content: Text(message),
         actions: <Widget>[
           TextButton(
-            child: Text('OK'),
+            child: const Text('OK'),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -83,6 +85,8 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = Provider.of<AuthProvider>(context).isLoading;
+
     return Scaffold(
         backgroundColor: AppColors.surface,
         body: GestureDetector(
@@ -93,78 +97,29 @@ class _SignUpPageState extends State<SignUpPage> {
                 child: ConstrainedBox(
               constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.9),
               child: Column(children: [
-                const SizedBox(height: 00),
-
-                //logo
-                const CustomSquareTile(
-                  imagePath: 'assets/logo_login.png',
-                  borderRadius: 60,
-                  imageHeight: 275,
-                  paddingImage: 0.0,
-                ),
-
-                const SizedBox(height: 5),
-
-                const Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 48.0), // Adjust the left padding as needed
-                    child: Column(
-                      children: [
-                        Text(
-                          'Sign-Up',
-                          style: TextStyle(
-                            color: AppColors.textPrimary,
-                            fontSize: 30.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 10),
-
-                //username textfiled;
                 CustomTextField(
                   headerText: 'Username',
                   controller: usernameController,
                   labelText: 'Your username',
                   obscureText: false,
                 ),
-
-                const SizedBox(height: 10),
-
-                //Email textfield
                 CustomTextField(
                   headerText: 'Email',
                   controller: emailController,
                   labelText: 'Your Email',
                   obscureText: false,
                 ),
-
-                const SizedBox(height: 15),
-
-                //password textfield
                 CustomTextField(
                   headerText: 'Password',
                   controller: passwordController,
                   labelText: 'Password',
                   obscureText: true,
                 ),
-
-                const SizedBox(height: 10),
-
-                //confirm password textfield
                 CustomTextField(
                   controller: confirmPasswordController,
                   labelText: 'Confirm password',
                   obscureText: true,
                 ),
-
-                const SizedBox(height: 10),
-
                 Row(
                   children: [
                     const SizedBox(
@@ -193,12 +148,8 @@ class _SignUpPageState extends State<SignUpPage> {
                         clickableText: 'terms and conditions')
                   ],
                 ),
-
-                const SizedBox(height: 15),
-
-                //sign in button
                 CustomButton(
-                  onPressed: agree ? signUserUp : null,
+                  onPressed: agree && !isLoading ? () => signUserUp() : null,
                   textButton: 'Sign-up',
                 ),
               ]),

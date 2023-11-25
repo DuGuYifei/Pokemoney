@@ -10,13 +10,13 @@ import 'package:pokemoney/constants/AppColors.dart';
 /// such as logging out or accessing settings.
 class AccountCard extends StatelessWidget {
   /// The [Account] object associated with this widget.
-  final User _account;
+  final User _user;
 
   /// Constructs an [AccountCard] widget.
   ///
   /// [_account]: The [Account] object that the card will represent.
   /// [key]: An optional key for the widget.
-  const AccountCard(this._account, {Key? key}) : super(key: key);
+  const AccountCard(this._user, {Key? key}) : super(key: key);
 
   /// Handles the menu item selection from the popup menu.
   ///
@@ -42,8 +42,8 @@ class AccountCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(_account.accountName, style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
-        Text(_account.email, style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.w500)),
+        Text(_user.username, style: const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
+        Text(_user.email, style: const TextStyle(fontSize: 14.0, fontWeight: FontWeight.w500)),
       ],
     );
   }
@@ -81,7 +81,7 @@ class AccountCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () =>
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) => AccountDetailsPage(_account))),
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => AccountDetailsPage(_user))),
       child: Padding(
         padding: const EdgeInsets.only(bottom: 5.0),
         child: Card(
@@ -91,7 +91,7 @@ class AccountCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                CircleAvatar(radius: 25, backgroundImage: AssetImage(_account.pictureUrl)),
+                CircleAvatar(radius: 25, backgroundImage: AssetImage(_user.pictureUrl!)),
                 Padding(padding: const EdgeInsets.only(left: 15), child: _buildAccountDetails()),
                 Expanded(child: Container()),
                 _buildPopupMenu(),

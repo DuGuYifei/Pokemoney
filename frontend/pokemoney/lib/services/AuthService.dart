@@ -1,6 +1,7 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:pokemoney/services/SecureStorage.dart';
+import 'package:pokemoney/model/barrel.dart';
 
 class AuthService {
   final String baseUrl;
@@ -61,7 +62,7 @@ class AuthService {
     }
   }
 
-  Future<void> registerVerify(String username, String email, String password, String verificationCode) async {
+  Future<User> registerVerify(String username, String email, String password, String verificationCode) async {
     final url = Uri.parse('$baseUrl$_registerVerify');
     final response = await http.post(
       url,
@@ -76,17 +77,23 @@ class AuthService {
 
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
-      
-      
+
       if (responseData['status'] > 0) {
         String? token = response.headers['authorization'];
-        await secureStorage.saveToken(token!);
+        if (token != null) {
+          await secureStorage.saveToken(token);
 
-        //String token = responseData['token'];
-        //await secureStorage.saveToken(token); // Save the token securely
+          // Assuming responseData['data'] contains user data
+          User user = User.fromJson(responseData['data']);
+          return user;
+        } else {
+          throw Exception('Token not found in response');
+        }
       } else {
-        throw Exception('Failed to sign up: ${response.reasonPhrase}');
+        throw Exception('Failed to verify: ${responseData['message']}');
       }
+    } else {
+      throw Exception('Failed to sign up: ${response.reasonPhrase}');
     }
   }
 

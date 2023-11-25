@@ -1,15 +1,34 @@
 class User {
-  int id;
-  String accountName;
+  int? id;
+  String username;
   String email;
-  String pictureUrl;
-  String headerPicture;
+  String? pictureUrl;
+  String? headerPicture;
 
   User({
     required this.id,
-    required this.accountName,
+    required this.username,
     required this.email,
     required this.pictureUrl,
     required this.headerPicture,
   });
+  
+  User.usernameAndEmail({
+    required this.username,
+    required this.email,
+  });
+
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User.usernameAndEmail(
+      username: json['username'],
+      email: json['email'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'username': username,
+      'email': email,
+    };
+  }
 }

@@ -47,7 +47,7 @@ class RouteGenerator {
         );
       case signUpPage:
         return MaterialPageRoute(
-          builder: (_) => const SignUpPage(),
+          builder: (_) => SignUpPage(),
         );
       case forgotPasswordPage:
         return MaterialPageRoute(

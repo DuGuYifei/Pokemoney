@@ -9,19 +9,19 @@ import 'package:pokemoney/widgets/barrel.dart';
 /// a detailed view with the `HeaderAccountCard`, `LedgerOwnedContainer`,
 /// and `AlertsContainer` related to the account.
 class AccountDetailsPage extends StatelessWidget {
-  final User account;
+  final User user;
 
-  /// Creates an [AccountDetailsPage] with a given [account].
+  /// Creates an [AccountDetailsPage] with a given [user].
   ///
   /// [account]: The [Account] object whose details are to be displayed.
-  const AccountDetailsPage(this.account, {Key? key}) : super(key: key);
+  const AccountDetailsPage(this.user, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          account.accountName,
+          user.username,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -32,11 +32,11 @@ class AccountDetailsPage extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
-            HeaderAccountCard(account),
+            HeaderAccountCard(user),
             const SizedBox(height: 10),
-            LedgerOwnedContainer(account),
+            LedgerOwnedContainer(user),
             const SizedBox(height: 10),
-            AlertsContainer(account),
+            AlertsContainer(user),
           ],
         ),
       ),

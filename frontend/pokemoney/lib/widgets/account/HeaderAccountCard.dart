@@ -9,13 +9,13 @@ import 'package:pokemoney/constants/AppColors.dart';
 class HeaderAccountCard extends StatelessWidget {
   /// Represents the account details.
   /// It requires an instance of `Account`.
-  final User account;
+  final User user;
 
   /// Constructor for `HeaderAccountCard`.
   ///
   /// - `account`: The account data to display.
   /// - `key`: An optional key that uniquely identifies the widget.
-  const HeaderAccountCard(this.account, {Key? key}) : super(key: key);
+  const HeaderAccountCard(this.user, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +45,7 @@ class HeaderAccountCard extends StatelessWidget {
         topRight: Radius.circular(8.0),
       ),
       child: Image.asset(
-        account.headerPicture,
+        user.headerPicture!,
         fit: BoxFit.cover,
         width: double.infinity,
       ),
@@ -62,7 +62,7 @@ class HeaderAccountCard extends StatelessWidget {
         radius: 38,
         child: CircleAvatar(
           radius: 35,
-          backgroundImage: AssetImage(account.pictureUrl),
+          backgroundImage: AssetImage(user.pictureUrl!),
         ),
       ),
     );
@@ -93,11 +93,11 @@ class HeaderAccountCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(account.accountName,
+        Text(user.username,
             style:
                 const TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold)),
         const SizedBox(height: 3.0),
-        Text(account.email,
+        Text(user.email,
             style:
                 const TextStyle(fontSize: 14.0, fontWeight: FontWeight.w600)),
       ],
