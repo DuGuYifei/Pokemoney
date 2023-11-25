@@ -17,7 +17,6 @@ class LedgerBookDetailsPage extends StatefulWidget {
 }
 
 class _LedgerBookDetailsPageState extends State<LedgerBookDetailsPage> {
- 
   @override
   Widget build(BuildContext context) {
     // Watching providers

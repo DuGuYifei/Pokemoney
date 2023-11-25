@@ -1,13 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:pokemoney/widgets/barrel.dart';
-import 'package:pokemoney/dataExample.dart';
+import 'package:provider/provider.dart';
+import 'package:pokemoney/providers/AuthProvider.dart';
+import 'package:pokemoney/pages/register/LoginPage.dart';
 
 class AccountsPage extends StatelessWidget {
   const AccountsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold();
+    final authProvider = Provider.of<AuthProvider>(context);
+
+    return Scaffold(
+        body: Center(
+      child: authProvider.isLoggedIn
+          ? Text('User is logged in')
+          : Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text('User is not logged in'),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginPage()));
+                  },
+                  child: Text('Login/Register'),
+                ),
+              ],
+            ),
+    ));
+  }
+}
+
     //   List<Widget> accountsCards = accountsList.map((accounts) => AccountCard(accounts)).toList();
     //   return Column(
     //     crossAxisAlignment: CrossAxisAlignment.start,
@@ -29,5 +52,3 @@ class AccountsPage extends StatelessWidget {
     //       ),
     //     ],
     //   );
-  }
-}

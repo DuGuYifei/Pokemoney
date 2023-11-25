@@ -4,6 +4,9 @@ import 'package:pokemoney/providers/FundProvider.dart';
 import 'package:pokemoney/providers/TransactionProvider.dart';
 import 'package:pokemoney/providers/CategoryProvider.dart';
 import 'package:pokemoney/providers/LedgerBookProvider.dart';
+import 'package:pokemoney/providers/AuthProvider.dart';
+import 'package:pokemoney/services/AuthService.dart';
+import 'package:pokemoney/services/SecureStorage.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -15,6 +18,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const String apiBaseUrl = "http://42.0.81.32:8081";
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<FundProvider>(
@@ -30,6 +34,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<CategoryProvider>(
           create: (_) => CategoryProvider(),
+        ),
+        ChangeNotifierProvider<AuthProvider>(
+          create: (_) => AuthProvider(AuthService(apiBaseUrl, SecureStorage()), SecureStorage()),
         ),
       ],
       child: MaterialApp(

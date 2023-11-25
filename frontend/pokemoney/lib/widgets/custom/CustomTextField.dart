@@ -45,6 +45,7 @@ class CustomTextField extends StatelessWidget {
             width: 312,
             height: 45,
             child: TextField(
+              controller: controller, // Attach the controller here
               obscureText: obscureText,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
