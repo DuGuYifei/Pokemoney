@@ -22,6 +22,7 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
   late TextEditingController _amountController;
   late TextEditingController _dateController;
   final TextEditingController _customTypeController = TextEditingController();
+  late TextEditingController _commentController;
 
   late String _selectedType;
   late int _selectedCategoryId;
@@ -42,7 +43,7 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
     _selectedType = widget.transaction.type;
     _selectedFundId = widget.transaction.fundId;
     _selectedCategoryId = widget.transaction.categoryId; // default or initial value
-
+    _commentController = TextEditingController(text: widget.transaction.comment);
     fetchAndUpdateCategories();
     fetchAndUpdateFunds();
   }
@@ -102,6 +103,7 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
       billingDate: DateTime.parse(_dateController.text),
       categoryId: _selectedCategoryId,
       fundId: _selectedFundId,
+      comment: _commentController.text,
     );
 
     // Use the transaction provider to update the transaction
@@ -191,6 +193,8 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
                           _buildTextField(_customTypeController, 'Custom Type', 'Please enter a type'),
                         _buildDropdownField<int>(_selectedFundId, 'Fund', _fundItems,
                             (value) => setState(() => _selectedFundId = value!)),
+                        _buildTextField(_commentController, 'comment', 'Please enter the amount',
+                            maxLines: 3, validate: false, keyboardType: TextInputType.multiline),
                         ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
@@ -240,17 +244,24 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
   }
 
   Widget _buildTextField(TextEditingController controller, String label, String errorMessage,
-      {TextInputType keyboardType = TextInputType.text}) {
+      {TextInputType keyboardType = TextInputType.text,
+      int maxLines = 1,
+      int? minLines,
+      bool validate = true}) {
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(labelText: label),
       keyboardType: keyboardType,
-      validator: (value) {
-        if (value == null || value.isEmpty) return errorMessage;
-        if (keyboardType == TextInputType.number && double.tryParse(value) == null)
-          return 'Please enter a valid number';
-        return null;
-      },
+      maxLines: maxLines,
+      minLines: minLines,
+      validator: validate
+          ? (value) {
+              if (value == null || value.isEmpty) return errorMessage;
+              if (keyboardType == TextInputType.number && double.tryParse(value) == null)
+                return 'Please enter a valid number';
+              return null;
+            }
+          : null,
     );
   }
 

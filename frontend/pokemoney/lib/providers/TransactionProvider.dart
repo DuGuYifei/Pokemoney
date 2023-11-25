@@ -92,6 +92,12 @@ class TransactionProvider with ChangeNotifier {
     if (_ledgerBookProvider != null) {
       await _ledgerBookProvider!.fetchLedgerBookDetails(transaction.ledgerBookId);
     }
+
+    // Determine if the transaction is an income or expense
+    bool isIncome = transaction.type.toLowerCase() == 'income';
+
+    // Update the fund's balance
+    await _fundProvider?.updateFundBalance(transaction.fundId, transaction.amount, !isIncome);
     notifyListeners();
   }
 

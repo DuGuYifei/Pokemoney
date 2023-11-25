@@ -22,6 +22,7 @@ class _TransactionFormState extends State<TransactionForm> {
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _invoiceNumberController = TextEditingController();
   final TextEditingController _customTypeController = TextEditingController();
+  final TextEditingController _commentController = TextEditingController();
 
   late String _selectedType;
   late int _selectedCategoryId;
@@ -132,6 +133,7 @@ class _TransactionFormState extends State<TransactionForm> {
         amount: double.parse(_amountController.text),
         type: _selectedType == 'Other' ? _customTypeController.text : _selectedType,
         categoryId: _selectedCategoryId,
+        comment: _commentController.text,
       );
 
       transactionProvider.addTransaction(newTransaction).then((_) {
@@ -204,6 +206,8 @@ class _TransactionFormState extends State<TransactionForm> {
             (value) => setState(() => _selectedCategoryId = value!)),
         _buildDropdownField<int>(
             _selectedFundId, 'Fund', _fundItems, (value) => setState(() => _selectedFundId = value!)),
+        _buildTextField(_commentController, 'comment', 'Please enter the amount',
+            maxLines: 3, validate: false),
         ElevatedButton(
           onPressed: () => _submitForm(transactionProvider),
           child: const Text('Submit'),
@@ -218,17 +222,24 @@ class _TransactionFormState extends State<TransactionForm> {
 
   // Builds a generic text field
   Widget _buildTextField(TextEditingController controller, String label, String errorMessage,
-      {TextInputType keyboardType = TextInputType.text}) {
+      {TextInputType keyboardType = TextInputType.text,
+      int maxLines = 1,
+      int? minLines,
+      bool validate = true}) {
     return TextFormField(
       controller: controller,
       decoration: InputDecoration(labelText: label),
       keyboardType: keyboardType,
-      validator: (value) {
-        if (value == null || value.isEmpty) return errorMessage;
-        if (keyboardType == TextInputType.number && double.tryParse(value) == null)
-          return 'Please enter a valid number';
-        return null;
-      },
+      maxLines: maxLines,
+      minLines: minLines,
+      validator: validate
+          ? (value) {
+              if (value == null || value.isEmpty) return errorMessage;
+              if (keyboardType == TextInputType.number && double.tryParse(value) == null)
+                return 'Please enter a valid number';
+              return null;
+            }
+          : null,
     );
   }
 
