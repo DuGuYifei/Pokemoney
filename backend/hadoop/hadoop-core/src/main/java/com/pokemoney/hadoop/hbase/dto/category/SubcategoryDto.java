@@ -9,7 +9,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class Subcategory {
+public class SubcategoryDto {
     /**
      * subcategory ID.
      */
@@ -25,9 +25,9 @@ public class Subcategory {
     /**
      * update time.
      */
-    private String updateAt;
+    private Long updateAt;
     /**
-     * delete time.
+     * delete flag.
      */
-    private String deleteAt;
+    private Integer delFlag;
 }

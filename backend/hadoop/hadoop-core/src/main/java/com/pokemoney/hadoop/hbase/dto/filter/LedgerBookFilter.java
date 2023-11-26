@@ -23,30 +23,34 @@ public class LedgerBookFilter {
     /**
      * The owner.
      */
-    private String owner;
+    private Long owner;
 
     /**
      * The editors.
      */
-    private String[] editors;
+    private Long[] editors;
 
     /**
      * The min created at. Milliseconds since epoch 1970-01-01 00:00:00 UTC.
      */
-    private String minCreatedAt;
+    private Long minCreatedAt;
 
     /**
      * The max created at. Milliseconds since epoch 1970-01-01 00:00:00 UTC.
      */
-    private String maxCreatedAt;
+    private Long maxCreatedAt;
 
     /**
      * The min updated at. Milliseconds since epoch 1970-01-01 00:00:00 UTC.
      */
-    private String minUpdatedAt;
+    private Long minUpdatedAt;
 
     /**
      * The max updated at. Milliseconds since epoch 1970-01-01 00:00:00 UTC.
      */
-    private String maxUpdatedAt;
+    private Long maxUpdatedAt;
+    /**
+     * The deleted flag.
+     */
+    private Integer delFlag;
 }

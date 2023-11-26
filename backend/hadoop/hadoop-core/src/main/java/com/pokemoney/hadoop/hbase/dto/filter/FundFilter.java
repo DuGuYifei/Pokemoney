@@ -1,7 +1,6 @@
 package com.pokemoney.hadoop.hbase.dto.filter;
 
 import lombok.*;
-import org.apache.ibatis.jdbc.SQL;
 
 /**
  * The graph filter for fund
@@ -24,12 +23,12 @@ public class FundFilter {
     /**
      * The owner.
      */
-    private String owner;
+    private Long owner;
 
     /**
-     * The editors.
+     * The editors ids.
      */
-    private String[] editors;
+    private Long[] editors;
 
     /**
      * The min create at. Milliseconds since epoch 1970-01-01 00:00:00 UTC.
@@ -50,4 +49,9 @@ public class FundFilter {
      * The max update at. Milliseconds since epoch 1970-01-01 00:00:00 UTC.
      */
     private Long maxUpdateAt;
+
+    /**
+     * The deleted flag.
+     */
+    private Integer delFlag;
 }

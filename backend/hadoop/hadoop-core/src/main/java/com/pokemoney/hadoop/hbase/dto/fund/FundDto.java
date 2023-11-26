@@ -14,7 +14,7 @@ import java.util.List;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class Fund {
+public class FundDto {
     /**
      * fund ID.
      */
@@ -38,11 +38,11 @@ public class Fund {
     /**
      * create time.
      */
-    private Date createAt;
+    private Long createAt;
     /**
      * update time.
      */
-    private Date updateAt;
+    private Long updateAt;
     /**
      * delete flag.
      */

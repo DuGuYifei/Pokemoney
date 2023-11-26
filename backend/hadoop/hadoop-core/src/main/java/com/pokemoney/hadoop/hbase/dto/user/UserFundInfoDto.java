@@ -1,4 +1,4 @@
-package com.pokemoney.hadoop.hbase.dto.category;
+package com.pokemoney.hadoop.hbase.dto.user;
 
 import lombok.*;
 
@@ -19,5 +19,5 @@ public class UserFundInfoDto {
     /**
      * deleted fund IDs
      */
-    private List<Long> deletedFundIds;
+    private List<Long> delFundIds;
 }

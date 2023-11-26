@@ -5,7 +5,7 @@
 Download nacos-server zip from release page.
 Link is : [https://github.com/DuGuYifei/Pokemoney/releases/tag/nacos-server](https://github.com/DuGuYifei/Pokemoney/releases/tag/nacos-server)
 
-Unzip and run the following command:
+Unzip to current file folder and run the following command:
 
 ```bash
 cd nacos/bin

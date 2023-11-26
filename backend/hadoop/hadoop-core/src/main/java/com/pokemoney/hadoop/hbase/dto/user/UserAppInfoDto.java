@@ -1,5 +1,7 @@
-package com.pokemoney.hadoop.hbase.dto.category;
+package com.pokemoney.hadoop.hbase.dto.user;
 
+import com.pokemoney.hadoop.hbase.dto.category.CategoryDto;
+import com.pokemoney.hadoop.hbase.dto.category.SubcategoryDto;
 import lombok.*;
 
 import java.util.List;

@@ -20,7 +20,7 @@ public class CategoryModel {
     /**
      * subCategories.
      */
-    private com.pokemoney.hadoop.hbase.dto.category.CategoryDto.SubCategoryDto[] subCategories;
+    private SubCategoryModel[] subCategories;
 
     /**
      * SubCategory DTO

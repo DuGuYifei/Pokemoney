@@ -1,9 +1,9 @@
 package com.pokemoney.hadoop.hbase.enums;
 
 /**
- * transaction type
+ * type of transaction
  */
-public enum TransactionType {
+public enum TransactionTypeEnum {
     /**
      * income
      */
@@ -43,7 +43,7 @@ public enum TransactionType {
      *
      * @param value value
      */
-    TransactionType(int value) {
+    TransactionTypeEnum(int value) {
         this.value = value;
     }
 

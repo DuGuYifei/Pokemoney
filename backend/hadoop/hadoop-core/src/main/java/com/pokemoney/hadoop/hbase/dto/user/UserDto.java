@@ -1,4 +1,4 @@
-package com.pokemoney.hadoop.hbase.dto.category;
+package com.pokemoney.hadoop.hbase.dto.user;
 
 import lombok.*;
 
@@ -29,7 +29,7 @@ public class UserDto {
     /**
      * Ledger book info
      */
-    private UserLedgerBookInfoDto ledgerBookInfo;
+    private UserLedgerBookInfoDto ledgerInfo;
     /**
      * App info
      */

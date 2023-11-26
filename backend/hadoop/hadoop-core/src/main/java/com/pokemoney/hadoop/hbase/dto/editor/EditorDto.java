@@ -1,4 +1,4 @@
-package com.pokemoney.hadoop.hbase.dto.category;
+package com.pokemoney.hadoop.hbase.dto.editor;
 
 import lombok.*;
 

@@ -18,31 +18,8 @@ public class CategoryDto {
      * category name.
      */
     private String categoryName;
-
     /**
-     * subCategories.
+     * deleted flag.
      */
-    private SubCategoryDto[] subCategories;
-
-    /**
-     * SubCategory DTO
-     */
-    @Data
-    @Builder
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class SubCategoryDto {
-        /**
-         * SubCategory ID.
-         */
-        private Long subCategoryId;
-        /**
-         * SubCategory name.
-         */
-        private String subCategoryName;
-        /**
-         * The time when update.
-         */
-        private String updateAt;
-    }
+    private Integer delFlag;
 }

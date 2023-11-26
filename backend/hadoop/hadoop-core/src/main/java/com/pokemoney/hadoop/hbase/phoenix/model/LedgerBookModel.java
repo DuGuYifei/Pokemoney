@@ -3,6 +3,9 @@ package com.pokemoney.hadoop.hbase.phoenix.model;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * The ledger book model.
  */

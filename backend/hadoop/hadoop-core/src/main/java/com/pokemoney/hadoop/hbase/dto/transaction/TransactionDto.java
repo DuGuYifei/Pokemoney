@@ -1,4 +1,4 @@
-package com.pokemoney.hadoop.hbase.dto.category;
+package com.pokemoney.hadoop.hbase.dto.transaction;
 
 import lombok.*;
 
@@ -49,9 +49,13 @@ public class TransactionDto {
     /**
      * happen time of this transaction.
      */
-    private String happenAt;
+    private Long happenAt;
     /**
      * update time of this transaction.
      */
-    private String updatedAt;
+    private Long updatedAt;
+    /**
+     * deleted flag of this transaction.
+     */
+    private Boolean delFlag;
 }
