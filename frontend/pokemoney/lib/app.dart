@@ -45,6 +45,13 @@ class _AppState extends State<App> {
     });
   }
 
+  void _onDrawerItemTapped(int index) {
+    Navigator.of(context).pop(); // Close the drawer
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,7 +79,7 @@ class _AppState extends State<App> {
               },
             ),
           ]),
-      drawer: CustomNavBar(),
+      drawer: CustomNavBar(onItemTapped: _onDrawerItemTapped),
       body: _routers[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,

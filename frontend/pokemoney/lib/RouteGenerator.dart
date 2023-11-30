@@ -14,6 +14,7 @@ class RouteGenerator {
   static const String settingsPage = '/settings';
   static const String statsPage = '/stats';
   static const String stylePage = '/style';
+  static const String categoryPage = '/category';
   static const String privacySecurityPage = '/privacySecurity';
   static const String helpPage = '/help';
 
@@ -60,6 +61,10 @@ class RouteGenerator {
       case statsPage:
         return MaterialPageRoute(
           builder: (_) => const StatsPage(),
+        );
+      case categoryPage:
+        return MaterialPageRoute(
+          builder: (_) => const CategoryPage(),
         );
       case stylePage:
         return MaterialPageRoute(

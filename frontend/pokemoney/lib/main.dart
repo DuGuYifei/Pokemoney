@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pokemoney/RouteGenerator.dart';
+import 'package:pokemoney/providers/DatabaseProvider.dart';
 import 'package:pokemoney/providers/FundProvider.dart';
 import 'package:pokemoney/providers/TransactionProvider.dart';
 import 'package:pokemoney/providers/CategoryProvider.dart';
+import 'package:pokemoney/providers/SubCategoryProvider.dart';
 import 'package:pokemoney/providers/LedgerBookProvider.dart';
 import 'package:pokemoney/providers/AuthProvider.dart';
 import 'package:pokemoney/services/AuthService.dart';
@@ -37,6 +39,12 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<AuthProvider>(
           create: (_) => AuthProvider(AuthService(apiBaseUrl, SecureStorage()), SecureStorage()),
+        ),
+        ChangeNotifierProvider<SubCategoryProvider>(
+          create: (_) => SubCategoryProvider(),
+        ),
+        ChangeNotifierProvider<DatabaseProvider>(
+          create: (_) => DatabaseProvider(),
         ),
       ],
       child: MaterialApp(

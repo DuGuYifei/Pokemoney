@@ -100,7 +100,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
         centerTitle: true,
         backgroundColor: AppColors.surfaceContainer,
       ),
-      backgroundColor: AppColors.surface,
+      backgroundColor: AppColors.whiteBackgorund,
       body: Container(
         child: Column(
           children: [
@@ -219,9 +219,7 @@ class TransactionListItem extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {
-                  context
-                      .read<TransactionProvider>()
-                      .deleteTransaction(transaction);
+                  context.read<TransactionProvider>().deleteTransaction(transaction);
                   Navigator.of(ctx).pop();
                   onTransactionDeleted(); // Call the callback after deletion
                 },
@@ -284,10 +282,13 @@ class TransactionListItem extends StatelessWidget {
     return Card(
       child: ListTile(
         leading: category != null
-            ? SvgPicture.asset(
-                category.iconPath, // Use the iconPath from the Category object
-                width: 45,
-                height: 45,
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(10), // Adjust the radius as needed
+                child: SvgPicture.asset(
+                  category.iconPath,
+                  width: 50,
+                  height: 50,
+                ),
               )
             : const SizedBox(
                 width: 45,

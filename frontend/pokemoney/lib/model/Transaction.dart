@@ -2,7 +2,8 @@ class Transaction {
   final int? id;
   final int ledgerBookId;
   final int categoryId;
-  final int fundId; // New field
+  final int subCategoryId;
+  final int fundId;
   final String invoiceNumber;
   final DateTime billingDate;
   final double amount;
@@ -14,6 +15,7 @@ class Transaction {
     this.id,
     required this.ledgerBookId,
     required this.categoryId,
+    required this.subCategoryId,
     required this.fundId, // Include new field
     required this.invoiceNumber,
     required this.billingDate,
@@ -27,6 +29,7 @@ class Transaction {
     int? id,
     int? ledgerBookId,
     int? categoryId,
+    int? subCategoryId,
     int? fundId, // Include new field
     String? invoiceNumber,
     DateTime? billingDate,
@@ -39,6 +42,7 @@ class Transaction {
       id: id ?? this.id,
       ledgerBookId: ledgerBookId ?? this.ledgerBookId,
       categoryId: categoryId ?? this.categoryId,
+      subCategoryId: subCategoryId ?? this.subCategoryId,
       fundId: fundId ?? this.fundId, // Include new field
       invoiceNumber: invoiceNumber ?? this.invoiceNumber,
       billingDate: billingDate ?? this.billingDate,
@@ -54,6 +58,7 @@ class Transaction {
       'id': id,
       'ledgerBookId': ledgerBookId,
       'categoryId': categoryId,
+      'subCategoryId': subCategoryId,
       'fundId': fundId, // Include new field
       'invoiceNumber': invoiceNumber,
       'billingDate': billingDate.toIso8601String(),
@@ -67,7 +72,7 @@ class Transaction {
   factory Transaction.fromMap(Map<String, dynamic> map) {
     print('Mapping Transaction from: $map');
 
-    if (map['ledgerBookId'] == null || map['categoryId'] == null || map['fundId'] == null) {
+    if (map['ledgerBookId'] == null || map['categoryId'] == null || map['fundId'] == null || map['subCategoryId'] == null) {
       throw ArgumentError('An essential integer field is null: $map');
     }
 
@@ -75,6 +80,7 @@ class Transaction {
       id: map['id'] as int?,
       ledgerBookId: map['ledgerBookId'] as int,
       categoryId: map['categoryId'] as int,
+      subCategoryId: map['subCategoryId'] as int,
       fundId: map['fundId'] as int, // Extract new field
       invoiceNumber: map['invoiceNumber'] as String,
       billingDate: DateTime.parse(map['billingDate'] as String),

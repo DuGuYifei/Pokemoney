@@ -18,7 +18,7 @@ class AppColors {
 
   static const Color tileLists = Colors.white;
   static const Color cardBackgorund = Colors.white;
-
+  static const Color whiteBackgorund = Colors.white;
   //other format of colors Color.fromRGBO(33, 36, 49, 1)
   //cool color Color.fromRGBO(4, 11, 20, 1)
 }

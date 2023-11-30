@@ -21,14 +21,16 @@ class FundProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addFund(Fund fund) async {
+  Future<int> addFund(Fund fund) async {
     try {
       await _fundService.addFund(fund);
       await fetchAllFunds();
       _error = null;
+      return fund.id!;
     } catch (e) {
       _error = 'Failed to add fund: ${e.toString()}';
       notifyListeners(); // Notify listeners even if addition fails
+      return -1;
     }
   }
 

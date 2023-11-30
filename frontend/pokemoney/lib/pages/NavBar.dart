@@ -12,7 +12,8 @@ void switchAccount() {
 }
 
 class CustomNavBar extends StatelessWidget {
-  const CustomNavBar({super.key});
+  final Function(int) onItemTapped;
+  const CustomNavBar({super.key, required this.onItemTapped});
 
   @override
   Widget build(BuildContext context) {
@@ -38,26 +39,22 @@ class CustomNavBar extends StatelessWidget {
           ),
         ),
         CustomHoverableListTile(
-          icon: FontAwesomeIcons.book,
-          title: 'Ledger books',
-          onTap: () =>
-              //Navigator.of(context)?.pushNamed(RouteGenerator.ledgerBooksPage),
-              Navigator.pushNamed(context, RouteGenerator.ledgerBooksPage),
-        ),
+            icon: FontAwesomeIcons.book, title: 'Ledger books', onTap: () => onItemTapped(2)),
         CustomHoverableListTile(
           icon: FontAwesomeIcons.creditCard,
           title: 'Funds',
-          onTap: () => Navigator.of(context).pushNamed(RouteGenerator.fundsPage),
+          onTap: () => onItemTapped(1),
         ),
+        CustomHoverableListTile(icon: Icons.person, title: 'Accoutnts', onTap: () => onItemTapped(3)),
         CustomHoverableListTile(
-          icon: Icons.person,
-          title: 'Accoutnts',
-          onTap: () => Navigator.of(context).pushNamed(RouteGenerator.accountsPage),
+          icon: Icons.bar_chart_outlined,
+          title: 'Stats',
+          onTap: () => Navigator.of(context).pushNamed(RouteGenerator.statsPage),
         ),
         CustomHoverableListTile(
           icon: FontAwesomeIcons.pieChart,
-          title: 'Stats',
-          onTap: () => Navigator.of(context).pushNamed(RouteGenerator.statsPage),
+          title: 'Category',
+          onTap: () => Navigator.of(context).pushNamed(RouteGenerator.categoryPage),
         ),
         Spacer(),
         Divider(

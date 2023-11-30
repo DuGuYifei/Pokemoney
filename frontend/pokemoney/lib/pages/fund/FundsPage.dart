@@ -82,7 +82,7 @@ class _FundsPageState extends State<FundsPage> {
       ElevatedButton(
         onPressed: () {
           if (formKey.currentState!.validate()) {
-            // Use the saved values to create a new Fudn instance and add it
+            // Use the saved values to create a new fund instance and add it
             var newFund = Fund(
               name: titleController.text,
               balance: double.parse(budgetController.text),

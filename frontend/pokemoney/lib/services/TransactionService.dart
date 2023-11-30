@@ -6,21 +6,21 @@ class TransactionService {
 
   Future<int> addTransaction(pokemoney.Transaction transaction) async {
     var dbClient = await _dbHelper.db;
-    int res = await dbClient.insert("t_transactions", transaction.toMap());
+    int res = await dbClient.insert("t_transactions_unsync", transaction.toMap());
     return res;
   }
 
   Future<List<pokemoney.Transaction>> getAllTransactions() async {
     var dbClient = await _dbHelper.db;
-    var result = await dbClient.query("t_transactions");
+    var result = await dbClient.query("t_transactions_unsync");
     return result.map((map) => pokemoney.Transaction.fromMap(map)).toList();
   }
 
-  // Method to get t_transactions by LedgerBookId
+  // Method to get t_transactions_unsync by LedgerBookId
   Future<List<pokemoney.Transaction>> getTransactionsByLedgerBookId(int ledgerBookId) async {
     var dbClient = await _dbHelper.db;
     var result = await dbClient.query(
-      "t_transactions",
+      "t_transactions_unsync",
       where: "ledgerBookId = ?",
       whereArgs: [ledgerBookId],
     );
@@ -30,7 +30,7 @@ class TransactionService {
   Future<int> updateTransaction(pokemoney.Transaction transaction) async {
     var dbClient = await _dbHelper.db;
     return await dbClient.update(
-      "t_transactions",
+      "t_transactions_unsync",
       transaction.toMap(),
       where: "id = ?",
       whereArgs: [transaction.id],
@@ -39,13 +39,13 @@ class TransactionService {
 
   Future<int> deleteTransaction(int id) async {
     var dbClient = await _dbHelper.db;
-    return await dbClient.delete("t_transactions", where: "id = ?", whereArgs: [id]);
+    return await dbClient.delete("t_transactions_unsync", where: "id = ?", whereArgs: [id]);
   }
 
   Future<pokemoney.Category> getCategoryById(int categoryId) async {
     var dbClient = await _dbHelper.db;
     List<Map> maps = await dbClient.query(
-      "t_categories",
+      "t_categories_unsync",
       columns: ["id", "name", "iconPath"],
       where: "id = ?",
       whereArgs: [categoryId],
@@ -62,7 +62,7 @@ class TransactionService {
     var dbClient = await DBHelper().db;
     var result = await dbClient.rawQuery('''
     SELECT SUM(CASE WHEN type='Income' THEN amount ELSE -amount END) as total
-    FROM t_transactions
+    FROM t_transactions_unsync
     WHERE ledgerBookId = ?
   ''', [ledgerBookId]);
 

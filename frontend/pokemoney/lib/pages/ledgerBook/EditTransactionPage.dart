@@ -79,10 +79,13 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
                   value: category.id,
                   child: Row(
                     children: <Widget>[
-                      SvgPicture.asset(
-                        category.iconPath, // The path to the SVG asset
-                        width: 45,
-                        height: 45,
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10), // Adjust the radius as needed
+                        child: SvgPicture.asset(
+                          category.iconPath,
+                          width: 45,
+                          height: 45,
+                        ),
                       ),
                       SizedBox(width: 10),
                       Text(category.name),

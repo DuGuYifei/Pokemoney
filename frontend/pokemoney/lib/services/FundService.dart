@@ -6,25 +6,25 @@ class FundService {
 
   Future<int> addFund(Fund fund) async {
     var dbClient = await _dbHelper.db;
-    int res = await dbClient.insert(" t_funds", fund.toMap());
+    int res = await dbClient.insert(" t_funds_unsync", fund.toMap());
     return res;
   }
 
   Future<List<Fund>> getAllFunds() async {
     var dbClient = await _dbHelper.db;
-    var result = await dbClient.query("t_funds");
+    var result = await dbClient.query("t_funds_unsync");
     return result.map((map) => Fund.fromMap(map)).toList();
   }
 
   Future<int> deleteFund(int id) async {
     var dbClient = await _dbHelper.db;
-    return await dbClient.delete(" t_funds", where: "id = ?", whereArgs: [id]);
+    return await dbClient.delete(" t_funds_unsync", where: "id = ?", whereArgs: [id]);
   }
 
   Future<Fund> getFundById(int fundId) async {
     var dbClient = await _dbHelper.db;
     List<Map> maps = await dbClient.query(
-      " t_funds",
+      " t_funds_unsync",
       columns: ['id', 'name', 'balance', 'creationDate', 'owner', 'editors', 'updateAt', 'delFlag'],
       where: 'id = ?',
       whereArgs: [fundId],
@@ -39,7 +39,7 @@ class FundService {
 
   Future<int> updateFund(Fund fund) async {
     var dbClient = await _dbHelper.db;
-    return await dbClient.update(" t_funds", fund.toMap(), where: "id = ?", whereArgs: [fund.id]);
+    return await dbClient.update(" t_funds_unsync", fund.toMap(), where: "id = ?", whereArgs: [fund.id]);
   }
 
   Future<void> updateFundBalance(int fundId, double amount, bool isIncome) async {
@@ -47,7 +47,7 @@ class FundService {
 
     // Fetch the current balance
     List<Map> maps = await dbClient.query(
-      "t_funds",
+      "t_funds_unsync",
       columns: ['balance'],
       where: 'id = ?',
       whereArgs: [fundId],
@@ -59,7 +59,7 @@ class FundService {
 
       // Update the balance in the database
       await dbClient.update(
-        "t_funds",
+        "t_funds_unsync",
         {'balance': newBalance},
         where: "id = ?",
         whereArgs: [fundId],

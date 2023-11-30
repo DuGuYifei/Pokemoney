@@ -15,4 +15,5 @@ export 'other/SettingsPage.dart';
 export 'other/PrivacySecurityPage.dart';
 export 'other/HelpPage.dart';
 export 'other/AlertsPage.dart';
+export 'other/CategoryPage.dart';
 export 'package:pokemoney/RouteGenerator.dart';

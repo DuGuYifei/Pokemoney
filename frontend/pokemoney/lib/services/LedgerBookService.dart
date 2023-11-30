@@ -6,31 +6,31 @@ class LedgerBookService {
 
   Future<int> addLedgerBook(LedgerBook ledgerBook) async {
     var dbClient = await _dbHelper.db;
-    int res = await dbClient.insert(" t_ledger_books", ledgerBook.toMap());
+    int res = await dbClient.insert(" t_ledger_books_unsync", ledgerBook.toMap());
     return res;
   }
 
   Future<List<LedgerBook>> getAllLedgerBooks() async {
     var dbClient = await _dbHelper.db;
-    var result = await dbClient.query("t_ledger_books");
+    var result = await dbClient.query("t_ledger_books_unsync");
     return result.map((map) => LedgerBook.fromMap(map)).toList();
   }
 
   Future<int> updateLedgerBook(LedgerBook ledgerBook) async {
     var dbClient = await _dbHelper.db;
     return await dbClient
-        .update(" t_ledger_books", ledgerBook.toMap(), where: "id = ?", whereArgs: [ledgerBook.id]);
+        .update(" t_ledger_books_unsync", ledgerBook.toMap(), where: "id = ?", whereArgs: [ledgerBook.id]);
   }
 
   Future<int> deleteLedgerBook(int id) async {
     var dbClient = await _dbHelper.db;
-    return await dbClient.delete(" t_ledger_books", where: "id = ?", whereArgs: [id]);
+    return await dbClient.delete(" t_ledger_books_unsync", where: "id = ?", whereArgs: [id]);
   }
 
   Future<LedgerBook> getLedgerBookById(int ledgerBookId) async {
     var dbClient = await _dbHelper.db;
     List<Map> maps = await dbClient.query(
-      " t_ledger_books",
+      " t_ledger_books_unsync",
       columns: ['id', 'budget', 'title', 'owner', 'createAt', 'updateAt', 'delFlag'],
       where: 'id = ?',
       whereArgs: [ledgerBookId],
@@ -56,7 +56,7 @@ class LedgerBookService {
 
   //   // Fetch the initial balance if necessary
   //   var ledgerResult = await dbClient.query(
-  //     ' t_ledger_books',
+  //     ' t_ledger_books_unsync',
   //     columns: ['initial_balance'],
   //     where: 'id = ?',
   //     whereArgs: [ledgerBookId],
@@ -66,7 +66,7 @@ class LedgerBookService {
   //   // Update the ledger book's balance
   //   double newBalance = initialBalance + transactionsSum;
   //   await dbClient.update(
-  //     ' t_ledger_books',
+  //     ' t_ledger_books_unsync',
   //     {'balance': newBalance},
   //     where: 'id = ?',
   //     whereArgs: [ledgerBookId],
