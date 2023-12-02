@@ -7,6 +7,7 @@ import 'package:pokemoney/providers/SubCategoryProvider.dart';
 import 'package:pokemoney/providers/TransactionProvider.dart';
 import 'package:pokemoney/providers/CategoryProvider.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TransactionForm extends StatefulWidget {
   final pokemoney.LedgerBook ledgerBook;
@@ -126,7 +127,11 @@ class _TransactionFormState extends State<TransactionForm> {
   }
 
   // Updates funds dropdown items based on available funds
-  void _updateFundItems(List<pokemoney.Fund> funds) {
+  void _updateFundItems(List<pokemoney.Fund> funds) async {
+    // Retrieve preferences
+    final prefs = await SharedPreferences.getInstance();
+    int? id = prefs.getInt('id');
+
     if (funds.isNotEmpty) {
       setState(() {
         _selectedFundId = funds.isNotEmpty ? funds.first.id! : -1;
@@ -151,10 +156,11 @@ class _TransactionFormState extends State<TransactionForm> {
                 onTap: () {
                   _showAddItemDialog(context, 'Fund', (name, balance) {
                     final newFund = pokemoney.Fund(
-                      name: name, balance: balance,
+                      name: name,
+                      balance: balance,
                       creationDate: DateTime.now(),
-                      owner: 1, // TODO: Change this to the logged in user's ID
-                      editors: '1', // TODO: Change this to the logged in user's ID
+                      owner: id!,
+                      editors: id.toString(),
                       updateAt: DateTime.now(),
                       delFlag: 0,
                     );
@@ -239,6 +245,10 @@ class _TransactionFormState extends State<TransactionForm> {
   Future<void> _submitForm(TransactionProvider transactionProvider) async {
     final subCategoryProvider = Provider.of<SubCategoryProvider>(context, listen: false);
 
+    // Retrieve preferences asynchronously before showing the dialog
+    final prefs = await SharedPreferences.getInstance();
+    int? id = prefs.getInt('id');
+
     // Wait for all subcategories to be fetched
     await subCategoryProvider.fetchAllSubCategories();
     List<pokemoney.SubCategory> allSubCategories = subCategoryProvider.subCategories.values
@@ -274,6 +284,7 @@ class _TransactionFormState extends State<TransactionForm> {
           categoryId: subCategory.categoryId,
           subCategoryId: _selectedSubCategoryId,
           comment: _commentController.text,
+          updatedBy: id!,
         );
 
         transactionProvider.addTransaction(newTransaction).then((_) {

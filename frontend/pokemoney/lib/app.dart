@@ -67,16 +67,20 @@ class _AppState extends State<App> {
             ),
           ),
           actions: [
-            IconButton(
-              icon: const Icon(
-                FontAwesomeIcons.bell,
-                color: AppColors.textPrimary,
+            Padding(
+              padding: const EdgeInsets.only(right: 10.0),
+              child: ElevatedButton(
+                child: Text('Sync'),
+                style: ElevatedButton.styleFrom(
+                  primary: AppColors.primaryColor,
+                  onPrimary: AppColors.whiteBackgorund,
+                ),
+                onPressed: () {
+
+                  
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Syncing...')));
+                },
               ),
-              tooltip: 'Show Snackbar',
-              onPressed: () {
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(const SnackBar(content: Text('This is a notifications')));
-              },
             ),
           ]),
       drawer: CustomNavBar(onItemTapped: _onDrawerItemTapped),

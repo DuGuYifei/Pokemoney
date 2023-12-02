@@ -20,3 +20,10 @@ URGENT
 LATER
 # Viuslation
 # Send request to scan bill
+
+
+UI to fix:
+    Add validation to the register:
+    the username, should be bigger than 4,
+
+    The user can login in with his username as well

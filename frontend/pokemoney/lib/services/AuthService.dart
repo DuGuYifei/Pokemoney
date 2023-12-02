@@ -10,27 +10,35 @@ class AuthService {
   AuthService(this.baseUrl, this.secureStorage);
 
   // Constants for API endpoints
-  static const String _loginEndpoint = "/login";
+  static const String _loginEndpoint = "/api/v1/user/login";
   static const String _registerTry = "/api/v1/user/register-try";
   static const String _registerVerify = "/api/v1/user/register-verify";
   // Add other endpoints as constants...
 
-  Future<void> login(String email, String password) async {
+  Future<User> login(String email, String password) async {
     final url = Uri.parse('$baseUrl$_loginEndpoint');
     try {
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: json.encode({'email': email, 'password': password}),
+        body: json.encode({'usernameOrEmail': email, 'password': password}),
       );
 
       if (response.statusCode == 200) {
         String? token = response.headers['authorization'];
         await secureStorage.saveToken(token!);
-        // var responseData = json.decode(response.body);
+        var responseData = json.decode(response.body);
+        print("reposne date:" + responseData.toString());
+
+        User user = User.fromJson(responseData['data']);
+        return user;
         // String token = responseData['token'];
         // await secureStorage.saveToken(token);
       } else {
+        var responseData = json.decode(response.body);
+
+        print("reposne date:" + responseData.toString());
+
         // Handle different status codes appropriately
         throw Exception('Failed to login. Status code: ${response.statusCode}');
       }
@@ -83,7 +91,6 @@ class AuthService {
         if (token != null) {
           await secureStorage.saveToken(token);
 
-          // Assuming responseData['data'] contains user data
           User user = User.fromJson(responseData['data']);
           return user;
         } else {

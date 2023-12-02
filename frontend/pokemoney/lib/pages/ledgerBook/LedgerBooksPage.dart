@@ -1,8 +1,11 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:pokemoney/model/barrel.dart';
 import 'package:pokemoney/widgets/barrel.dart';
 import 'package:provider/provider.dart';
 import 'package:pokemoney/providers/LedgerBookProvider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LedgerBooksPage extends StatefulWidget {
   const LedgerBooksPage({Key? key}) : super(key: key);
@@ -32,6 +35,13 @@ class _LedgerBooksPageState extends State<LedgerBooksPage> {
     final titleController = TextEditingController();
     final budgetController = TextEditingController()..text = '1000000';
 
+// Retrieve preferences asynchronously before showing the dialog
+  final prefs = await SharedPreferences.getInstance();
+  int? id = prefs.getInt('id');
+
+  // Now pass the id to _buildFormActions
+  List<Widget> actions = _buildFormActions(context, formKey, titleController,budgetController, id);
+
     await showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -45,7 +55,7 @@ class _LedgerBooksPageState extends State<LedgerBooksPage> {
                 child: _buildForm(formKey, titleController, budgetController),
               ),
             ),
-            actions: _buildFormActions(context, formKey, titleController, budgetController),
+            actions:actions,
           );
         });
   }
@@ -78,7 +88,7 @@ class _LedgerBooksPageState extends State<LedgerBooksPage> {
 
   // Builds actions for the form dialog
   List<Widget> _buildFormActions(BuildContext context, GlobalKey<FormState> formKey,
-      TextEditingController titleController, TextEditingController budgetController) {
+      TextEditingController titleController, TextEditingController budgetController, int? id) {
     return [
       TextButton(
         onPressed: () => Navigator.of(context).pop(),
@@ -92,8 +102,8 @@ class _LedgerBooksPageState extends State<LedgerBooksPage> {
               title: titleController.text,
               budget: double.parse(budgetController.text),
               creationDate: DateTime.now(),
-              owner: 1, // TODO: Change this to the logged in user's ID
-              editors: '1', // TODO: Change this to the logged in user's ID
+              owner: id!,
+              editors: id.toString(),
               updateAt: DateTime.now(),
               delFlag: 0,
             );

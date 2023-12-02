@@ -142,7 +142,7 @@ class DBHelper {
   }
 
   void _onCreate(Database db, int version) async {
-    // Create the 't_users' table 
+    // Create the 't_users' table // TODO : change it to be editors
     await db.execute('''
       CREATE TABLE t_users_unsync(
         id INTEGER PRIMARY KEY, 
@@ -200,6 +200,7 @@ class DBHelper {
     ''');
 
     // Create the 't_transactions' table
+    // TODO: add updatedBy
     await db.execute('''
       CREATE TABLE t_transactions_unsync(
         id INTEGER PRIMARY KEY, 
@@ -211,12 +212,14 @@ class DBHelper {
         invoiceNumber TEXT NOT NULL, 
         amount REAL NOT NULL, 
         type TEXT NOT NULL, 
+        updatedBy INTEGER NOT NULL,
         relevantEntity TEXT DEFAULT NULL, 
         comment TEXT DEFAULT NULL, 
         FOREIGN KEY (fundId) REFERENCES t_funds_unsync(id),
         FOREIGN KEY (ledgerBookId) REFERENCES t_ledger_books_unsync(id),
         FOREIGN KEY (categoryId) REFERENCES t_categories_unsync(id),
-        FOREIGN KEY (subCategoryId) REFERENCES t_subcategories_unsync(id))
+        FOREIGN KEY (subCategoryId) REFERENCES t_subcategories_unsync(id)
+        )
     ''');
 
     await db.execute('''

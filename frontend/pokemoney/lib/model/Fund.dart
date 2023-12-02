@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 class Fund {
   int? id;
   String name;
@@ -44,4 +46,13 @@ class Fund {
       delFlag: map['delFlag'],
     );
   }
+
+  // void test(String editors) {
+  //   List<int> editorList = editors.split(',').map((e) => int.parse(e)).toList();
+  //   for (int i = 0; i < editorList.length; i++) {
+  //     'select * from t_users where id = ?'
+  //     if null unknown
+  //   }
+  //   'select * from t_users where id in (${editorList.map((e) => '?').join(',')})';
+  // }
 }

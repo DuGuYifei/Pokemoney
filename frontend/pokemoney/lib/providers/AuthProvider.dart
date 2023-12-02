@@ -20,82 +20,86 @@ class AuthProvider with ChangeNotifier {
   User? get currentUser => _currentUser;
   bool get isLoggedIn => _isLoggedIn;
 
-  set isLoading(bool value) {
-    _isLoading = value;
-    notifyListeners();
-  }
-
   AuthProvider(this._authService, this._secureStorage) {
-    checkLoginStatus();
+    _initialize();
   }
 
-  Future<void> checkLoginStatus() async {
+  Future<void> _initialize() async {
+    _isLoading = true;
+    try {
+      await _checkLoginStatus();
+    } catch (e) {
+      _errorMessage = 'Initialization error: ${e.toString()}';
+    } finally {
+      _isLoading = false;
+    }
+  }
+
+  Future<void> _checkLoginStatus() async {
     String? token = await _secureStorage.getToken();
-    _isLoggedIn = token != null && token.isNotEmpty;
+    if (token != null && token.isNotEmpty) {
+      _isLoggedIn = true;
+      await _loadUserData();
+    } else {
+      _isLoggedIn = false;
+      _currentUser = null;
+    }
     notifyListeners();
   }
 
   Future<void> login(String email, String password) async {
-    isLoading = true;
-    _errorMessage = null;
+    _updateLoadingStatus(true);
 
     try {
-      await _authService.login(email, password);
-      await checkLoginStatus();
-    } on HttpException catch (e) {
-      _errorMessage = "Server error: ${e.message}";
-    } on ClientException catch (e) {
-      _errorMessage = "Network error: ${e.message}";
-    } on TimeoutException catch (e) {
-      _errorMessage = "Connection timeout";
+      _currentUser = await _authService.login(email, password);
+      await _checkLoginStatus();
+      if (_isLoggedIn) {
+        // Here you might need to modify to actually fetch user details from the server or AuthService
+        await _saveUserData(_currentUser!);
+      }
     } catch (e) {
-      _errorMessage = "An unexpected error occurred";
+      _errorMessage = 'Login error: ${e.toString()}';
     } finally {
-      isLoading = false;
-      notifyListeners();
+      _updateLoadingStatus(false);
     }
   }
 
-  //The is called when the user if first trying to sign up
   Future<void> startSignUp(String username, String email, String password) async {
-    _isLoading = true;
-    _errorMessage = null;
-    notifyListeners();
+    _updateLoadingStatus(true);
 
     try {
       await _authService.registerTry(username, email, password);
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = 'Signup error: ${e.toString()}';
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      _updateLoadingStatus(false);
     }
   }
 
-  //This is called when the user is trying to complete the sign up process by asking the server to verify the user's email address
   Future<void> completeSignUp(String username, String email, String password, String verificationCode) async {
-    _isLoading = true;
+    _updateLoadingStatus(true);
+
     try {
       User user = await _authService.registerVerify(username, email, password, verificationCode);
       _isLoggedIn = true;
-      await saveUserData(user);
+      await _saveUserData(user);
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = 'Signup completion error: ${e.toString()}';
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      _updateLoadingStatus(false);
     }
   }
 
-  Future<void> saveUserData(User user) async {
+  Future<void> _saveUserData(User user) async {
     _currentUser = user;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('username', user.username);
     await prefs.setString('email', user.email);
+    await prefs.setInt('id', user.id!);
     notifyListeners();
   }
 
-  Future<void> loadUserData() async {
+  Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     String? username = prefs.getString('username');
     String? email = prefs.getString('email');
@@ -106,12 +110,31 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> logout() async {
-    await _authService.logout();
-    _isLoggedIn = false;
-    _currentUser = null;
-    await _authService.logout();
-    await checkLoginStatus();
+    _updateLoadingStatus(true);
+
+    try {
+      await _authService.logout();
+      _isLoggedIn = false;
+      _currentUser = null;
+      await _secureStorage.deleteToken();
+      await _clearUserData();
+    } catch (e) {
+      _errorMessage = 'Logout error: ${e.toString()}';
+    } finally {
+      _updateLoadingStatus(false);
+    }
   }
 
-  // Add additional authentication logic as needed
+  Future<void> _clearUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('username');
+    await prefs.remove('email');
+    notifyListeners();
+  }
+
+  void _updateLoadingStatus(bool isLoading) {
+    _isLoading = isLoading;
+    _errorMessage = null;
+    notifyListeners();
+  }
 }

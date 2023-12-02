@@ -1,6 +1,6 @@
 export 'HomePage.dart';
 export 'register/LoginPage.dart';
-export 'NavBar.dart';
+export '../widgets/NavBar.dart';
 export 'register/SignUpPage.dart';
 export 'register/ForgotPasswordPage.dart';
 export 'fund/FundsPage.dart';

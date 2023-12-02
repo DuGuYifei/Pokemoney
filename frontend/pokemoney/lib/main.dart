@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const String apiBaseUrl = "http://42.0.81.32:8081";
+    const String apiBaseUrl = "http://192.168.1.14:8081";
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<FundProvider>(
