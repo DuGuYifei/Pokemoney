@@ -8,57 +8,73 @@ import 'dart:convert';
 import 'package:provider/provider.dart';
 import 'package:pokemoney/providers/AuthProvider.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   LoginPage({super.key});
 
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   // text editing controllers
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
 
-  bool _validateInput(BuildContext context, String username, String password) {
-    if (username.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please enter both email and password')),
-      );
-      return false;
-    }
-    return true;
-  }
+  bool isPasswordVisible = false;
 
   Future<void> signUserIn(BuildContext context) async {
     var username = usernameController.text;
     var password = passwordController.text;
 
-    if (!_validateInput(context, username, password)) return;
-
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-    await authProvider.login(username, password);
-
-    // Check if there is an error message set by AuthProvider
-    if (authProvider.errorMessage != null) {
-      // Show the error message in a dialog
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Login Failed'),
-          content: Text(authProvider.errorMessage!),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        ),
-      );
-    } else {
-      // On successful login, navigate to another page
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => App(),
-      ));
+    // checking the password or email not empty
+    if (username.isEmpty || password.isEmpty) {
+      _showDialog('Please fill in all fields');
+      return;
     }
+
+    //checking the password that is less than 8 characters
+    if (password.length < 8) {
+      _showDialog('Passwords is too short should be atleast 8 characters');
+      return;
+    }
+
+    try {
+      await authProvider.login(username, password);
+
+      // Check if there is an error message set by AuthProvider
+      if (authProvider.errorMessage != null) {
+        // Show the error message in a dialog
+        _showDialog(authProvider.errorMessage!);
+      } else {
+        // On successful login, navigate to another page
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => App(),
+        ));
+      }
+    } catch (error) {
+      _showDialog('Login failed: ${error.toString()}');
+    }
+  }
+
+  // Helper function to show dialog
+  void _showDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Login Failed'),
+        content: Text(message),
+        actions: <Widget>[
+          TextButton(
+            child: const Text('OK'),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -112,9 +128,9 @@ class LoginPage extends StatelessWidget {
 
                 //username textfiled;
                 CustomTextField(
-                  headerText: 'Email',
+                  headerText: 'Email or Username',
                   controller: usernameController,
-                  labelText: 'Your email',
+                  labelText: 'Your email or username',
                   obscureText: false,
                 ),
 
@@ -125,7 +141,17 @@ class LoginPage extends StatelessWidget {
                   headerText: 'Password',
                   controller: passwordController,
                   labelText: 'Password',
-                  obscureText: true,
+                  obscureText: !isPasswordVisible,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        isPasswordVisible = !isPasswordVisible;
+                      });
+                    },
+                  ),
                 ),
 
                 const SizedBox(height: 10),

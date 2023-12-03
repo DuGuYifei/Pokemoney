@@ -19,6 +19,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final confirmPasswordController = TextEditingController();
 
   bool agree = false;
+  bool isPasswordVisible = false;
 
   void signUserUp() async {
     String username = usernameController.text;
@@ -33,9 +34,21 @@ class _SignUpPageState extends State<SignUpPage> {
       return;
     }
 
+    // Check username length
+    if (username.length < 4) {
+      _showDialog('Username must be at least 4 characters long');
+      return;
+    }
+
     // Validate email format (you can use more sophisticated validation here)
     if (!email.contains('@')) {
       _showDialog('Please enter a valid email');
+      return;
+    }
+
+    // Check if passwords match
+    if (password.length < 8) {
+      _showDialog('Passwords is too short should be atleast 8 characters');
       return;
     }
 
@@ -153,7 +166,17 @@ class _SignUpPageState extends State<SignUpPage> {
                   headerText: 'Password',
                   controller: passwordController,
                   labelText: 'Password',
-                  obscureText: true,
+                  obscureText: !isPasswordVisible,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        isPasswordVisible = !isPasswordVisible;
+                      });
+                    },
+                  ),
                 ),
 
                 const SizedBox(height: 10),
@@ -162,7 +185,17 @@ class _SignUpPageState extends State<SignUpPage> {
                 CustomTextField(
                   controller: confirmPasswordController,
                   labelText: 'Confirm password',
-                  obscureText: true,
+                  obscureText: !isPasswordVisible,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        isPasswordVisible = !isPasswordVisible;
+                      });
+                    },
+                  ),
                 ),
 
                 const SizedBox(height: 10),
