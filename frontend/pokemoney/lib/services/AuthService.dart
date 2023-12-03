@@ -36,15 +36,13 @@ class AuthService {
         // await secureStorage.saveToken(token);
       } else {
         var responseData = json.decode(response.body);
-
-        print("reposne date:" + responseData.toString());
-
-        // Handle different status codes appropriately
-        throw Exception('Failed to login. Status code: ${response.statusCode}');
+        String serverErrorMessage = responseData['message'] ??
+            'Unknown error occurred'; // Replace 'message' with the actual key used by your server
+        return Future.error('Failed to login. Error: $serverErrorMessage');
       }
     } catch (e) {
       // Handle exceptions for network issues, etc.
-      throw Exception('Login failed due to an error: $e');
+      return Future.error('Login failed due to an error: $e');
     }
   }
 
@@ -52,6 +50,7 @@ class AuthService {
     //final url = Uri.parse('$baseUrl/signup'); // Use your actual sign-up endpoint
     final url = Uri.parse('$baseUrl$_registerTry'); // Use your actual sign-up endpoint
 
+    try{
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -65,13 +64,17 @@ class AuthService {
         // if everything is ok
         // Registration try successful, handle as needed
       } else {
-        throw Exception(responseData['message']);
+        return Future.error(responseData['message']);
       }
+    }
+    }catch(e){
+      return Future.error('Failed to Register: ${e.toString()}');
     }
   }
 
   Future<User> registerVerify(String username, String email, String password, String verificationCode) async {
     final url = Uri.parse('$baseUrl$_registerVerify');
+    try{
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -94,13 +97,16 @@ class AuthService {
           User user = User.fromJson(responseData['data']);
           return user;
         } else {
-          throw Exception('Token not found in response');
+          return Future.error('Token not found in response');
         }
       } else {
-        throw Exception('Failed to verify: ${responseData['message']}');
+        return Future.error('Failed to verify: ${responseData['message']}');
       }
     } else {
-      throw Exception('Failed to sign up: ${response.reasonPhrase}');
+      return Future.error('Failed to sign up: ${response.reasonPhrase}');
+    }
+    }catch(e){
+      return Future.error('Failed to sign up: ${e.toString()}');
     }
   }
 

@@ -49,16 +49,17 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> login(String email, String password) async {
     _updateLoadingStatus(true);
+    _errorMessage = null;
 
     try {
       _currentUser = await _authService.login(email, password);
       await _checkLoginStatus();
       if (_isLoggedIn) {
-        // Here you might need to modify to actually fetch user details from the server or AuthService
         await _saveUserData(_currentUser!);
       }
-    } catch (e) {
-      _errorMessage = 'Login error: ${e.toString()}';
+    } catch (error) {
+      // Set the error message here
+      _errorMessage = 'Login error: ${error.toString()}';
     } finally {
       _updateLoadingStatus(false);
     }
@@ -66,6 +67,7 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> startSignUp(String username, String email, String password) async {
     _updateLoadingStatus(true);
+    _errorMessage = null;
 
     try {
       await _authService.registerTry(username, email, password);
@@ -78,6 +80,7 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> completeSignUp(String username, String email, String password, String verificationCode) async {
     _updateLoadingStatus(true);
+    _errorMessage = null;
 
     try {
       User user = await _authService.registerVerify(username, email, password, verificationCode);
@@ -105,7 +108,7 @@ class AuthProvider with ChangeNotifier {
     String? username = prefs.getString('username');
     String? email = prefs.getString('email');
     if (username != null && email != null && id != null) {
-      _currentUser = User.idAndUsernameAndEmail(id: id,username: username, email: email);
+      _currentUser = User.idAndUsernameAndEmail(id: id, username: username, email: email);
     }
     notifyListeners();
   }
@@ -136,7 +139,6 @@ class AuthProvider with ChangeNotifier {
 
   void _updateLoadingStatus(bool isLoading) {
     _isLoading = isLoading;
-    _errorMessage = null;
     notifyListeners();
   }
 }
