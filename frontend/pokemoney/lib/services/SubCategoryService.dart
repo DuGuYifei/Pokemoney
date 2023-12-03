@@ -15,6 +15,23 @@ class SubCategoryService {
     var result = await dbClient.query("t_subcategories_unsync");
     return result.map((map) => SubCategory.fromMap(map)).toList();
   }
+  
+  Future<List<SubCategory>> getAllSubCategoriesFromSyncAndUnsync() async {
+    var dbClient = await _dbHelper.db;
+
+    // Fetching from unsync table
+    var unsyncedResult = await dbClient.query("t_subcategories_unsync");
+    var unsyncedSubCategories = unsyncedResult.map((map) => SubCategory.fromMap(map)).toList();
+
+    // Fetching from sync table
+    var syncedResult = await dbClient.query("t_subcategories_sync");
+    var syncedSubCategories = syncedResult.map((map) => SubCategory.fromMap(map)).toList();
+
+    // Combine both lists, ensuring unique entries (based on ID or other criteria)
+    var combinedSubCategories = {...unsyncedSubCategories, ...syncedSubCategories}.toList();
+    
+    return combinedSubCategories;
+  }
 
   Future<int> deleteSubCategory(int id) async {
     var dbClient = await _dbHelper.db;

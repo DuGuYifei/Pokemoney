@@ -20,11 +20,21 @@ class FundProvider with ChangeNotifier {
     }
     notifyListeners();
   }
+  
+  Future<void> fetchAllFundsFromSyncAndUnsync() async {
+    try {
+      _funds = await _fundService.getAllFundsFromSyncAndUnsync();
+      _error = null; // Reset the error on successful fetch
+    } catch (e) {
+      _error = 'Failed to fetch funds: ${e.toString()}';
+    }
+    notifyListeners();
+  }
 
   Future<int> addFund(Fund fund) async {
     try {
       await _fundService.addFund(fund);
-      await fetchAllFunds();
+      await fetchAllFundsFromSyncAndUnsync();
       _error = null;
       return fund.id!;
     } catch (e) {
@@ -37,7 +47,7 @@ class FundProvider with ChangeNotifier {
   Future<void> deleteFund(int id) async {
     try {
       await _fundService.deleteFund(id);
-      await fetchAllFunds();
+      await fetchAllFundsFromSyncAndUnsync();
       _error = null;
     } catch (e) {
       _error = 'Failed to delete fund: ${e.toString()}';
@@ -59,7 +69,7 @@ class FundProvider with ChangeNotifier {
   Future<void> updateFund(Fund fund) async {
     try {
       await _fundService.updateFund(fund);
-      await fetchAllFunds();
+      await fetchAllFundsFromSyncAndUnsync();
       _error = null;
     } catch (e) {
       _error = 'Failed to update fund: ${e.toString()}';
@@ -80,7 +90,7 @@ class FundProvider with ChangeNotifier {
       int index = _funds.indexWhere((fund) => fund.id == fundId);
       if (index != -1) {
         _funds[index] = updatedFund;
-        await fetchAllFunds();
+        await fetchAllFundsFromSyncAndUnsync();
         notifyListeners();
       }
     } catch (e) {

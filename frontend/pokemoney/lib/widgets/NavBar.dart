@@ -28,8 +28,8 @@ class CustomNavBar extends StatelessWidget {
             accountEmail: authProvider.isLoggedIn
                 ? GestureDetector(
                     onTap: () {
-                      // Implement the logic to switch accounts
-                      print("Switch account clicked");  // TODO: replce with going ot the account page
+                      // Going to the account page
+                      Navigator.of(context).pushNamed(RouteGenerator.accountPage);
                     },
                     child: Text(
                       'Switch Account',
@@ -40,13 +40,13 @@ class CustomNavBar extends StatelessWidget {
                   )
                 : GestureDetector(
                     onTap: () {
-                      // Implement the logic for guest or login action
-                      
+                      // Going to the login page
+                      Navigator.of(context).pushNamed(RouteGenerator.loginPage);
                     },
                     child: Text(
                       'Login/Signup',
                       style: TextStyle(
-                        decoration: TextDecoration.underline,  // TODO: going to the sign up page
+                        decoration: TextDecoration.underline,
                       ),
                     ),
                   ),

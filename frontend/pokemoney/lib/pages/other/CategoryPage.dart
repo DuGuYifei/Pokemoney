@@ -21,8 +21,8 @@ class _CategoryPageState extends State<CategoryPage> {
   void initState() {
     super.initState();
     // fetch all categories
-    Provider.of<CategoryProvider>(context, listen: false).fetchAllCategory();
-    Provider.of<SubCategoryProvider>(context, listen: false).fetchAllSubCategories();
+    Provider.of<CategoryProvider>(context, listen: false).fetchAllCategoryFromSyncAndUnsync();
+    Provider.of<SubCategoryProvider>(context, listen: false).fetchAllSubCategoriesFromSyncAndUnsync();
 
     //categories = Provider.of.CategoryProvider(context, listen: false).categories;
   }

@@ -20,4 +20,13 @@ class Category {
       iconPath: map['iconPath'],
     );
   }
+
+  //create for me a fromJson method
+  static Category fromJson(Map<String, dynamic> json) {
+    return Category(
+      id: json['id'],
+      name: json['name'],
+      iconPath: json['iconPath'],
+    );
+  }
 }

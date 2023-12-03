@@ -10,6 +10,23 @@ class CategoryService {
     return result.map((map) => Category.fromMap(map)).toList();
   }
 
+  Future<List<Category>> getAllCategoryFromSyncAndUnsync() async {
+    var dbClient = await _dbHelper.db;
+
+    // Fetching from unsync table
+    var unsyncedResult = await dbClient.query("t_categories_unsync");
+    var unsyncedCategories = unsyncedResult.map((map) => Category.fromMap(map)).toList();
+
+    // Fetching from sync table
+    var syncedResult = await dbClient.query("t_categories_sync");
+    var syncedCategories = syncedResult.map((map) => Category.fromMap(map)).toList();
+
+    // Combine both lists, ensuring unique entries (based on ID or other criteria)
+    var combinedCategories = {...unsyncedCategories, ...syncedCategories}.toList();
+
+    return combinedCategories;
+  }
+  
   Future<int> addCategory(Category category) async {
     var dbClient = await _dbHelper.db;
     int res = await dbClient.insert("t_categories_unsync", category.toMap());

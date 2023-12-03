@@ -3,8 +3,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pokemoney/constants/AppColors.dart';
-
+import 'package:pokemoney/services/sync/SyncManager.dart';
 import 'package:pokemoney/pages/barrel.dart';
+import 'package:pokemoney/services/sync/GraphQLClientService.dart';
+import 'package:pokemoney/services/DatabaseService.dart';
 
 class App extends StatefulWidget {
   final int initialIndex;
@@ -16,11 +18,15 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   int _currentIndex = 0;
+  final DatabaseService databaseProvider = DatabaseService();
+  final GraphQLClientService graphqlClientService = GraphQLClientService();
+  late final SyncManager syncManager;
 
   @override
   void initState() {
     super.initState();
     _currentIndex = widget.initialIndex;
+    syncManager = SyncManager(databaseProvider, graphqlClientService);
   }
 
   final List<Widget> _routers = [
@@ -28,7 +34,7 @@ class _AppState extends State<App> {
     HomePage(),
     FundsPage(),
     LedgerBooksPage(),
-    AccountsPage(),
+    AccountPage(),
   ];
 
   final List<String> _titles = [
@@ -52,6 +58,16 @@ class _AppState extends State<App> {
     });
   }
 
+  void _onSyncButtonPressed() async {
+    try {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Syncing...')));
+      await syncManager.syncData(context); // Call syncData from SyncManager
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Sync Complete')));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Sync Failed: $e')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,16 +86,12 @@ class _AppState extends State<App> {
             Padding(
               padding: const EdgeInsets.only(right: 10.0),
               child: ElevatedButton(
-                child: Text('Sync'),
                 style: ElevatedButton.styleFrom(
                   primary: AppColors.primaryColor,
                   onPrimary: AppColors.whiteBackgorund,
                 ),
-                onPressed: () {
-
-                  
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Syncing...')));
-                },
+                onPressed: _onSyncButtonPressed,
+                child: Text('Sync'),
               ),
             ),
           ]),

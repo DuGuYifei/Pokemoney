@@ -13,10 +13,16 @@ class SubCategoryProvider with ChangeNotifier {
     _subCategories = _groupByCategory(allSubCategories);
     notifyListeners();
   }
+  
+  Future<void> fetchAllSubCategoriesFromSyncAndUnsync() async {
+    var allSubCategories = await _subCategoryService.getAllSubCategoriesFromSyncAndUnsync();
+    _subCategories = _groupByCategory(allSubCategories);
+    notifyListeners();
+  }
 
   addSubCategory(SubCategory subCategory) async {
     await _subCategoryService.addSubCategory(subCategory);
-    fetchAllSubCategories();
+    fetchAllSubCategoriesFromSyncAndUnsync();
   }
 
   Map<int, List<SubCategory>> _groupByCategory(List<SubCategory> subCategories) {
@@ -26,12 +32,12 @@ class SubCategoryProvider with ChangeNotifier {
   //Implementation of the delete method
   deleteSubCategory(int subCategoryId) async {
     await _subCategoryService.deleteSubCategory(subCategoryId);
-    fetchAllSubCategories();
+    fetchAllSubCategoriesFromSyncAndUnsync();
   }
 
   //Implementation of the update method
   updateSubCategory(SubCategory subCategory) async {
     await _subCategoryService.updateSubCategory(subCategory);
-    fetchAllSubCategories();
+    fetchAllSubCategoriesFromSyncAndUnsync();
   }
 }

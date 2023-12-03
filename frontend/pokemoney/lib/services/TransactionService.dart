@@ -19,12 +19,27 @@ class TransactionService {
   // Method to get t_transactions_unsync by LedgerBookId
   Future<List<pokemoney.Transaction>> getTransactionsByLedgerBookId(int ledgerBookId) async {
     var dbClient = await _dbHelper.db;
-    var result = await dbClient.query(
+
+    // Fetching from unsync table
+    var unsyncedResult = await dbClient.query(
       "t_transactions_unsync",
       where: "ledgerBookId = ?",
       whereArgs: [ledgerBookId],
     );
-    return result.map((map) => pokemoney.Transaction.fromMap(map)).toList();
+    var unsyncedTransactions = unsyncedResult.map((map) => pokemoney.Transaction.fromMap(map)).toList();
+
+    // Fetching from sync table
+    var syncedResult = await dbClient.query(
+      "t_transactions_sync",
+      where: "ledgerBookId = ?",
+      whereArgs: [ledgerBookId],
+    );
+    var syncedTransactions = syncedResult.map((map) => pokemoney.Transaction.fromMap(map)).toList();
+
+    // Combine both lists, ensuring unique entries (based on ID or other criteria)
+    var combinedTransactions = {...unsyncedTransactions, ...syncedTransactions}.toList();
+
+    return combinedTransactions;
   }
 
   Future<int> updateTransaction(pokemoney.Transaction transaction) async {

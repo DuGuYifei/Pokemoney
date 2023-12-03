@@ -36,4 +36,16 @@ class SubCategory {
       delFlag: map['delFlag'],
     );
   }
+
+  //create for me a fromJson method
+  static SubCategory fromJson(Map<String, dynamic> json) {
+    return SubCategory(
+      id: json['id'],
+      categoryId: json['categoryId'], // Corrected field name
+      name: json['name'],
+      iconPath: json['iconPath'],
+      updateAt: json['updateAt'] != null ? DateTime.parse(json['updateAt']) : null,
+      delFlag: json['delFlag'],
+    );
+  }
 }

@@ -7,7 +7,7 @@ export 'fund/FundsPage.dart';
 export 'fund/FundDetailsPage.dart';
 export 'ledgerBook/LedgerBooksPage.dart';
 export 'ledgerBook/LedgerBookDetailsPage.dart';
-export 'account/AccountsPage.dart';
+export 'account/AccountPage.dart';
 export 'account/AccountDetailsPage.dart';
 export 'other/StatsPage.dart';
 export 'other/StylePage.dart';

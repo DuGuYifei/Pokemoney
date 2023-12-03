@@ -5,8 +5,8 @@ import 'package:pokemoney/providers/AuthProvider.dart';
 import 'package:pokemoney/pages/register/LoginPage.dart';
 import 'package:pokemoney/pages/register/SignUpPage.dart';
 
-class AccountsPage extends StatelessWidget {
-  const AccountsPage({super.key});
+class AccountPage extends StatelessWidget {
+  const AccountPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,6 @@ class AccountsPage extends StatelessWidget {
   }
 
   Widget _buildUserDetails(AuthProvider authProvider) {
-    // Assuming authProvider has a method to get the current user
     final user = authProvider.currentUser;
 
     return Column(

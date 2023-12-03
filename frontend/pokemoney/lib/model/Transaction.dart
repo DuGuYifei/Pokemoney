@@ -11,6 +11,7 @@ class Transaction {
   final String? relevantEntity; // New nullable field
   final String? comment; // New nullable field
   final int? updatedBy;
+  final int? delFlag; // New field
 
   Transaction({
     this.id,
@@ -25,6 +26,7 @@ class Transaction {
     required this.updatedBy,
     this.relevantEntity,
     this.comment,
+    this.delFlag = 0, // Default value or required
   });
 
   Transaction copyWith({
@@ -40,6 +42,7 @@ class Transaction {
     int? updatedBy,
     String? relevantEntity, // Include new nullable field
     String? comment, // Include new nullable field
+    int? delFlag, // Include new field
   }) {
     return Transaction(
       id: id ?? this.id,
@@ -54,6 +57,7 @@ class Transaction {
       updatedBy: updatedBy ?? this.updatedBy,
       relevantEntity: relevantEntity ?? this.relevantEntity, // Include new nullable field
       comment: comment ?? this.comment, // Include new nullable field
+      delFlag: delFlag ?? this.delFlag, // Include new field
     );
   }
 
@@ -80,6 +84,7 @@ class Transaction {
       updatedBy: map['updatedBy'] as int?,
       relevantEntity: map['relevantEntity'] as String?,
       comment: map['comment'] as String?,
+      delFlag: map['delFlag'] as int?,
     );
   }
 
@@ -97,6 +102,26 @@ class Transaction {
       'updatedBy': updatedBy,
       'relevantEntity': relevantEntity,
       'comment': comment,
+      'delFlag': delFlag,
     };
+  }
+
+  //create for me a fromJson method
+  static Transaction fromJson(Map<String, dynamic> json) {
+    return Transaction(
+      id: json['id'],
+      ledgerBookId: json['ledgerBookId'],
+      categoryId: json['categoryId'],
+      subCategoryId: json['subCategoryId'],
+      fundId: json['fundId'],
+      invoiceNumber: json['invoiceNumber'],
+      billingDate: DateTime.parse(json['billingDate']),
+      amount: json['amount'],
+      type: json['type'],
+      updatedBy: json['updatedBy'],
+      relevantEntity: json['relevantEntity'],
+      comment: json['comment'],
+      delFlag: json['delFlag'],
+    );
   }
 }

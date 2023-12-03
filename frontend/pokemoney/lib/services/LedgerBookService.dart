@@ -16,6 +16,23 @@ class LedgerBookService {
     return result.map((map) => LedgerBook.fromMap(map)).toList();
   }
 
+  Future<List<LedgerBook>> getAllLedgerBooksFromSyncAndUnsync() async {
+    var dbClient = await _dbHelper.db;
+
+    // Fetching from unsync table
+    var unsyncedResult = await dbClient.query("t_ledger_books_unsync");
+    var unsyncedLedgerBooks = unsyncedResult.map((map) => LedgerBook.fromMap(map)).toList();
+
+    // Fetching from sync table
+    var syncedResult = await dbClient.query("t_ledger_books_sync");
+    var syncedLedgerBooks = syncedResult.map((map) => LedgerBook.fromMap(map)).toList();
+
+    // Combine both lists, ensuring unique entries (based on ID or other criteria)
+    var combinedLedgerBooks = {...unsyncedLedgerBooks, ...syncedLedgerBooks}.toList();
+
+    return combinedLedgerBooks;
+  }
+
   Future<int> updateLedgerBook(LedgerBook ledgerBook) async {
     var dbClient = await _dbHelper.db;
     return await dbClient

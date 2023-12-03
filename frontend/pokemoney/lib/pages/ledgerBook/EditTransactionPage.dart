@@ -51,7 +51,7 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
   void fetchAndUpdateCategories() {
     final categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
     if (categoryProvider.categories.isEmpty) {
-      categoryProvider.fetchAllCategory().then((_) {
+      categoryProvider.fetchAllCategoryFromSyncAndUnsync().then((_) {
         updateCategoryItems(categoryProvider.categories);
       });
     } else {
@@ -107,6 +107,7 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
       categoryId: _selectedCategoryId,
       fundId: _selectedFundId,
       comment: _commentController.text,
+      delFlag: 1,
     );
 
     // Use the transaction provider to update the transaction

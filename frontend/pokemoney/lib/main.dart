@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pokemoney/RouteGenerator.dart';
-import 'package:pokemoney/providers/DatabaseProvider.dart';
+import 'package:pokemoney/services/DatabaseService.dart';
 import 'package:pokemoney/providers/FundProvider.dart';
 import 'package:pokemoney/providers/TransactionProvider.dart';
 import 'package:pokemoney/providers/CategoryProvider.dart';
@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const String apiBaseUrl = "http://192.168.1.14:8081";
+    const String apiBaseUrl = "http://43.131.33.18";
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<FundProvider>(
@@ -43,8 +43,8 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<SubCategoryProvider>(
           create: (_) => SubCategoryProvider(),
         ),
-        ChangeNotifierProvider<DatabaseProvider>(
-          create: (_) => DatabaseProvider(),
+        Provider<DatabaseService>(
+          create: (_) => DatabaseService(),
         ),
       ],
       child: MaterialApp(

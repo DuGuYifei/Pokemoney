@@ -7,7 +7,7 @@ class RouteGenerator {
   static const String homePage = '/home';
   static const String fundsPage = '/funds';
   static const String ledgerBooksPage = '/ledgerBooks';
-  static const String accountsPage = '/accounts';
+  static const String accountPage = '/account';
   static const String loginPage = '/login';
   static const String signUpPage = '/signUp';
   static const String forgotPasswordPage = '/forgotPassword';
@@ -38,9 +38,9 @@ class RouteGenerator {
         return MaterialPageRoute(
           builder: (_) => const LedgerBooksPage(),
         );
-      case accountsPage:
+      case accountPage:
         return MaterialPageRoute(
-          builder: (_) => const AccountsPage(),
+          builder: (_) => const AccountPage(),
         );
       case loginPage:
         return MaterialPageRoute(

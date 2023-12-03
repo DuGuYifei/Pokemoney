@@ -25,7 +25,7 @@ class _FundsPageState extends State<FundsPage> {
 
   // Fetches all funds from the provider and updates the loading state
   void fetchFunds() async {
-    await context.read<FundProvider>().fetchAllFunds();
+    await context.read<FundProvider>().fetchAllFundsFromSyncAndUnsync();
     setState(() => _isLoading = false);
   }
 

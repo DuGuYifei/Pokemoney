@@ -128,6 +128,33 @@ class DBHelper {
     });
   }
 
+// Method to fetch unsynced data for each table
+//TODO: add the rest of the tables
+  Future<List<Map<String, dynamic>>> getUnsyncedUsers() async {
+    final db = await this.db;
+    return db.query('t_users_unsync');
+  }
+
+  // Similarly, create methods for other unsynced tables...
+  // getUnsyncedLedgerBooks(), getUnsyncedCategories(), etc.
+
+  // Method to clear unsynced tables after successful sync
+  Future<void> clearUnsyncedTable(String tableName) async {
+    final db = await this.db;
+    await db.delete(tableName);
+  }
+
+  // Method to update synced data
+  Future<void> updateSyncedUsers(List<Map<String, dynamic>> users) async {
+    final db = await this.db;
+    for (var user in users) {
+      await db.insert('t_users_sync', user, conflictAlgorithm: ConflictAlgorithm.replace);
+    }
+  }
+
+  // Similarly, create methods to update other synced tables...
+  // updateSyncedLedgerBooks(), updateSyncedCategories(), etc.
+
   initDb() async {
     String path = join(await getDatabasesPath(), 'pokemoney.db');
     var theDb = await openDatabase(
@@ -215,6 +242,7 @@ class DBHelper {
         updatedBy INTEGER NOT NULL,
         relevantEntity TEXT DEFAULT NULL, 
         comment TEXT DEFAULT NULL, 
+        delFlag INTEGER NOT NULL,
         FOREIGN KEY (fundId) REFERENCES t_funds_unsync(id),
         FOREIGN KEY (ledgerBookId) REFERENCES t_ledger_books_unsync(id),
         FOREIGN KEY (categoryId) REFERENCES t_categories_unsync(id),
@@ -293,6 +321,7 @@ class DBHelper {
         type TEXT NOT NULL, 
         relevantEntity TEXT DEFAULT NULL, 
         comment TEXT DEFAULT NULL, 
+        delFlag INTEGER NOT NULL,
         FOREIGN KEY (fundId) REFERENCES t_funds_sync(id),
         FOREIGN KEY (ledgerBookId) REFERENCES t_ledger_books_sync(id),
         FOREIGN KEY (categoryId) REFERENCES t_categories_sync(id),

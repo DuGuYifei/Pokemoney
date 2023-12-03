@@ -20,14 +20,23 @@ class LedgerBookProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> fetchAllLedgerBooksFromSyncAndUnsync() async {
+    _ledgerBooks = await _ledgerBookService.getAllLedgerBooksFromSyncAndUnsync();
+    for (var ledgerBook in _ledgerBooks) {
+      double transactionTotal = await _transactionService.getTotalBalanceForLedgerBook(ledgerBook.id!);
+      ledgerBook.currentBalance = transactionTotal;
+    }
+    notifyListeners();
+  }
+
   addLedgerBook(LedgerBook ledgerBook) async {
     await _ledgerBookService.addLedgerBook(ledgerBook);
-    fetchAllLedgerBooks();
+    fetchAllLedgerBooksFromSyncAndUnsync();
   }
 
   deleteLedgerBook(int id) async {
     await _ledgerBookService.deleteLedgerBook(id);
-    fetchAllLedgerBooks();
+    fetchAllLedgerBooksFromSyncAndUnsync();
   }
 
   Future<void> fetchLedgerBookDetails(int ledgerBookId) async {

@@ -93,18 +93,19 @@ class AuthProvider with ChangeNotifier {
   Future<void> _saveUserData(User user) async {
     _currentUser = user;
     final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('id', user.id!);
     await prefs.setString('username', user.username);
     await prefs.setString('email', user.email);
-    await prefs.setInt('id', user.id!);
     notifyListeners();
   }
 
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
+    int? id = prefs.getInt('id');
     String? username = prefs.getString('username');
     String? email = prefs.getString('email');
-    if (username != null && email != null) {
-      _currentUser = User.usernameAndEmail(username: username, email: email);
+    if (username != null && email != null && id != null) {
+      _currentUser = User.idAndUsernameAndEmail(id: id,username: username, email: email);
     }
     notifyListeners();
   }
@@ -127,6 +128,7 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> _clearUserData() async {
     final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('id');
     await prefs.remove('username');
     await prefs.remove('email');
     notifyListeners();

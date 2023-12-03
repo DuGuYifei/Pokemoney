@@ -53,7 +53,7 @@ class _TransactionFormState extends State<TransactionForm> {
     final subCategoryProvider = Provider.of<SubCategoryProvider>(context, listen: false);
     final fundProvider = Provider.of<FundProvider>(context, listen: false);
 
-    subCategoryProvider.fetchAllSubCategories();
+    subCategoryProvider.fetchAllSubCategoriesFromSyncAndUnsync();
     fundProvider.fetchAllFunds();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -73,7 +73,7 @@ class _TransactionFormState extends State<TransactionForm> {
     List<pokemoney.SubCategory> allSubCategories = [];
 
     if (subCategoryProvider.subCategories.isEmpty) {
-      subCategoryProvider.fetchAllSubCategories().then((_) {
+      subCategoryProvider.fetchAllSubCategoriesFromSyncAndUnsync().then((_) {
         allSubCategories = subCategoryProvider.subCategories.values
             .expand((x) => x)
             .toList(); //Flatten the Map into a Single List
@@ -249,17 +249,35 @@ class _TransactionFormState extends State<TransactionForm> {
     final prefs = await SharedPreferences.getInstance();
     int? id = prefs.getInt('id');
 
+    if (id == null) {
+      // Handle null id appropriately
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('User ID is not available')),
+      );
+      return;
+    }
     // Wait for all subcategories to be fetched
-    await subCategoryProvider.fetchAllSubCategories();
+    await subCategoryProvider.fetchAllSubCategoriesFromSyncAndUnsync();
+
+    if (subCategoryProvider.subCategories.isEmpty) {
+      // Handle empty subcategory list
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No subcategories available')),
+      );
+      return;
+    }
+
     List<pokemoney.SubCategory> allSubCategories = subCategoryProvider.subCategories.values
         .expand((x) => x)
         .toList(); // Flatten the Map into a Single List
+
     if (subCategoryProvider.subCategories.isNotEmpty) {
-      subCategoryProvider.fetchAllSubCategories().then((_) {
+      subCategoryProvider.fetchAllSubCategoriesFromSyncAndUnsync().then((_) {
         allSubCategories = subCategoryProvider.subCategories.values
             .expand((x) => x)
             .toList(); //Flatten the Map into a Single List
       });
+
       // Handle the case where no matching subcategory is found
       pokemoney.SubCategory? subCategory =
           allSubCategories.firstWhere((subcategory) => subcategory.id == _selectedSubCategoryId, orElse: () {
@@ -268,12 +286,14 @@ class _TransactionFormState extends State<TransactionForm> {
       });
 
       if (subCategory == null) {
-        // Handle the case where no subcategory is selected or found
-        // For example, show an error message
-
+        // Handle null subcategory
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Subcategory not found')),
+        );
         return;
       }
-      if (_formKey.currentState!.validate()) {
+
+      if (_formKey.currentState?.validate() ?? false) {
         final pokemoney.Transaction newTransaction = pokemoney.Transaction(
           ledgerBookId: widget.ledgerBook.id!,
           fundId: _selectedFundId,
@@ -284,7 +304,8 @@ class _TransactionFormState extends State<TransactionForm> {
           categoryId: subCategory.categoryId,
           subCategoryId: _selectedSubCategoryId,
           comment: _commentController.text,
-          updatedBy: id!,
+          updatedBy: id,
+          delFlag: 0,
         );
 
         transactionProvider.addTransaction(newTransaction).then((_) {
@@ -298,6 +319,10 @@ class _TransactionFormState extends State<TransactionForm> {
             SnackBar(content: Text('Failed to add transaction: $error')),
           );
         });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Form validation failed')),
+        );
       }
     }
   }

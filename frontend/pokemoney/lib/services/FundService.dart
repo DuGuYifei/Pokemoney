@@ -15,6 +15,23 @@ class FundService {
     var result = await dbClient.query("t_funds_unsync");
     return result.map((map) => Fund.fromMap(map)).toList();
   }
+  
+  Future<List<Fund>> getAllFundsFromSyncAndUnsync() async {
+    var dbClient = await _dbHelper.db;
+
+    // Fetching from unsync table
+    var unsyncedResult = await dbClient.query("t_funds_unsync");
+    var unsyncedFunds = unsyncedResult.map((map) => Fund.fromMap(map)).toList();
+
+    // Fetching from sync table
+    var syncedResult = await dbClient.query("t_funds_sync");
+    var syncedFunds = syncedResult.map((map) => Fund.fromMap(map)).toList();
+
+    // Combine both lists, ensuring unique entries (based on ID or other criteria)
+    var combinedFunds = {...unsyncedFunds, ...syncedFunds}.toList();
+
+    return combinedFunds;
+  }
 
   Future<int> deleteFund(int id) async {
     var dbClient = await _dbHelper.db;

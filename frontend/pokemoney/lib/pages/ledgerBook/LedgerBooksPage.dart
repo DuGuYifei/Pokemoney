@@ -25,7 +25,7 @@ class _LedgerBooksPageState extends State<LedgerBooksPage> {
 
   // Fetches all ledger books from the provider and updates the loading state
   void fetchLedgerBooks() async {
-    await context.read<LedgerBookProvider>().fetchAllLedgerBooks();
+    await context.read<LedgerBookProvider>().fetchAllLedgerBooksFromSyncAndUnsync();
     setState(() => _isLoading = false);
   }
 
