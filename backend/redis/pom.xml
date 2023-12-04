@@ -16,7 +16,7 @@
 
     <modules>
         <module>redis-service-api</module>
-        <module>redis-service-provider</module>
+        <module>redis-service</module>
     </modules>
 
     <properties>

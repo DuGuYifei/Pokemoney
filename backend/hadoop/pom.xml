@@ -13,7 +13,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>hadoop-client-api</module>
+        <module>hadoop-client</module>
         <module>hadoop-core</module>
     </modules>
 

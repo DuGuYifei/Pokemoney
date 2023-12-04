@@ -1,1 +1,2 @@
 INSERT INTO t_permissions (service_name) VALUES (1, 'basic');
+INSERT INTO t_permissions (service_name) VALUES (2, 'hadoop-client');

@@ -14,4 +14,8 @@ public class RemoveEditorInputDto {
      * user ID of editor
      */
     private Long userId;
+    /**
+     * Ledger id or fund id
+     */
+    private Long targetId;
 }

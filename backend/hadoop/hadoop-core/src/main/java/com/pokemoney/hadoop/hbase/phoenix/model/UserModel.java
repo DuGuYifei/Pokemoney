@@ -1,22 +1,29 @@
 package com.pokemoney.hadoop.hbase.phoenix.model;
 
+import com.pokemoney.hadoop.hbase.dto.category.CategoryDto;
+import com.pokemoney.hadoop.hbase.dto.category.SubcategoryDto;
+import com.pokemoney.hadoop.hbase.utils.JsonUtils;
 import lombok.*;
+
+import java.util.Map;
 
 /**
  * The user model.
  */
-@Getter
-@Setter
+@Data
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserModel {
     /**
      * region id of Row key.
      */
-    private String regionId;
+    private Integer regionId;
 
     /**
      * user id of Row key.
      */
-    private String userId;
+    private Long userId;
 
     /**
      * User info.
@@ -26,61 +33,104 @@ public class UserModel {
     /**
      * Fund info.
      */
-    private FundInfo fundInfo;
+    private FundInfoModel fundInfo;
+
+    /**
+     * Ledger book info.
+     */
+    private LedgerInfoModel ledgerInfo;
 
     /**
      * App info.
      */
-    private AppInfo appInfo;
+    private AppInfoModel appInfo;
 
     /**
      * User info
      */
+    @Getter
+    @Setter
     public static class UserInfo {
         /**
-         * User ID.
+         * User name.
          */
-        private Long id;
+        private String name;
+        /**
+         * User email.
+         */
+        private String email;
     }
     /**
      * Fund info
      */
     @Getter
     @Setter
-    public static class FundInfo {
+    public static class FundInfoModel {
         /**
          * Fund IDs.
          */
-        private String[] funds;
+        private Long[] funds;
         /**
          * Deleted fund IDs.
          */
-        private String[] delFunds;
+        private Long[] delFunds;
     }
     /**
      * Ledger book info
      */
     @Getter
     @Setter
-    public static class LedgerBookInfo {
+    public static class LedgerInfoModel {
         /**
          * Ledger book IDs.
          */
-        private String[] ledgerBooks;
+        private Long[] ledgers;
         /**
          * Deleted ledger book IDs.
          */
-        private String[] delLedgerBooks;
+        private Long[] delLedgers;
     }
     /**
      * App info
      */
     @Getter
     @Setter
-    public static class AppInfo {
+    public static class AppInfoModel {
         /**
-         * category list
+         * category map
          */
-        private CategoryModel[] categories;
+        private Map<String, CategoryDto> categories;
+        /**
+         * category list in json
+         */
+        private String jsonCategories;
+        /**
+         * subcategory map
+         */
+        private Map<String, SubcategoryDto> subcategories;
+        /**
+         * subcategory list in json
+         */
+        private String jsonSubcategories;
+
+        /**
+         * Set category list in json and category list.
+         *
+         * @param jsonCategories the category list in json
+         */
+        public void setJsonCategories(String jsonCategories) {
+            this.jsonCategories = jsonCategories;
+            this.categories = JsonUtils.categoryFromJson(jsonCategories);
+        }
+
+        /**
+         * Set subcategory list in json and subcategory list.
+         *
+         * @param jsonSubcategories the subcategory list in json
+         */
+        public void setJsonSubcategories(String jsonSubcategories) {
+            this.jsonSubcategories = jsonSubcategories;
+            this.subcategories = JsonUtils.subcategoryFromJson(jsonSubcategories);
+        }
     }
 }

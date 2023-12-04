@@ -1,28 +1,31 @@
 package com.pokemoney.hadoop.hbase.phoenix.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
+import java.sql.Array;
 
 /**
  * The fund model.
  */
-@Getter
-@Setter
+@Data
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FundModel {
     /**
      * region id of Row key.
      */
-    private String regionId;
+    private Integer regionId;
 
     /**
      * user id of Row key who create the fund.
      */
-    private String userId;
+    private Long userId;
 
     /**
      * fund id of Row key.
      */
-    private String fundId;
+    private Long fundId;
 
     /**
      * Fund info.
@@ -32,18 +35,16 @@ public class FundModel {
     /**
      * Update column family.
      */
-    private UpdateInfoColumnFamily updateInfoColumnFamily;
+    private UpdateInfoColumnFamily updateInfo;
 
     /**
      * Fund info.
      */
-    @Getter
-    @Setter
+    @Data
+    @Builder
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FundInfo {
-        /**
-         * Fund ID.
-         */
-        private Long id;
         /**
          * Fund name.
          */
@@ -53,13 +54,13 @@ public class FundModel {
          */
         private Float balance;
         /**
-         * Fund owner.
-         */
-        private String owner;
-        /**
          * Fund editors.
          */
-        private String[] editors;
+        private Array editors;
+        /**
+         * Fund owner.
+         */
+        private Long owner;
         /**
          * Fund create at. Milliseconds since epoch 1970-01-01 00:00:00 UTC.
          */

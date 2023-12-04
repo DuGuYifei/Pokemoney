@@ -1,8 +1,8 @@
 package com.pokemoney.hadoop.hbase.dto.sync;
 
-import com.pokemoney.hadoop.hbase.dto.user.UserAppInfoDto;
-import com.pokemoney.hadoop.hbase.dto.user.UserFundInfoDto;
 import lombok.*;
+
+
 
 /**
  * Sync fund input DTO.

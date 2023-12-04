@@ -43,13 +43,13 @@ public class TransactionFilter {
      */
     private Long[] ledgerIds;
     /**
-     * The min updated at. Milliseconds since epoch 1970-01-01 00:00:00 UTC.
+     * The min update at. Milliseconds since epoch 1970-01-01 00:00:00 UTC.
      */
-    private Long minUpdatedAt;
+    private Long minUpdateAt;
     /**
-     * The max updated at. Milliseconds since epoch 1970-01-01 00:00:00 UTC.
+     * The max update at. Milliseconds since epoch 1970-01-01 00:00:00 UTC.
      */
-    private Long maxUpdatedAt;
+    private Long maxUpdateAt;
     /**
      * The deleted flag.
      */

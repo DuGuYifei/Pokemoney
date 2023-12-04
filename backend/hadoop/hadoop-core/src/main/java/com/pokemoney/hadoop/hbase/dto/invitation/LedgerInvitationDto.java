@@ -6,9 +6,6 @@ import com.pokemoney.hadoop.hbase.dto.editor.EditorDto;
  * The DTOs for the invitation of ledger.
  */
 public class LedgerInvitationDto {
-//    id: ID!
-//    invitedBy: Editor!
-//    ledgerId: ID!
     /**
      * The ID of the invitation.
      */

@@ -1,23 +1,26 @@
 package com.pokemoney.hadoop.hbase.phoenix.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
+import java.util.Date;
 
 /**
  * The transaction model.
  */
-@Getter
-@Setter
+@Data
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TransactionModel {
     /**
      * region id of Row key.
      */
-    private String regionId;
+    private Integer regionId;
 
     /**
      * user id of Row key.
      */
-    private String userId;
+    private Long userId;
 
     /**
      * reverse transaction id of Row key.
@@ -27,19 +30,26 @@ public class TransactionModel {
     /**
      * The transaction info.
      */
-    private TransactionInfo transactionInfo;
+    private TransactionInfoModel transactionInfo;
+
+    /**
+     * Update by
+     */
+    private Long updateBy;
 
     /**
      * Update column family.
      */
-    private UpdateInfoColumnFamily updateInfoColumnFamily;
+    private UpdateInfoColumnFamily updateInfo;
 
     /**
      * The transaction info.
      */
-    @Getter
-    @Setter
-    public static class TransactionInfo {
+    @Data
+    @Builder
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class TransactionInfoModel {
         /**
          * The transaction id.
          */
@@ -79,7 +89,7 @@ public class TransactionModel {
         /**
          * The transaction happen at. Milliseconds since epoch 1970-01-01 00:00:00 UTC.
          */
-        private String happenAt;
+        private Date happenAt;
     }
 
     public void generateReverseTransactionId(Long transactionId) {

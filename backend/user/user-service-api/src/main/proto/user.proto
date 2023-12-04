@@ -1,0 +1,42 @@
+syntax = 'proto3';
+
+import "proto/commons.proto";
+import "buf/validate/validate.proto";
+
+option java_multiple_files = true;
+option java_package = "com.pokemoney.user.service.api";
+option java_outer_classname = "UserServiceProto";
+
+message VerifyUserJwtWithServiceNameRequestDto {
+  string jwt = 1 [(buf.validate.field).string.pattern = "^Bearer [A-Za-z0-9-_=]+\\.[A-Za-z0-9-_=]+\\.([A-Za-z0-9-_=]+)?$"];
+  int64 userId = 2 [(buf.validate.field).int64.gt = 1729999999999999999]; // 2023-11-30
+  optional string serviceName = 3; // if not set, use 'basic'
+  optional string needRole = 4; // if not set, use 'user'
+}
+
+message VerifyUserJwtWithServiceNameResponseDto {
+  ResponseCommonPart responseCommonPart = 1;
+  int64 userId = 2;
+  string username = 3;
+  string email = 4;
+  string role = 5;
+  string permission = 6;
+}
+
+message GetUserInfoRequestDto {
+  int64 userId = 1 [(buf.validate.field).int64.gt = 1729999999999999999]; // 2023-11-30
+}
+
+message GetUserInfoResponseDto {
+  ResponseCommonPart responseCommonPart = 1;
+  int64 userId = 2;
+  string username = 3;
+  string email = 4;
+  string role = 5;
+  string permission = 6;
+}
+
+service UserTriService {
+  rpc VerifyUserJwt(VerifyUserJwtWithServiceNameRequestDto) returns (VerifyUserJwtWithServiceNameResponseDto) {}
+  rpc GetUserInfo(GetUserInfoRequestDto) returns (GetUserInfoResponseDto) {}
+}

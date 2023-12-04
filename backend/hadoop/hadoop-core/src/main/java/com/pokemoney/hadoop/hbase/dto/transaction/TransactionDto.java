@@ -53,7 +53,7 @@ public class TransactionDto {
     /**
      * update time of this transaction.
      */
-    private Long updatedAt;
+    private Long updateAt;
     /**
      * deleted flag of this transaction.
      */

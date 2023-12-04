@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="error" monitorInterval="600">
+    <properties>
+        <property name="LOG_HOME">logs/hadoop-client</property>
+    </properties>
+    <Appenders>
+        <!--*******************Console Log**********************-->
+        <Console name="consoleAppender" target="SYSTEM_OUT">
+            <PatternLayout
+                    pattern="%style{%d{ISO8601}}{bright,green} %highlight{%-5level} [%style{%t}{bright,blue}] %style{%C{}}{bright,yellow}: %msg%n%style{%throwable}{red}"
+                    disableAnsi="false" noConsoleNoAnsi="false"
+            />
+        </Console>
+
+        <!--*********************File Log***********************-->
+        <!--info-->
+        <RollingRandomAccessFile name="infoFileAppender"
+                                 fileName="${LOG_HOME}/info.log"
+                                 filePattern="${LOG_HOME}/$${date:yyyy-MM}/info-%d{yyyy-MM-dd}-%i.log.gz">
+            <Filters>
+                <ThresholdFilter level="info" onMatch="accept" onMismatch="deny"/>
+            </Filters>
+            <PatternLayout>
+                <pattern>%d %p %C{} [%t] %m%n</pattern>
+            </PatternLayout>
+            <Policies>
+                <!--<OnStartupTriggeringPolicy/>-->
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+                <!--set up log file roll time, depend on filePattern, interval is day, modulate is true means the log file will be rolled at the beginning of the day-->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingRandomAccessFile>
+
+        <!--json format error-level log-->
+        <RollingRandomAccessFile name="errorJsonAppender"
+                                 fileName="${LOG_HOME}/error-json.log"
+                                 filePattern="${LOG_HOME}/error-json-%d{yyyy-MM-dd}-%i.log.gz">
+            <JSONLayout compact="true" eventEol="true" locationInfo="true"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+            </Policies>
+            <DefaultRolloverStrategy max="10"/>
+        </RollingRandomAccessFile>
+    </Appenders>
+
+    <Loggers>
+        <logger name="com.pokemoney.hadoop.hbase.phoenix.dao.UserMapper" additivity="true">
+            <appender-ref ref="consoleAppender"/>
+            <appender-ref ref="infoFileAppender"/>
+        </logger>
+        <logger name="com.pokemoney.hadoop.hbase.phoenix.dao.TransactionMapper" additivity="true">
+            <appender-ref ref="consoleAppender"/>
+            <appender-ref ref="infoFileAppender"/>
+        </logger>
+        <logger name="com.pokemoney.hadoop.hbase.phoenix.dao.OperationMapper" additivity="true">
+            <appender-ref ref="consoleAppender"/>
+            <appender-ref ref="infoFileAppender"/>
+        </logger>
+        <logger name="com.pokemoney.hadoop.hbase.phoenix.dao.FundMapper" additivity="true">
+            <appender-ref ref="consoleAppender"/>
+            <appender-ref ref="infoFileAppender"/>
+        </logger>
+        <logger name="com.pokemoney.hadoop.hbase.phoenix.dao.LedgerMapper" additivity="true">
+            <appender-ref ref="consoleAppender"/>
+            <appender-ref ref="infoFileAppender"/>
+        </logger>
+        <logger name="com.pokemoney.hadoop.hbase.phoenix.dao.LedgerMapper" additivity="true">
+            <appender-ref ref="consoleAppender"/>
+            <appender-ref ref="infoFileAppender"/>
+        </logger>
+        <!-- root -->
+        <Root level="info">
+            <AppenderRef ref="consoleAppender" />
+            <AppenderRef ref="infoFileAppender" />
+            <AppenderRef ref="errorJsonAppender" level="error"/>
+        </Root>
+
+    </Loggers>
+
+</Configuration>

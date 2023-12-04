@@ -1,6 +1,7 @@
 package com.pokemoney.hadoop.hbase.dto.sync;
 
 import com.pokemoney.hadoop.hbase.dto.category.CategoryDto;
+import com.pokemoney.hadoop.hbase.dto.category.SubcategoryDto;
 import com.pokemoney.hadoop.hbase.dto.fund.FundDto;
 import com.pokemoney.hadoop.hbase.dto.ledger.LedgerDto;
 import com.pokemoney.hadoop.hbase.dto.transaction.TransactionDto;
@@ -37,6 +38,10 @@ public class SyncResponseDto {
      * categories dto
      */
     private List<CategoryDto> categories;
+    /**
+     * subcategories dto
+     */
+    private List<SubcategoryDto> subcategories;
     /**
      * notifications dto
      */

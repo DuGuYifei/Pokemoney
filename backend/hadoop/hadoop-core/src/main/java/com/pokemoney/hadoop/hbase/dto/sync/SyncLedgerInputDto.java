@@ -1,8 +1,15 @@
 package com.pokemoney.hadoop.hbase.dto.sync;
 
+
+import lombok.*;
+
 /**
  * Sync ledger input DTO.
  */
+@Data
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SyncLedgerInputDto {
     /**
      * ledger ID.
@@ -19,7 +26,7 @@ public class SyncLedgerInputDto {
     /**
      * owner
      */
-    private String owner;
+    private Long owner;
     /**
      * create at
      */

@@ -3,6 +3,7 @@ package com.pokemoney.hadoop.hbase.dto.ledger;
 import com.pokemoney.hadoop.hbase.dto.editor.EditorDto;
 import lombok.*;
 
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,20 +13,21 @@ import java.util.Map;
  */
 @Data
 @Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
 public class LedgerDto {
     /**
      * ledger book field from request to database field mapping.
      */
     public static final Map<String, String> FIELD_NAME_MAPPING = new HashMap<>() {{
-        put("ledgerId", "ledger_info.ledger_id");
+        put("ledgerId", "ledger_id");
         put("name", "ledger_info.name");
         put("budget", "ledger_info.budget");
         put("editors", "ledger_info.editors");
         put("owner", "ledger_info.owner");
         put("createAt", "ledger_info.create_at");
-        put("updateAt", "ledger_info.update_at");
+        put("updateAt", "update_info.update_at");
+        put("delFlag", "update_info.del_flag");
     }};
     /**
      * ledger book ID.

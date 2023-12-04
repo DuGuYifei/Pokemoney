@@ -1,7 +1,5 @@
 package com.pokemoney.redis.service.api.exceptions;
 
-import org.apache.dubbo.rpc.RpcException;
-import org.apache.dubbo.rpc.StatusRpcException;
 import org.apache.dubbo.rpc.TriRpcStatus;
 
 /**
@@ -21,7 +19,7 @@ public class RedisRpcException extends TriRpcStatus {
     }
 
     /**
-     * euqals.
+     * equals.
      *
      * @param o object
      * @return true if equals
@@ -32,12 +30,9 @@ public class RedisRpcException extends TriRpcStatus {
             if (this.code.code != that.code.code) {
                 return false;
             }
-            if (this.description != null && that.description != null) {
-                return this.description.equals(that.description);
-            }
+            return this.description.equals(that.description);
         }else {
             return false;
         }
-        return true;
     }
 }

@@ -4,17 +4,32 @@ package com.pokemoney.hadoop.hbase.dto.fund;
 import com.pokemoney.hadoop.hbase.dto.editor.EditorDto;
 import lombok.*;
 
-import java.util.Date;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * fund DTO
  */
 @Data
 @Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FundDto {
+    /**
+     * fund field from request to database field mapping.
+     */
+    public static final Map<String, String> FIELD_NAME_MAPPING = new HashMap<>() {{
+        put("fundId", "fund_id");
+        put("name", "fund_info.name");
+        put("balance", "fund_info.balance");
+        put("editors", "fund_info.editors");
+        put("owner", "fund_info.owner");
+        put("createAt", "fund_info.create_at");
+        put("updateAt", "update_info.update_at");
+        put("delFlag", "update_info.del_flag");
+    }};
     /**
      * fund ID.
      */

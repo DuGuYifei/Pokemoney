@@ -1,6 +1,7 @@
 package com.pokemoney.hadoop.hbase.dto.category;
 
 import lombok.*;
+import org.apache.hbase.thirdparty.com.google.gson.annotations.SerializedName;
 
 /**
  * category DTO
@@ -13,13 +14,11 @@ public class CategoryDto {
     /**
      * category ID.
      */
+    @SerializedName("category_id")
     private Long categoryId;
     /**
      * category name.
      */
+    @SerializedName("category_name")
     private String categoryName;
-    /**
-     * deleted flag.
-     */
-    private Integer delFlag;
 }

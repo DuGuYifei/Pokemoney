@@ -2,6 +2,8 @@ package com.pokemoney.hadoop.hbase.dto.sync;
 
 import lombok.*;
 
+
+
 /**
  * Sync transaction input DTO.
  */

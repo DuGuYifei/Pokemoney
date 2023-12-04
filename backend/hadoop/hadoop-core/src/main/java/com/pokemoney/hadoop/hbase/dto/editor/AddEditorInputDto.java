@@ -2,6 +2,8 @@ package com.pokemoney.hadoop.hbase.dto.editor;
 
 import lombok.*;
 
+
+
 /**
  * add editor input DTO
  */
@@ -14,4 +16,8 @@ public class AddEditorInputDto {
      * email of editor
      */
     private String email;
+    /**
+     * Ledger id or fund id
+     */
+    private Long targetId;
 }

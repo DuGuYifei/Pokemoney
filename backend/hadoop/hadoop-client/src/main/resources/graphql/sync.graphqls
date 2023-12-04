@@ -1,0 +1,76 @@
+type Notification {
+    ledgerInvitation: [LedgerInvitation]!
+    fundInvitation: [FundInvitation]!
+}
+
+type SyncResponse {
+    user: User!
+    funds: [Fund]!
+    ledgers: [Ledger]!
+    transactions: [Transaction]!
+    categories: [Category]!
+    subcategories: [Subcategory]!
+    notifications: [Notification]!
+    operationId: ID!
+}
+
+input SyncUserInput {
+    userId: ID!
+    email: String!
+    name: String!
+    updateAt: String!
+}
+
+input SyncFundInput {
+    fundId: ID!
+    name: String!
+    balance: Float!
+    owner: ID!
+    createAt: String!
+    updateAt: String!
+    delFlag: Int!
+}
+
+input SyncLedgerInput {
+    ledgerId: ID!
+    name: String!
+    budget: Float!
+    owner: ID!
+    createAt: String!
+    updateAt: String!
+    delFlag: Int!
+}
+
+input SyncTransactionInput {
+    transactionId: ID!
+    money: Float!
+    typeId: Int!
+    relevantEntity: String!
+    comment: String
+    fundId: String!
+    categoryId: Int!
+    subcategoryId: ID!
+    ledgerId: ID!
+    happenAt: String!
+    updateAt: String!
+    delFlag: Int!
+}
+
+input SyncSubcategoryInput {
+    subcategoryId: ID!
+    categoryId: ID!
+    subcategoryName: String!
+    updateAt: String!
+    delFlag: Int!
+}
+
+type Mutation {
+    syncAll(
+        maxOperationId: ID!
+        user: SyncUserInput!
+        fund: [SyncFundInput]!
+        ledger: [SyncLedgerInput]!
+        transaction: [SyncTransactionInput]!
+        subcategory: [SyncSubcategoryInput]!
+    ): SyncResponse!
+}
