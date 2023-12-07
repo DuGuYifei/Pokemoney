@@ -12,8 +12,15 @@ class TransactionService {
 
   Future<List<pokemoney.Transaction>> getAllTransactions() async {
     var dbClient = await _dbHelper.db;
-    var result = await dbClient.query("t_transactions_unsync");
-    return result.map((map) => pokemoney.Transaction.fromMap(map)).toList();
+    var unsyncedResult = await dbClient.query("t_transactions_unsync");
+    var syncedResult = await dbClient.query("t_transactions_sync");
+
+    var unsyncedTransactions = unsyncedResult.map((map) => pokemoney.Transaction.fromMap(map)).toList();
+    var syncedTransactions = syncedResult.map((map) => pokemoney.Transaction.fromMap(map)).toList();
+
+    var combinedTransactions = {...unsyncedTransactions, ...syncedTransactions}.toList();
+
+    return combinedTransactions;
   }
 
   // Method to get t_transactions_unsync by LedgerBookId

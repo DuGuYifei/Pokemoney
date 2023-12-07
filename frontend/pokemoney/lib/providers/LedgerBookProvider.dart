@@ -59,4 +59,9 @@ class LedgerBookProvider with ChangeNotifier {
 
     notifyListeners();
   }
+
+  // Method than return the ledger book by id
+  Future<LedgerBook> getLedgerBookById(int ledgerBookId) async {
+    return await _ledgerBookService.getLedgerBookById(ledgerBookId);
+  }
 }

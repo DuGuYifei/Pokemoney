@@ -44,49 +44,34 @@ class LedgerBookService {
     return await dbClient.delete(" t_ledger_books_unsync", where: "id = ?", whereArgs: [id]);
   }
 
-  Future<LedgerBook> getLedgerBookById(int ledgerBookId) async {
-    var dbClient = await _dbHelper.db;
-    List<Map> maps = await dbClient.query(
-      " t_ledger_books_unsync",
-      columns: ['id', 'budget', 'title', 'owner', 'createAt', 'updateAt', 'delFlag'],
-      where: 'id = ?',
-      whereArgs: [ledgerBookId],
-    );
+Future<LedgerBook> getLedgerBookById(int ledgerBookId) async {
+  var dbClient = await _dbHelper.db;
 
-    if (maps.isNotEmpty) {
-      return LedgerBook.fromMap(maps.first.cast<String, dynamic>());
-    }
+  // First, query the unsync table
+  List<Map<String, dynamic>> maps = await dbClient.query(
+    "t_ledger_books_unsync",
+    columns: ['id', 'budget', 'title', 'owner', 'createAt', 'updateAt', 'delFlag'],
+    where: 'id = ?',
+    whereArgs: [ledgerBookId],
+  );
 
-    throw Exception('LedgerBook with id $ledgerBookId not found');
+  if (maps.isNotEmpty) {
+    return LedgerBook.fromMap(maps.first);
   }
-  // Future<void> recalculateAndStoreBalance(int ledgerBookId) async {
-  //   var dbClient = await _dbHelper.db;
 
-  //   // Efficiently calculate the sum of all transactions for this ledger book
-  //   var sumResult = await dbClient.rawQuery('''
-  //     SELECT SUM(CASE WHEN type='Income' THEN amount ELSE -amount END) as total
-  //     FROM transactions
-  //     WHERE ledgerBookId = ?
-  //   ''', [ledgerBookId]);
+  // If not found, then query the sync table
+  maps = await dbClient.query(
+    "t_ledger_books_sync",
+    columns: ['id', 'budget', 'title', 'owner', 'createAt', 'updateAt', 'delFlag'],
+    where: 'id = ?',
+    whereArgs: [ledgerBookId],
+  );
 
-  //   double transactionsSum = sumResult.first["total"] ?? 0.0;
+  if (maps.isNotEmpty) {
+    return LedgerBook.fromMap(maps.first);
+  }
 
-  //   // Fetch the initial balance if necessary
-  //   var ledgerResult = await dbClient.query(
-  //     ' t_ledger_books_unsync',
-  //     columns: ['initial_balance'],
-  //     where: 'id = ?',
-  //     whereArgs: [ledgerBookId],
-  //   );
-  //   double initialBalance = ledgerResult.first["initial_balance"] ?? 0.0;
+  throw Exception('LedgerBook with id $ledgerBookId not found in either table');
+}
 
-  //   // Update the ledger book's balance
-  //   double newBalance = initialBalance + transactionsSum;
-  //   await dbClient.update(
-  //     ' t_ledger_books_unsync',
-  //     {'balance': newBalance},
-  //     where: 'id = ?',
-  //     whereArgs: [ledgerBookId],
-  //   );
-  // }
 }
