@@ -40,4 +40,10 @@ class SubCategoryProvider with ChangeNotifier {
     await _subCategoryService.updateSubCategory(subCategory);
     fetchAllSubCategoriesFromSyncAndUnsync();
   }
+
+  // Get sub category name by id
+  String getCategoryNameById(int subCategoryId) {
+    var subCategory = _subCategories.values.expand((element) => element).firstWhere((element) => element.id == subCategoryId);
+    return subCategory.name;
+  }
 }

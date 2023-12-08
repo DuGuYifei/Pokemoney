@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         debugShowCheckedModeBanner: false,
-        initialRoute: RouteGenerator.app,
+        initialRoute: RouteGenerator.welcomePage,
         onGenerateRoute: RouteGenerator.generateRoute,
       ),
     );

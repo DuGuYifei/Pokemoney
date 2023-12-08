@@ -41,30 +41,28 @@ class _TransactionFormState extends State<TransactionForm> {
     _dateController.text = DateFormat.yMd().format(_selectedDate);
     _selectedFundId = -1; // Initial value indicating fund not yet selected
     _selectedSubCategoryId = -1; // Initial value indicating subcategory not yet selected
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateSubCategoriesAndFundPostFrame();
-      });
-
+    });
   }
 
   // Updates categories after the frame is built
-void _updateSubCategoriesAndFundPostFrame() {
-  final subCategoryProvider = Provider.of<SubCategoryProvider>(context, listen: false);
-  final fundProvider = Provider.of<FundProvider>(context, listen: false);
+  void _updateSubCategoriesAndFundPostFrame() {
+    final subCategoryProvider = Provider.of<SubCategoryProvider>(context, listen: false);
+    final fundProvider = Provider.of<FundProvider>(context, listen: false);
 
-  subCategoryProvider.fetchAllSubCategoriesFromSyncAndUnsync().then((_) {
-    if (mounted) {
-      fetchAndUpdateSubCategories();
-    }
-  });
+    subCategoryProvider.fetchAllSubCategoriesFromSyncAndUnsync().then((_) {
+      if (mounted) {
+        fetchAndUpdateSubCategories();
+      }
+    });
 
-  fundProvider.fetchAllFunds().then((_) {
-    if (mounted) {
-      fetchAndUpdateFunds();
-    }
-  });
-}
-
+    fundProvider.fetchAllFunds().then((_) {
+      if (mounted) {
+        fetchAndUpdateFunds();
+      }
+    });
+  }
 
   // Fetches categories and updates dropdown items
   void fetchAndUpdateSubCategories() {
@@ -318,46 +316,46 @@ void _updateSubCategoriesAndFundPostFrame() {
     }
   }
 
-@override
-Widget build(BuildContext context) {
-  final subCategoryProvider = Provider.of<SubCategoryProvider>(context, listen: false);
-  final fundProvider = Provider.of<FundProvider>(context, listen: false);
-  final transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
+  @override
+  Widget build(BuildContext context) {
+    final subCategoryProvider = Provider.of<SubCategoryProvider>(context, listen: false);
+    final fundProvider = Provider.of<FundProvider>(context, listen: false);
+    final transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
 
-  return Scaffold(
-    appBar: AppBar(title: const Text('Add Transaction')),
-    body: Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: FutureBuilder(
-        future: Future.wait([
-          subCategoryProvider.fetchAllSubCategoriesFromSyncAndUnsync(),
-          fundProvider.fetchAllFunds(),
-        ]),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator(); // Show loading indicator
-          }
+    return Scaffold(
+      appBar: AppBar(title: const Text('Add Transaction')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: FutureBuilder(
+          future: Future.wait([
+            subCategoryProvider.fetchAllSubCategoriesFromSyncAndUnsync(),
+            fundProvider.fetchAllFunds(),
+          ]),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator(); // Show loading indicator
+            }
 
-          if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}'); // Handle error state
-          }
+            if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}'); // Handle error state
+            }
 
-          // Once data is fetched, build the form
-          return Form(
-            key: _formKey,
-            child: _buildFormFields(context, subCategoryProvider, fundProvider,transactionProvider),
-          );
-        },
+            // Once data is fetched, build the form
+            return Form(
+              key: _formKey,
+              child: _buildFormFields(context, subCategoryProvider, fundProvider, transactionProvider),
+            );
+          },
+        ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 
   // Builds the form fields
-Widget _buildFormFields(BuildContext context, SubCategoryProvider subCategoryProvider, FundProvider fundProvider, TransactionProvider transactionProvider) {
-  //fetchAndUpdateSubCategories(); // Call this to update items
-  //fetchAndUpdateFunds(); // Call this to update items
+  Widget _buildFormFields(BuildContext context, SubCategoryProvider subCategoryProvider,
+      FundProvider fundProvider, TransactionProvider transactionProvider) {
+    //fetchAndUpdateSubCategories(); // Call this to update items
+    //fetchAndUpdateFunds(); // Call this to update items
     return ListView(
       children: [
         _buildTextField(_invoiceNumberController, 'Invoice Number', 'Please enter the invoice number'),

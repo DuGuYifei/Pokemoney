@@ -53,7 +53,7 @@ class DBHelper {
         Category(id: 3, name: 'Rent', iconPath: 'assets/category_icons/rent_icon.svg'),
         Category(id: 4, name: 'Grocery', iconPath: 'assets/category_icons/groceries_icon.svg'),
         Category(id: 5, name: 'Shopping', iconPath: 'assets/category_icons/shopping_icon.svg'),
-        Category(id: 6, name: 'Intertainment', iconPath: 'assets/category_icons/intertainment_icon.svg'),
+        Category(id: 6, name: 'Entertainment', iconPath: 'assets/category_icons/intertainment_icon.svg'),
         Category(id: 7, name: 'Saving', iconPath: 'assets/category_icons/saving_icon.svg'),
         Category(id: 8, name: 'Other', iconPath: 'assets/category_icons/other_icon.svg'),
         Category(id: 9, name: 'Job', iconPath: 'assets/category_icons/job_icon.svg'),

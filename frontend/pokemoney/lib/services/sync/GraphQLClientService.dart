@@ -11,7 +11,7 @@ class GraphQLClientService {
   GraphQLClient _initClient() {
     // Configuration for the GraphQL client
     // Replace with your GraphQL endpoint and any necessary headers
-    final HttpLink httpLink = HttpLink('YOUR_GRAPHQL_ENDPOINT');
+    final HttpLink httpLink = HttpLink('http://43.131.33.18/api/v1/hadoop/client/graphql');
 
     // If you need to add headers for authentication, you can use Link
     // from 'package:graphql_flutter/graphql_flutter.dart'
@@ -24,63 +24,132 @@ class GraphQLClientService {
   }
 
   Future<Map<String, dynamic>> syncAll(Map<String, dynamic> unsyncedData) async {
-    // Define the mutation string, replace with your actual mutation
+    // Define the mutation string with variable definitions
     const String syncAllMutation = '''
-      mutation SyncAllData(\$userData: SyncUserInput!, \$fundData: [SyncFundInput]!, \$ledgerData: [SyncLedgerInput]!, \$transactionData: [SyncTransactionInput]!, \$subcategoryData: [SyncSubcategoryInput]!) {
-        syncAll(
-          maxOperationId: 1,
-          user: \$userData,
-          fund: \$fundData,
-          ledger: \$ledgerData,
-          transaction: \$transactionData,
-          subcategory: \$subcategoryData
-        ) {
+    mutation SyncAllData(
+      \$maxOperationId: ID!,
+      \$userData: SyncUserInput!,
+      \$fundData: [SyncFundInput]!,
+      \$ledgerData: [SyncLedgerInput]!,
+      \$transactionData: [SyncTransactionInput]!,
+      \$subcategoryData: [SyncSubcategoryInput]!
+    ) {
+      syncAll(
+        maxOperationId: \$maxOperationId,
+        user: \$userData,
+        fund: \$fundData,
+        ledger: \$ledgerData,
+        transaction: \$transactionData,
+        subcategory: \$subcategoryData
+      ) {
     user {
       userId
       email
       name
+      fundInfo {
+        fundIds
+        delFundIds
+      }
+      ledgerInfo {
+        ledgerIds
+        delLedgerIds
+      }
+      appInfo {
+        categories {
+          categoryId
+          categoryName
+          delFlag
+        }
+        subCategories {
+          subcategoryId
+          categoryId
+          subcategoryName
+          updateAt
+          delFlag
+        }
+      }
     }
     funds {
       fundId
       name
       balance
+      owner
+      editors {
+        userId
+        email
+        name
+      }
+      createAt
+      updateAt
+      delFlag
     }
     ledgers {
       ledgerId
       name
       budget
+      owner
+      editors {
+        userId
+        email
+        name
+      }
+      createAt
+      updateAt
+      delFlag
     }
     transactions {
       transactionId
       money
       typeId
+      relevantEntity
+      comment
+      fundId
+      categoryId
+      subcategoryId
+      ledgerId
+      happenAt
+      updateAt
+      delFlag
     }
     categories {
       categoryId
       categoryName
+      delFlag
     }
     subcategories {
       subcategoryId
+      categoryId
       subcategoryName
+      updateAt
+      delFlag
     }
     notifications {
       ledgerInvitation {
-        id
+      	id
         invitedBy {
           userId
+          email
+          name
         }
+        ledgerId
       }
       fundInvitation {
         id
         invitedBy {
           userId
+          email
+          name
         }
+        fundId
       }
     }
     operationId
   }
       }
     ''';
+
+// Ensure you extract 'maxOperationId' from unsyncedData or define it beforehand
+    var maxOperationId = unsyncedData['maxOperationId'];
 
     // Extracting individual data categories from unsyncedData
     var userData = unsyncedData['users'];
@@ -93,11 +162,12 @@ class GraphQLClientService {
     final MutationOptions options = MutationOptions(
       document: gql(syncAllMutation),
       variables: {
-        'userData': userData,
-        'fundData': fundData,
-        'ledgerData': ledgerData,
-        'transactionData': transactionData,
-        'subcategoryData': subcategoryData,
+        'maxOperationId': maxOperationId,
+        'user': userData,
+        'fund': fundData,
+        'ledger': ledgerData,
+        'transaction': transactionData,
+        'subcategory': subcategoryData,
       },
     );
 

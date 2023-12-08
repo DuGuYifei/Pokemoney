@@ -50,6 +50,7 @@ class SyncManager {
 
     // Prepare the data in the structure expected by your GraphQL backend
     Map<String, dynamic> unsyncedData = {
+      'maxOperationId': 1,
       'users': unsyncedUsers,
       'funds': unsyncedFunds,
       'ledgerBooks': unsyncedLedgerBooks,

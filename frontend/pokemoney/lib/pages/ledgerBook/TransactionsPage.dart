@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:pokemoney/model/barrel.dart';
 import 'package:pokemoney/pages/ledgerBook/EditTransactionPage.dart';
 import 'package:pokemoney/providers/TransactionProvider.dart';
+import 'package:pokemoney/providers/SubCategoryProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:pokemoney/constants/AppColors.dart';
 
@@ -20,10 +21,22 @@ class _TransactionsPageState extends State<TransactionsPage> {
   late ScrollController _scrollController;
   final TextEditingController _searchController = TextEditingController();
   List<Transaction> _filteredTransactions = [];
-  String _selectedCategory = 'All'; // Default value for category filter
+  String _selectedSubCategory = 'All'; // Default value for category filter
   bool _sortAscending = true; // Default value for sorting order
 
-  final List<String> _categories = ['All', 'Restaurant', 'Transportation', 'Rent']; // Example categories
+  List<String> _subCategories = [];
+  Map<String, int> subCategoryMap = {
+    'Restaurant': 1,
+    'Transportation': 2,
+    'Rent': 3,
+    'Grocery': 4,
+    'Shopping': 5,
+    'Entertainment': 6,
+    'Saving': 7,
+    'Other': 8,
+    'Job': 9,
+    'All': -1
+  };
 
   @override
   void initState() {
@@ -31,6 +44,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
     _scrollController = ScrollController();
     _scrollController.addListener(_onScroll);
     _searchController.addListener(_onSearchChanged);
+    _subCategories = subCategoryMap.keys.toList(); // Use keys from the map
     // You could initialize the transaction fetch here if needed
     // Provider.of<TransactionProvider>(context, listen: false).fetchAllTransactions();
     // Other initializations...
@@ -43,20 +57,66 @@ class _TransactionsPageState extends State<TransactionsPage> {
   }
 
   void _onSearchChanged() {
-    if (_searchController.text.isEmpty) {
-      setState(() {
-        _filteredTransactions = Provider.of<TransactionProvider>(context, listen: false).filteredTransactions;
-      });
-    } else {
-      setState(() {
-        _filteredTransactions = Provider.of<TransactionProvider>(context, listen: false)
-            .filteredTransactions
-            .where((transaction) {
-          return transaction.comment!.toLowerCase().contains(_searchController.text.toLowerCase()) ||
-              transaction.invoiceNumber.toLowerCase().contains(_searchController.text.toLowerCase());
-        }).toList();
-      });
+    _applyFilterAndSort();
+  }
+
+  void _applyFilterAndSort() {
+    final transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
+    List<Transaction> transactions = transactionProvider.filteredTransactions;
+
+    // Filter by search text
+    if (_searchController.text.isNotEmpty) {
+      transactions = transactions.where((transaction) {
+        return transaction.comment!.toLowerCase().contains(_searchController.text.toLowerCase()) ||
+            transaction.invoiceNumber.toLowerCase().contains(_searchController.text.toLowerCase());
+      }).toList();
     }
+
+// Filter by selected subcategory if not 'All'
+    if (_selectedSubCategory != 'All') {
+      int subCategoryId = subCategoryMap[_selectedSubCategory] ?? -1;
+      transactions = transactions.where((transaction) {
+        return transaction.subCategoryId == subCategoryId;
+      }).toList();
+    }
+
+    // Sort transactions
+    transactions.sort((a, b) {
+      if (_sortAscending) {
+        // Replace 'transactionDate' with the actual property name in your Transaction class
+        return a.billingDate.compareTo(b.billingDate);
+      } else {
+        return b.billingDate.compareTo(a.billingDate);
+      }
+    });
+
+    // Update the filtered transactions list
+    setState(() {
+      _filteredTransactions = transactions;
+    });
+  }
+
+  String _getCategoryNameById(int subCategoryId) {
+    // Assuming you have a method in SubCategoryProvider to get the category name by ID
+    final subCategoryProvider = Provider.of<SubCategoryProvider>(context, listen: false);
+    return subCategoryProvider.getCategoryNameById(subCategoryId);
+  }
+
+  int _getCategoryIdByName(String categoryName) {
+    // Implement this method based on how your categories are stored or mapped
+    Map<String, int> categoryMap = {
+      'Restaurant': 1,
+      'Transportation': 2,
+      'Rent': 3,
+      'Grocery': 4,
+      'Shopping': 5,
+      'Entertainment': 6,
+      'Saving': 7,
+      'Other': 8,
+      'Job': 9,
+      'All': -1
+    };
+    return categoryMap[categoryName] ?? -1;
   }
 
   @override
@@ -77,14 +137,14 @@ class _TransactionsPageState extends State<TransactionsPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 DropdownButton(
-                  value: _selectedCategory,
-                  items: _categories.map((String category) {
-                    return DropdownMenuItem(value: category, child: Text(category));
+                  value: _selectedSubCategory,
+                  items: _subCategories.map((String subCategory) {
+                    return DropdownMenuItem(value: subCategory, child: Text(subCategory));
                   }).toList(),
                   onChanged: (String? newValue) {
                     setState(() {
-                      _selectedCategory = newValue!;
-                      //_applyFilterAndSort()
+                      _selectedSubCategory = newValue!;
+                      _applyFilterAndSort();
                     });
                   },
                 ),
@@ -93,7 +153,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                   onPressed: () {
                     setState(() {
                       _sortAscending = !_sortAscending;
-                      //_applyFilterAndSort();
+                      _applyFilterAndSort();
                     });
                   },
                 ),
@@ -105,7 +165,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                 controller: _searchController,
                 decoration: const InputDecoration(
                     labelText: "Search",
-                    hintText: "Search by category or invoice number",
+                    hintText: "Search by comment or invoice number",
                     prefixIcon: Icon(Icons.search),
                     border: OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(25.0)))),
               ),
@@ -243,18 +303,18 @@ class TransactionListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Access the category directly from the provider's cache
-    Category? category =
-        Provider.of<TransactionProvider>(context, listen: false).getCategoryForTransaction(transaction);
+    SubCategory? subCategory =
+        Provider.of<TransactionProvider>(context, listen: false).getSubCategoryForTransaction(transaction);
 
     Fund? fund = Provider.of<TransactionProvider>(context, listen: false).getFundForTransaction(transaction);
 
     return Card(
       child: ListTile(
-        leading: category != null
+        leading: subCategory != null
             ? ClipRRect(
                 borderRadius: BorderRadius.circular(10), // Adjust the radius as needed
                 child: SvgPicture.asset(
-                  category.iconPath,
+                  subCategory.iconPath!,
                   width: 50,
                   height: 50,
                 ),

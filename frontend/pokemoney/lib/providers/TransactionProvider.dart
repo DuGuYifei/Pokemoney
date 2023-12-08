@@ -3,6 +3,7 @@ import 'package:pokemoney/providers/FundProvider.dart';
 import 'package:pokemoney/services/TransactionService.dart';
 import 'package:pokemoney/providers/LedgerBookProvider.dart';
 import 'package:pokemoney/services/CategoryService.dart';
+import 'package:pokemoney/services/SubCategoryService.dart';
 import 'package:pokemoney/services/LedgerBookService.dart';
 import 'package:pokemoney/model/barrel.dart' as pokemoney;
 import 'package:pokemoney/services/FundService.dart';
@@ -10,6 +11,7 @@ import 'package:pokemoney/services/FundService.dart';
 class TransactionProvider with ChangeNotifier {
   final TransactionService _transactionService = TransactionService();
   final CategoryService _categoryService = CategoryService();
+  final SubCategoryService _subCategoryService = SubCategoryService();
   final FundService _fundService = FundService(); // FundService instance
   final LedgerBookService _ledgerBookService = LedgerBookService(); // FundService instance
   FundProvider? _fundProvider;
@@ -30,6 +32,7 @@ class TransactionProvider with ChangeNotifier {
   List<pokemoney.Transaction> _transactions = []; // List of transactions
   List<pokemoney.Transaction> _filteredTransactions = []; // List of filtered transactions
   final Map<int, pokemoney.Category> _categoryCache = {};
+  final Map<int, pokemoney.SubCategory> _subCategoryCache = {};
   final Map<int, pokemoney.Fund> _fundCache = {}; // Cache for funds
   final Map<int, pokemoney.LedgerBook> _ledgerBookCache = {}; // Cache for ledger books
 
@@ -123,6 +126,15 @@ class TransactionProvider with ChangeNotifier {
       }
     }
 
+    if (!_subCategoryCache.containsKey(transaction.subCategoryId)) {
+      try {
+        pokemoney.SubCategory subCategory = await _subCategoryService.getSubCategoryById(transaction.subCategoryId);
+        _subCategoryCache[transaction.subCategoryId] = subCategory;
+      } catch (e) {
+        print('Error fetching category: $e');
+      }
+    }
+
     if (!_fundCache.containsKey(transaction.fundId)) {
       // Similar logic for funds
       try {
@@ -146,6 +158,11 @@ class TransactionProvider with ChangeNotifier {
   // Helper method to get a category from the cache
   pokemoney.Category? getCategoryForTransaction(pokemoney.Transaction transaction) {
     return _categoryCache[transaction.categoryId];
+  }
+
+  // Helper method to get a subcategory from the cache
+  pokemoney.SubCategory? getSubCategoryForTransaction(pokemoney.Transaction transaction) {
+    return _subCategoryCache[transaction.subCategoryId];
   }
 
   //helper method to get a ledgerbook
