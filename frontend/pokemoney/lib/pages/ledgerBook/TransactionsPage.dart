@@ -52,43 +52,12 @@ class _TransactionsPageState extends State<TransactionsPage> {
         _filteredTransactions = Provider.of<TransactionProvider>(context, listen: false)
             .filteredTransactions
             .where((transaction) {
-          return transaction.categoryId.toString().contains(_searchController.text.toLowerCase()) ||
+          return transaction.comment!.toLowerCase().contains(_searchController.text.toLowerCase()) ||
               transaction.invoiceNumber.toLowerCase().contains(_searchController.text.toLowerCase());
         }).toList();
       });
     }
   }
-
-  // void _applyFilterAndSort() {
-  //   // Get a reference to TransactionProvider
-  //   var transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
-
-  //   var transactions = transactionProvider.transactions;
-
-  //   // Filter transactions by selected category
-  //   if (_selectedCategory != 'All') {
-  //     transactions = transactions.where((transaction) {
-  //       String categoryName = transactionProvider.getCategoryNameForTransaction(transaction)?.name ?? '';
-  //       return categoryName == _selectedCategory;
-  //     }).toList();
-  //   }
-
-  //   // Sort transactions
-  //   transactions.sort((a, b) =>
-  //       _sortAscending ? a.billingDate.compareTo(b.billingDate) : b.billingDate.compareTo(a.billingDate));
-
-  //   // Apply search filter
-  //   if (_searchController.text.isNotEmpty) {
-  //     transactions = transactions.where((transaction) {
-  //       return transaction.categoryId.toString().contains(_searchController.text.toLowerCase()) ||
-  //           transaction.invoiceNumber.toLowerCase().contains(_searchController.text.toLowerCase());
-  //     }).toList();
-  //   }
-
-  //   setState(() {
-  //     _filteredTransactions = transactions;
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -328,3 +297,34 @@ class TransactionListItem extends StatelessWidget {
     );
   }
 }
+
+  // void _applyFilterAndSort() {
+  //   // Get a reference to TransactionProvider
+  //   var transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
+
+  //   var transactions = transactionProvider.transactions;
+
+  //   // Filter transactions by selected category
+  //   if (_selectedCategory != 'All') {
+  //     transactions = transactions.where((transaction) {
+  //       String categoryName = transactionProvider.getCategoryNameForTransaction(transaction)?.name ?? '';
+  //       return categoryName == _selectedCategory;
+  //     }).toList();
+  //   }
+
+  //   // Sort transactions
+  //   transactions.sort((a, b) =>
+  //       _sortAscending ? a.billingDate.compareTo(b.billingDate) : b.billingDate.compareTo(a.billingDate));
+
+  //   // Apply search filter
+  //   if (_searchController.text.isNotEmpty) {
+  //     transactions = transactions.where((transaction) {
+  //       return transaction.categoryId.toString().contains(_searchController.text.toLowerCase()) ||
+  //           transaction.invoiceNumber.toLowerCase().contains(_searchController.text.toLowerCase());
+  //     }).toList();
+  //   }
+
+  //   setState(() {
+  //     _filteredTransactions = transactions;
+  //   });
+  // }
