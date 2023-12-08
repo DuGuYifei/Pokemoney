@@ -19,6 +19,7 @@ class _SignUpPageState extends State<SignUpPage> {
   final confirmPasswordController = TextEditingController();
 
   bool agree = false;
+  bool isPasswordVisible = false;
 
   void signUserUp() async {
     String username = usernameController.text;
@@ -33,9 +34,21 @@ class _SignUpPageState extends State<SignUpPage> {
       return;
     }
 
+    // Check username length
+    if (username.length < 4) {
+      _showDialog('Username must be at least 4 characters long');
+      return;
+    }
+
     // Validate email format (you can use more sophisticated validation here)
     if (!email.contains('@')) {
       _showDialog('Please enter a valid email');
+      return;
+    }
+
+    // Check if passwords match
+    if (password.length < 8) {
+      _showDialog('Passwords is too short should be atleast 8 characters');
       return;
     }
 
@@ -130,6 +143,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                 //username textfiled;
                 CustomTextField(
+                  key: const Key('usernameField'),
                   headerText: 'Username',
                   controller: usernameController,
                   labelText: 'Your username',
@@ -140,6 +154,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                 //Email textfield
                 CustomTextField(
+                  key: const Key('emailField'),
                   headerText: 'Email',
                   controller: emailController,
                   labelText: 'Your Email',
@@ -150,19 +165,41 @@ class _SignUpPageState extends State<SignUpPage> {
 
                 //password textfield
                 CustomTextField(
+                  key: const Key('passwordField'),
                   headerText: 'Password',
                   controller: passwordController,
                   labelText: 'Password',
-                  obscureText: true,
+                  obscureText: !isPasswordVisible,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        isPasswordVisible = !isPasswordVisible;
+                      });
+                    },
+                  ),
                 ),
 
                 const SizedBox(height: 10),
 
                 //confirm password textfield
                 CustomTextField(
+                  key: const Key('confirmPasswordField'),
                   controller: confirmPasswordController,
                   labelText: 'Confirm password',
-                  obscureText: true,
+                  obscureText: !isPasswordVisible,
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        isPasswordVisible = !isPasswordVisible;
+                      });
+                    },
+                  ),
                 ),
 
                 const SizedBox(height: 10),
@@ -177,6 +214,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         height: 24.0,
                         width: 24.0,
                         child: Checkbox(
+                          key: const Key('termsCheckbox'),
                           fillColor: MaterialStateProperty.all<Color>(AppColors.primaryColor),
                           value: agree,
                           onChanged: (value) {
@@ -190,7 +228,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     CustomClickableText(
                         text: 'I have read and accpet terms and conditions',
                         onTap: () {
-                          // Navigate to another page or perform desired action
+                          // TODO: Navigate to another page for reading the terms and conditions
                         },
                         clickableText: 'terms and conditions')
                   ],
@@ -198,6 +236,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                 const SizedBox(height: 15),
                 CustomButton(
+                  key: const Key('signUpButton'),
                   onPressed: agree && !isLoading ? () => signUserUp() : null,
                   textButton: 'Sign-up',
                 ),

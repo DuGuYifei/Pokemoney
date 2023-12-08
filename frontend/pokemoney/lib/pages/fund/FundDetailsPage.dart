@@ -27,7 +27,7 @@ class FundDetailsPage extends StatelessWidget {
   //   // Add more transactions as needed
   // ];
 
-  FundDetailsPage(this.fund, {Key? key}) : super(key: key);
+  const FundDetailsPage(this.fund, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

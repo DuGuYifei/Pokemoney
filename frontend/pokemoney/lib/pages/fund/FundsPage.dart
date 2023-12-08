@@ -1,8 +1,11 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:pokemoney/model/barrel.dart';
 import 'package:pokemoney/widgets/barrel.dart';
 import 'package:provider/provider.dart';
 import 'package:pokemoney/providers/FundProvider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FundsPage extends StatefulWidget {
   const FundsPage({super.key});
@@ -12,6 +15,8 @@ class FundsPage extends StatefulWidget {
 }
 
 class _FundsPageState extends State<FundsPage> {
+  bool _isLoading = true;
+
   @override
   void initState() {
     super.initState();
@@ -20,14 +25,21 @@ class _FundsPageState extends State<FundsPage> {
 
   // Fetches all funds from the provider and updates the loading state
   void fetchFunds() async {
-    await context.read<FundProvider>().fetchAllFunds();
+    await context.read<FundProvider>().fetchAllFundsFromSyncAndUnsync();
+    setState(() => _isLoading = false);
   }
 
-  // Shows a form dialog for adding a new fund
   Future<void> _showForm(BuildContext context) async {
     final formKey = GlobalKey<FormState>();
     final titleController = TextEditingController();
     final balanceController = TextEditingController()..text = '2000';
+
+    // Retrieve preferences asynchronously before showing the dialog
+    final prefs = await SharedPreferences.getInstance();
+    int? id = prefs.getInt('id');
+
+    // Now pass the id to _buildFormActions
+    List<Widget> actions = _buildFormActions(context, formKey, titleController, balanceController, id);
 
     await showDialog(
         context: context,
@@ -40,9 +52,39 @@ class _FundsPageState extends State<FundsPage> {
                 child: _buildForm(formKey, titleController, balanceController),
               ),
             ),
-            actions: _buildFormActions(context, formKey, titleController, balanceController),
+            actions: actions,
           );
         });
+  }
+
+  // Builds actions for the form dialog
+  List<Widget> _buildFormActions(BuildContext context, GlobalKey<FormState> formKey,
+      TextEditingController titleController, TextEditingController balanceController, int? id) {
+    return [
+      TextButton(
+        onPressed: () => Navigator.of(context).pop(),
+        child: const Text('Cancel'),
+      ),
+      ElevatedButton(
+        onPressed: () {
+          if (formKey.currentState!.validate()) {
+            // Use the saved values to create a new fund instance and add it
+            var newFund = Fund(
+              name: titleController.text,
+              balance: double.parse(balanceController.text),
+              creationDate: DateTime.now(),
+              owner: id!,
+              editors: id.toString(),
+              updateAt: DateTime.now(),
+              delFlag: 0,
+            );
+            context.read<FundProvider>().addFund(newFund);
+            Navigator.of(context).pop();
+          }
+        },
+        child: const Text('Add'),
+      ),
+    ];
   }
 
   // Builds the form for adding a new fund
@@ -71,44 +113,16 @@ class _FundsPageState extends State<FundsPage> {
     );
   }
 
-  // Builds actions for the form dialog
-  List<Widget> _buildFormActions(BuildContext context, GlobalKey<FormState> formKey,
-      TextEditingController titleController, TextEditingController budgetController) {
-    return [
-      TextButton(
-        onPressed: () => Navigator.of(context).pop(),
-        child: const Text('Cancel'),
-      ),
-      ElevatedButton(
-        onPressed: () {
-          if (formKey.currentState!.validate()) {
-            // Use the saved values to create a new Fudn instance and add it
-            var newFund = Fund(
-              name: titleController.text,
-              balance: double.parse(budgetController.text),
-              creationDate: DateTime.now(),
-              owner: 1, // TODO: Change this to the logged in user's ID
-              editors: '1', // TODO: Change this to the logged in user's ID
-              updateAt: DateTime.now(),
-              delFlag: 0,
-            );
-            context.read<FundProvider>().addFund(newFund);
-            Navigator.of(context).pop();
-          }
-        },
-        child: const Text('Add'),
-      ),
-    ];
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Consumer<FundProvider>(
-        builder: (context, fundProvider, child) => fundProvider.funds.isEmpty
-            ? const Center(child: Text('No funds yet'))
-            : _buildFundGrid(fundProvider),
-      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Consumer<FundProvider>(
+              builder: (context, fundProvider, child) => fundProvider.funds.isEmpty
+                  ? const Center(child: Text('No funds yet'))
+                  : _buildFundGrid(fundProvider),
+            ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showForm(context),
         icon: const Icon(Icons.add),

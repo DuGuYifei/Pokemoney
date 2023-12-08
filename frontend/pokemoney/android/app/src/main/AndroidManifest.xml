@@ -2,7 +2,7 @@
     package="com.example.pokemoney">
    <application
         android:label="pokemoney"
-        android:name="${applicationName}"
+        android:name=".MyApplication"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

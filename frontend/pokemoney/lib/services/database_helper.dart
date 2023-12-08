@@ -1,8 +1,12 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:pokemoney/model/barrel.dart';
 
 class DBHelper {
+  // Flag to determine the type of database to use
+  bool useInMemoryDatabase = false;
+
   static final DBHelper _instance = DBHelper.internal();
 
   factory DBHelper() => _instance;
@@ -13,41 +17,171 @@ class DBHelper {
 
   Future<Database> get db async {
     if (_db != null) return _db!;
-    _db = await initDb();
+
+    if (useInMemoryDatabase) {
+      _db = await initInMemoryDb(); // Use in-memory database for testing
+    } else {
+      _db = await initDb(); // Use real database
+    }
+
     return _db!;
   }
 
+  // Method to initialize an in-memory database for testing
+  Future<Database> initInMemoryDb() async {
+    // Initialize sqflite for FFI (use only in tests)
+    sqfliteFfiInit();
+    var databaseFactory = databaseFactoryFfi;
+
+    String path = inMemoryDatabasePath;
+    var theDb = await databaseFactory.openDatabase(
+      path,
+      options: OpenDatabaseOptions(version: 1, onCreate: _onCreate),
+    );
+
+    // Insert initial categories, etc.
+    await insertInitialCategories(theDb);
+
+    return theDb;
+  }
+
   Future<void> insertInitialCategories(Database db) async {
-    final List<Category> initialCategories = [
-      Category(name: 'Restaurant', iconPath: 'assets/category_icons/restaurant_icon.svg'),
-      Category(name: 'Transportation', iconPath: 'assets/category_icons/transportation_icon.svg'),
-      Category(name: 'Rent', iconPath: 'assets/category_icons/rent_icon.svg'),
-      Category(name: 'Grocery', iconPath: 'assets/category_icons/groceries_icon.svg'),
-      Category(name: 'Shopping', iconPath: 'assets/category_icons/shopping_icon.svg'),
-      Category(name: 'Intertainment', iconPath: 'assets/category_icons/intertainment_icon.svg'),
-      Category(name: 'Saving', iconPath: 'assets/category_icons/saving_icon.svg'),
-      Category(name: 'Other', iconPath: 'assets/category_icons/other_icon.svg'),
-      Category(name: 'Job', iconPath: 'assets/category_icons/job_icon.svg'),
-    ];
+    await db.transaction((txn) async {
+      final List<Category> initialCategories = [
+        Category(id: 1, name: 'Restaurant', iconPath: 'assets/category_icons/restaurant_icon.svg'),
+        Category(id: 2, name: 'Transportation', iconPath: 'assets/category_icons/transportation_icon.svg'),
+        Category(id: 3, name: 'Rent', iconPath: 'assets/category_icons/rent_icon.svg'),
+        Category(id: 4, name: 'Grocery', iconPath: 'assets/category_icons/groceries_icon.svg'),
+        Category(id: 5, name: 'Shopping', iconPath: 'assets/category_icons/shopping_icon.svg'),
+        Category(id: 6, name: 'Intertainment', iconPath: 'assets/category_icons/intertainment_icon.svg'),
+        Category(id: 7, name: 'Saving', iconPath: 'assets/category_icons/saving_icon.svg'),
+        Category(id: 8, name: 'Other', iconPath: 'assets/category_icons/other_icon.svg'),
+        Category(id: 9, name: 'Job', iconPath: 'assets/category_icons/job_icon.svg'),
+      ];
 
-    for (var category in initialCategories) {
-      // Check if this category already exists
-      var result = await db.query(
-        't_categories',
-        where: 'name = ?',
-        whereArgs: [category.name],
-      );
+      final List<SubCategory> initialSubCategories = [
+        SubCategory(
+            categoryId: 1,
+            name: 'Restaurant',
+            iconPath: 'assets/category_icons/restaurant_icon.svg',
+            updateAt: DateTime.now(),
+            delFlag: 0),
+        SubCategory(
+            categoryId: 2,
+            name: 'Transportation',
+            iconPath: 'assets/category_icons/transportation_icon.svg',
+            updateAt: DateTime.now(),
+            delFlag: 0),
+        SubCategory(
+            categoryId: 3,
+            name: 'Rent',
+            iconPath: 'assets/category_icons/rent_icon.svg',
+            updateAt: DateTime.now(),
+            delFlag: 0),
+        SubCategory(
+            categoryId: 4,
+            name: 'Grocery',
+            iconPath: 'assets/category_icons/groceries_icon.svg',
+            updateAt: DateTime.now(),
+            delFlag: 0),
+        SubCategory(
+            categoryId: 5,
+            name: 'Shopping',
+            iconPath: 'assets/category_icons/shopping_icon.svg',
+            updateAt: DateTime.now(),
+            delFlag: 0),
+        SubCategory(
+            categoryId: 6,
+            name: 'Intertainment',
+            iconPath: 'assets/category_icons/intertainment_icon.svg',
+            updateAt: DateTime.now(),
+            delFlag: 0),
+        SubCategory(
+            categoryId: 7,
+            name: 'Saving',
+            iconPath: 'assets/category_icons/saving_icon.svg',
+            updateAt: DateTime.now(),
+            delFlag: 0),
+        SubCategory(
+            categoryId: 8,
+            name: 'Other',
+            iconPath: 'assets/category_icons/other_icon.svg',
+            updateAt: DateTime.now(),
+            delFlag: 0),
+        SubCategory(
+            categoryId: 9,
+            name: 'Job',
+            iconPath: 'assets/category_icons/job_icon.svg',
+            updateAt: DateTime.now(),
+            delFlag: 0),
+      ];
 
-      // If the category does not exist, insert it
-      if (result.isEmpty) {
-        await db.insert(
-          't_categories',
-          category.toMap(),
-          conflictAlgorithm: ConflictAlgorithm.ignore,
-        );
+      try {
+        for (var category in initialCategories) {
+          var result = await txn.query(
+            't_categories_unsync',
+            where: 'name = ?',
+            whereArgs: [category.name],
+          );
+
+          if (result.isEmpty) {
+            await txn.insert(
+              't_categories_unsync',
+              category.toMap(),
+              conflictAlgorithm: ConflictAlgorithm.ignore,
+            );
+          }
+        }
+
+        for (var subCategory in initialSubCategories) {
+          var result = await txn.query(
+            't_subcategories_unsync',
+            where: 'name = ? AND categoryId = ?',
+            whereArgs: [subCategory.name, subCategory.categoryId],
+          );
+
+          if (result.isEmpty) {
+            await txn.insert(
+              't_subcategories_unsync',
+              subCategory.toMap(),
+              conflictAlgorithm: ConflictAlgorithm.ignore,
+            );
+          }
+        }
+      } catch (e) {
+        print('Error inserting initial categories and subcategories: $e');
+        // Optionally, rethrow the error if you want to handle it further up the call stack
+        // throw e;
       }
+    });
+  }
+
+// Method to fetch unsynced data for each table
+//TODO: add the rest of the tables
+  Future<List<Map<String, dynamic>>> getUnsyncedUsers() async {
+    final db = await this.db;
+    return db.query('t_users_unsync');
+  }
+
+  // Similarly, create methods for other unsynced tables...
+  // getUnsyncedLedgerBooks(), getUnsyncedCategories(), etc.
+
+  // Method to clear unsynced tables after successful sync
+  Future<void> clearUnsyncedTable(String tableName) async {
+    final db = await this.db;
+    await db.delete(tableName);
+  }
+
+  // Method to update synced data
+  Future<void> updateSyncedUsers(List<Map<String, dynamic>> users) async {
+    final db = await this.db;
+    for (var user in users) {
+      await db.insert('t_users_sync', user, conflictAlgorithm: ConflictAlgorithm.replace);
     }
   }
+
+  // Similarly, create methods to update other synced tables...
+  // updateSyncedLedgerBooks(), updateSyncedCategories(), etc.
 
   initDb() async {
     String path = join(await getDatabasesPath(), 'pokemoney.db');
@@ -55,6 +189,7 @@ class DBHelper {
       path, version: 1, onCreate: _onCreate,
       onUpgrade: _onUpgrade, // Provide the onUpgrade method
     );
+
     insertInitialCategories(theDb);
     print('Database path: $path');
 
@@ -62,9 +197,9 @@ class DBHelper {
   }
 
   void _onCreate(Database db, int version) async {
-    // Create the 't_users' table
+    // Create the 't_users' table // TODO : change it to be editors
     await db.execute('''
-      CREATE TABLE t_users(
+      CREATE TABLE t_users_unsync(
         id INTEGER PRIMARY KEY, 
         userName TEXT NOT NULL,
         email TEXT NOT NULL,
@@ -74,7 +209,7 @@ class DBHelper {
 
     // Create the 't_ledger_books' table
     await db.execute('''
-      CREATE TABLE t_ledger_books(
+      CREATE TABLE t_ledger_books_unsync(
         id INTEGER PRIMARY KEY,
         title TEXT NOT NULL,
         budget REAL DEFAULT 1000000,
@@ -83,20 +218,31 @@ class DBHelper {
         createAt TEXT NOT NULL,
         updateAt TEXT NOT NULL,
         delFlag INTEGER NOT NULL,
-        FOREIGN KEY (owner) REFERENCES t_users(id))
+        FOREIGN KEY (owner) REFERENCES t_users_unsync(id))
     ''');
 
     // Create the 't_categories' table
     await db.execute('''
-      CREATE TABLE t_categories(
+      CREATE TABLE t_categories_unsync(
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         iconPath TEXT)
     ''');
 
+    await db.execute('''
+      CREATE TABLE t_subcategories_unsync(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        categoryId INTEGER,
+        name TEXT,
+        iconPath TEXT default null,
+        updateAt TEXT NOT NULL,
+        delFlag INTEGER NOT NULL,
+        foreign key (categoryId) references t_categories_unsync(id)
+        )
+    ''');
     // Create the 't_funds' table
     await db.execute('''
-      CREATE TABLE t_funds(
+      CREATE TABLE t_funds_unsync(
         id INTEGER PRIMARY KEY, 
         name TEXT NOT NULL, 
         balance REAL NOT NULL, 
@@ -105,15 +251,97 @@ class DBHelper {
         editors TEXT NOT NULL,
         updateAt TEXT NOT NULL,
         delFlag INTEGER NOT NULL,
-        FOREIGN KEY (owner) REFERENCES t_users(id))
+        FOREIGN KEY (owner) REFERENCES t_users_unsync(id))
+    ''');
+
+    // Create the 't_transactions' table
+    // TODO: add updatedBy
+    await db.execute('''
+      CREATE TABLE t_transactions_unsync(
+        id INTEGER PRIMARY KEY, 
+        ledgerBookId INTEGER NOT NULL, 
+        categoryId INTEGER NOT NULL,
+        subCategoryId INTEGER, 
+        fundId INTEGER NOT NULL, 
+        billingDate TEXT NOT NULL, 
+        invoiceNumber TEXT NOT NULL, 
+        amount REAL NOT NULL, 
+        type TEXT NOT NULL, 
+        updatedBy INTEGER NOT NULL,
+        relevantEntity TEXT DEFAULT NULL, 
+        comment TEXT DEFAULT NULL, 
+        delFlag INTEGER NOT NULL,
+        FOREIGN KEY (fundId) REFERENCES t_funds_unsync(id),
+        FOREIGN KEY (ledgerBookId) REFERENCES t_ledger_books_unsync(id),
+        FOREIGN KEY (categoryId) REFERENCES t_categories_unsync(id),
+        FOREIGN KEY (subCategoryId) REFERENCES t_subcategories_unsync(id)
+        )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE t_users_sync(
+        id INTEGER PRIMARY KEY, 
+        userName TEXT NOT NULL,
+        email TEXT NOT NULL,
+        pictureUrl TEXT, 
+        headerPicture TEXT)
+    ''');
+
+    // Create the 't_ledger_books' table
+    await db.execute('''
+      CREATE TABLE t_ledger_books_sync(
+        id INTEGER PRIMARY KEY,
+        title TEXT NOT NULL,
+        budget REAL DEFAULT 1000000,
+        owner INTEGER NOT NULL,
+        editors TEXT NOT NULL,
+        createAt TEXT NOT NULL,
+        updateAt TEXT NOT NULL,
+        delFlag INTEGER NOT NULL,
+        FOREIGN KEY (owner) REFERENCES t_users_sync(id))
+    ''');
+
+    // Create the 't_categories' table
+    await db.execute('''
+      CREATE TABLE t_categories_sync(
+        id INTEGER PRIMARY KEY,
+        name TEXT,
+        iconPath TEXT)
+    ''');
+
+    await db.execute('''
+      CREATE TABLE t_subcategories_sync(
+        id INTEGER PRIMARY KEY,
+        categoryId INTEGER,
+        name TEXT,
+        iconPath TEXT default null,
+        updateAt TEXT NOT NULL,
+        delFlag INTEGER NOT NULL,
+        foreign key (categoryId) references t_categories_sync(id)
+        )
+    ''');
+
+    // Create the 't_funds' table
+    await db.execute('''
+      CREATE TABLE t_funds_sync(
+        id INTEGER PRIMARY KEY, 
+        name TEXT NOT NULL, 
+        balance REAL NOT NULL, 
+        creationDate TEXT NOT NULL, 
+        owner INTEGER NOT NULL,
+        editors TEXT NOT NULL,
+        updateAt TEXT NOT NULL,
+        delFlag INTEGER NOT NULL,
+        FOREIGN KEY (owner) REFERENCES t_users_sync(id))
     ''');
 
     // Create the 't_transactions' table
     await db.execute('''
-      CREATE TABLE t_transactions(
+      CREATE TABLE t_transactions_sync(
         id INTEGER PRIMARY KEY, 
         ledgerBookId INTEGER NOT NULL, 
-        categoryId INTEGER NOT NULL, 
+        categoryId INTEGER NOT NULL,
+        subCategoryId INTEGEr, 
         fundId INTEGER NOT NULL, 
         billingDate TEXT NOT NULL, 
         invoiceNumber TEXT NOT NULL, 
@@ -121,9 +349,11 @@ class DBHelper {
         type TEXT NOT NULL, 
         relevantEntity TEXT DEFAULT NULL, 
         comment TEXT DEFAULT NULL, 
-        FOREIGN KEY (fundId) REFERENCES t_funds(id),
-        FOREIGN KEY (ledgerBookId) REFERENCES t_ledger_books(id),
-        FOREIGN KEY (categoryId) REFERENCES t_categories(id))
+        delFlag INTEGER NOT NULL,
+        FOREIGN KEY (fundId) REFERENCES t_funds_sync(id),
+        FOREIGN KEY (ledgerBookId) REFERENCES t_ledger_books_sync(id),
+        FOREIGN KEY (categoryId) REFERENCES t_categories_sync(id),
+        FOREIGN KEY (subCategoryId) REFERENCES t_subcategories_sync(id))
     ''');
   }
 

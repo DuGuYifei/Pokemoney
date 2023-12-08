@@ -10,33 +10,39 @@ class AuthService {
   AuthService(this.baseUrl, this.secureStorage);
 
   // Constants for API endpoints
-  static const String _loginEndpoint = "/login";
+  static const String _loginEndpoint = "/api/v1/user/login";
   static const String _registerTry = "/api/v1/user/register-try";
   static const String _registerVerify = "/api/v1/user/register-verify";
   // Add other endpoints as constants...
 
-  Future<void> login(String email, String password) async {
+  Future<User> login(String email, String password) async {
     final url = Uri.parse('$baseUrl$_loginEndpoint');
     try {
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: json.encode({'email': email, 'password': password}),
+        body: json.encode({'usernameOrEmail': email, 'password': password}),
       );
 
       if (response.statusCode == 200) {
         String? token = response.headers['authorization'];
         await secureStorage.saveToken(token!);
-        // var responseData = json.decode(response.body);
+        var responseData = json.decode(response.body);
+        print("reposne date:$responseData");
+
+        User user = User.fromJson(responseData['data']);
+        return user;
         // String token = responseData['token'];
         // await secureStorage.saveToken(token);
       } else {
-        // Handle different status codes appropriately
-        throw Exception('Failed to login. Status code: ${response.statusCode}');
+        var responseData = json.decode(response.body);
+        String serverErrorMessage = responseData['message'] ??
+            'Unknown error occurred'; // Replace 'message' with the actual key used by your server
+        return Future.error('Failed to login. Error: $serverErrorMessage');
       }
     } catch (e) {
       // Handle exceptions for network issues, etc.
-      throw Exception('Login failed due to an error: $e');
+      return Future.error('Login failed due to an error: $e');
     }
   }
 
@@ -44,6 +50,7 @@ class AuthService {
     //final url = Uri.parse('$baseUrl/signup'); // Use your actual sign-up endpoint
     final url = Uri.parse('$baseUrl$_registerTry'); // Use your actual sign-up endpoint
 
+    try{
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -57,13 +64,17 @@ class AuthService {
         // if everything is ok
         // Registration try successful, handle as needed
       } else {
-        throw Exception(responseData['message']);
+        return Future.error(responseData['message']);
       }
+    }
+    }catch(e){
+      return Future.error('Failed to Register: ${e.toString()}');
     }
   }
 
   Future<User> registerVerify(String username, String email, String password, String verificationCode) async {
     final url = Uri.parse('$baseUrl$_registerVerify');
+    try{
     final response = await http.post(
       url,
       headers: {'Content-Type': 'application/json'},
@@ -83,17 +94,19 @@ class AuthService {
         if (token != null) {
           await secureStorage.saveToken(token);
 
-          // Assuming responseData['data'] contains user data
           User user = User.fromJson(responseData['data']);
           return user;
         } else {
-          throw Exception('Token not found in response');
+          return Future.error('Token not found in response');
         }
       } else {
-        throw Exception('Failed to verify: ${responseData['message']}');
+        return Future.error('Failed to verify: ${responseData['message']}');
       }
     } else {
-      throw Exception('Failed to sign up: ${response.reasonPhrase}');
+      return Future.error('Failed to sign up: ${response.reasonPhrase}');
+    }
+    }catch(e){
+      return Future.error('Failed to sign up: ${e.toString()}');
     }
   }
 

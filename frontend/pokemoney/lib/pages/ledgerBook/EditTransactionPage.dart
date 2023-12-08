@@ -51,7 +51,7 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
   void fetchAndUpdateCategories() {
     final categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
     if (categoryProvider.categories.isEmpty) {
-      categoryProvider.fetchAllCategory().then((_) {
+      categoryProvider.fetchAllCategoryFromSyncAndUnsync().then((_) {
         updateCategoryItems(categoryProvider.categories);
       });
     } else {
@@ -79,12 +79,15 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
                   value: category.id,
                   child: Row(
                     children: <Widget>[
-                      SvgPicture.asset(
-                        category.iconPath, // The path to the SVG asset
-                        width: 45,
-                        height: 45,
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10), // Adjust the radius as needed
+                        child: SvgPicture.asset(
+                          category.iconPath,
+                          width: 45,
+                          height: 45,
+                        ),
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Text(category.name),
                     ],
                   ),
@@ -104,6 +107,7 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
       categoryId: _selectedCategoryId,
       fundId: _selectedFundId,
       comment: _commentController.text,
+      delFlag: 1,
     );
 
     // Use the transaction provider to update the transaction
@@ -157,10 +161,10 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Transaction'),
+        title: const Text('Edit Transaction'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Consumer<TransactionProvider>(
           builder: (context, provider, child) {
             return Form(
@@ -257,8 +261,9 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
       validator: validate
           ? (value) {
               if (value == null || value.isEmpty) return errorMessage;
-              if (keyboardType == TextInputType.number && double.tryParse(value) == null)
+              if (keyboardType == TextInputType.number && double.tryParse(value) == null) {
                 return 'Please enter a valid number';
+              }
               return null;
             }
           : null,

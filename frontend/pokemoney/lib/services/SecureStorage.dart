@@ -1,7 +1,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SecureStorage {
-  final _storage = FlutterSecureStorage();
+  final _storage = const FlutterSecureStorage();
 
   Future<void> saveToken(String token) async {
     await _storage.write(key: 'auth_token', value: token);
@@ -12,6 +12,18 @@ class SecureStorage {
   }
 
   Future<void> deleteToken() async {
+    await _storage.delete(key: 'auth_token');
+  }
+
+  Future<void> saveUsername(String username) async {
+    await _storage.write(key: 'username', value: username);
+  }
+
+  Future<String?> getUsername() async {
+    return await _storage.read(key: 'auth_token');
+  }
+
+  Future<void> deleteUsername() async {
     await _storage.delete(key: 'auth_token');
   }
 

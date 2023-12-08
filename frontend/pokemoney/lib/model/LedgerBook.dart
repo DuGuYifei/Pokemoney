@@ -46,4 +46,18 @@ class LedgerBook {
       delFlag: map['delFlag'],
     );
   }
+
+  //create for me a fromJson method
+  static LedgerBook fromJson(Map<String, dynamic> json) {
+    return LedgerBook(
+      id: json['id'],
+      title: json['title'],
+      budget: json['budget'],
+      owner: json['owner'],
+      editors: json['editors'],
+      creationDate: DateTime.parse(json['createAt']),
+      updateAt: json['updateAt'] != null ? DateTime.parse(json['updateAt']) : null,
+      delFlag: json['delFlag'],
+    );
+  }
 }

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'dart:io';
 import 'package:pokemoney/model/barrel.dart';
 import 'package:pokemoney/services/AuthService.dart';
 import 'package:pokemoney/services/SecureStorage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart';
 
 class AuthProvider with ChangeNotifier {
   final AuthService _authService;
@@ -20,98 +18,125 @@ class AuthProvider with ChangeNotifier {
   User? get currentUser => _currentUser;
   bool get isLoggedIn => _isLoggedIn;
 
-  set isLoading(bool value) {
-    _isLoading = value;
-    notifyListeners();
-  }
-
   AuthProvider(this._authService, this._secureStorage) {
-    checkLoginStatus();
+    _initialize();
   }
 
-  Future<void> checkLoginStatus() async {
+  Future<void> _initialize() async {
+    _isLoading = true;
+    try {
+      await _checkLoginStatus();
+    } catch (e) {
+      _errorMessage = 'Initialization error: ${e.toString()}';
+    } finally {
+      _isLoading = false;
+    }
+  }
+
+  Future<void> _checkLoginStatus() async {
     String? token = await _secureStorage.getToken();
-    _isLoggedIn = token != null && token.isNotEmpty;
+    if (token != null && token.isNotEmpty) {
+      _isLoggedIn = true;
+      await _loadUserData();
+    } else {
+      _isLoggedIn = false;
+      _currentUser = null;
+    }
     notifyListeners();
   }
 
   Future<void> login(String email, String password) async {
-    isLoading = true;
+    _updateLoadingStatus(true);
     _errorMessage = null;
 
     try {
-      await _authService.login(email, password);
-      await checkLoginStatus();
-    } on HttpException catch (e) {
-      _errorMessage = "Server error: ${e.message}";
-    } on ClientException catch (e) {
-      _errorMessage = "Network error: ${e.message}";
-    } on TimeoutException catch (e) {
-      _errorMessage = "Connection timeout";
-    } catch (e) {
-      _errorMessage = "An unexpected error occurred";
+      _currentUser = await _authService.login(email, password);
+      await _checkLoginStatus();
+      if (_isLoggedIn) {
+        await _saveUserData(_currentUser!);
+      }
+    } catch (error) {
+      // Set the error message here
+      _errorMessage = 'Login error: ${error.toString()}';
     } finally {
-      isLoading = false;
-      notifyListeners();
+      _updateLoadingStatus(false);
     }
   }
 
-  //The is called when the user if first trying to sign up
   Future<void> startSignUp(String username, String email, String password) async {
-    _isLoading = true;
+    _updateLoadingStatus(true);
     _errorMessage = null;
-    notifyListeners();
 
     try {
       await _authService.registerTry(username, email, password);
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = 'Signup error: ${e.toString()}';
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      _updateLoadingStatus(false);
     }
   }
 
-  //This is called when the user is trying to complete the sign up process by asking the server to verify the user's email address
   Future<void> completeSignUp(String username, String email, String password, String verificationCode) async {
-    _isLoading = true;
+    _updateLoadingStatus(true);
+    _errorMessage = null;
+
     try {
       User user = await _authService.registerVerify(username, email, password, verificationCode);
       _isLoggedIn = true;
-      await saveUserData(user);
+      await _saveUserData(user);
     } catch (e) {
-      _errorMessage = e.toString();
+      _errorMessage = 'Signup completion error: ${e.toString()}';
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      _updateLoadingStatus(false);
     }
   }
 
-  Future<void> saveUserData(User user) async {
+  Future<void> _saveUserData(User user) async {
     _currentUser = user;
     final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('id', user.id!);
     await prefs.setString('username', user.username);
     await prefs.setString('email', user.email);
     notifyListeners();
   }
 
-  Future<void> loadUserData() async {
+  Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
+    int? id = prefs.getInt('id');
     String? username = prefs.getString('username');
     String? email = prefs.getString('email');
-    if (username != null && email != null) {
-      _currentUser = User.usernameAndEmail(username: username, email: email);
+    if (username != null && email != null && id != null) {
+      _currentUser = User.idAndUsernameAndEmail(id: id, username: username, email: email);
     }
     notifyListeners();
   }
 
   Future<void> logout() async {
-    await _authService.logout();
-    _isLoggedIn = false;
-    _currentUser = null;
-    await _authService.logout();
-    await checkLoginStatus();
+    _updateLoadingStatus(true);
+
+    try {
+      await _authService.logout();
+      _isLoggedIn = false;
+      _currentUser = null;
+      await _secureStorage.deleteToken();
+      await _clearUserData();
+    } catch (e) {
+      _errorMessage = 'Logout error: ${e.toString()}';
+    } finally {
+      _updateLoadingStatus(false);
+    }
   }
 
-  // Add additional authentication logic as needed
+  Future<void> _clearUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('id');
+    await prefs.remove('username');
+    await prefs.remove('email');
+    notifyListeners();
+  }
+
+  void _updateLoadingStatus(bool isLoading) {
+    _isLoading = isLoading;
+    notifyListeners();
+  }
 }

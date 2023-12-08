@@ -6,31 +6,53 @@ class TransactionService {
 
   Future<int> addTransaction(pokemoney.Transaction transaction) async {
     var dbClient = await _dbHelper.db;
-    int res = await dbClient.insert("t_transactions", transaction.toMap());
+    int res = await dbClient.insert("t_transactions_unsync", transaction.toMap());
     return res;
   }
 
   Future<List<pokemoney.Transaction>> getAllTransactions() async {
     var dbClient = await _dbHelper.db;
-    var result = await dbClient.query("t_transactions");
-    return result.map((map) => pokemoney.Transaction.fromMap(map)).toList();
+    var unsyncedResult = await dbClient.query("t_transactions_unsync");
+    var syncedResult = await dbClient.query("t_transactions_sync");
+
+    var unsyncedTransactions = unsyncedResult.map((map) => pokemoney.Transaction.fromMap(map)).toList();
+    var syncedTransactions = syncedResult.map((map) => pokemoney.Transaction.fromMap(map)).toList();
+
+    var combinedTransactions = {...unsyncedTransactions, ...syncedTransactions}.toList();
+
+    return combinedTransactions;
   }
 
-  // Method to get t_transactions by LedgerBookId
+  // Method to get t_transactions_unsync by LedgerBookId
   Future<List<pokemoney.Transaction>> getTransactionsByLedgerBookId(int ledgerBookId) async {
     var dbClient = await _dbHelper.db;
-    var result = await dbClient.query(
-      "t_transactions",
+
+    // Fetching from unsync table
+    var unsyncedResult = await dbClient.query(
+      "t_transactions_unsync",
       where: "ledgerBookId = ?",
       whereArgs: [ledgerBookId],
     );
-    return result.map((map) => pokemoney.Transaction.fromMap(map)).toList();
+    var unsyncedTransactions = unsyncedResult.map((map) => pokemoney.Transaction.fromMap(map)).toList();
+
+    // Fetching from sync table
+    var syncedResult = await dbClient.query(
+      "t_transactions_sync",
+      where: "ledgerBookId = ?",
+      whereArgs: [ledgerBookId],
+    );
+    var syncedTransactions = syncedResult.map((map) => pokemoney.Transaction.fromMap(map)).toList();
+
+    // Combine both lists, ensuring unique entries (based on ID or other criteria)
+    var combinedTransactions = {...unsyncedTransactions, ...syncedTransactions}.toList();
+
+    return combinedTransactions;
   }
 
   Future<int> updateTransaction(pokemoney.Transaction transaction) async {
     var dbClient = await _dbHelper.db;
     return await dbClient.update(
-      "t_transactions",
+      "t_transactions_unsync",
       transaction.toMap(),
       where: "id = ?",
       whereArgs: [transaction.id],
@@ -39,13 +61,13 @@ class TransactionService {
 
   Future<int> deleteTransaction(int id) async {
     var dbClient = await _dbHelper.db;
-    return await dbClient.delete("t_transactions", where: "id = ?", whereArgs: [id]);
+    return await dbClient.delete("t_transactions_unsync", where: "id = ?", whereArgs: [id]);
   }
 
   Future<pokemoney.Category> getCategoryById(int categoryId) async {
     var dbClient = await _dbHelper.db;
     List<Map> maps = await dbClient.query(
-      "t_categories",
+      "t_categories_unsync",
       columns: ["id", "name", "iconPath"],
       where: "id = ?",
       whereArgs: [categoryId],
@@ -62,7 +84,7 @@ class TransactionService {
     var dbClient = await DBHelper().db;
     var result = await dbClient.rawQuery('''
     SELECT SUM(CASE WHEN type='Income' THEN amount ELSE -amount END) as total
-    FROM t_transactions
+    FROM t_transactions_unsync
     WHERE ledgerBookId = ?
   ''', [ledgerBookId]);
 

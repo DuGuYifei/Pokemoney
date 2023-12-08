@@ -25,7 +25,7 @@ class _VerificationPageState extends State<VerificationPage> {
 
       if (authProvider.errorMessage == null) {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => App(),
+          builder: (context) => const App(),
         ));
       } else {
         _showErrorDialog(authProvider.errorMessage!);
@@ -39,11 +39,11 @@ class _VerificationPageState extends State<VerificationPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Verification Failed'),
+        title: const Text('Verification Failed'),
         content: Text(message),
         actions: <Widget>[
           TextButton(
-            child: Text('OK'),
+            child: const Text('OK'),
             onPressed: () {
               Navigator.of(context).pop();
             },
@@ -62,7 +62,7 @@ class _VerificationPageState extends State<VerificationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Verify Your Account')),
+      appBar: AppBar(title: const Text('Verify Your Account')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -71,26 +71,26 @@ class _VerificationPageState extends State<VerificationPage> {
             Text(
               'Enter the verification code sent to ${widget.email}',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16.0),
+              style: const TextStyle(fontSize: 16.0),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             TextField(
               controller: codeController,
               keyboardType: TextInputType.number,
               maxLength: 6, // Limit to 6 digits
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 labelText: 'Verification Code',
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: verifyCode,
-              child: Text('Verify'),
+              child: const Text('Verify'),
             ),
             TextButton(
               onPressed: resendCode,
-              child: Text('Resend Code'),
+              child: const Text('Resend Code'),
             ),
           ],
         ),

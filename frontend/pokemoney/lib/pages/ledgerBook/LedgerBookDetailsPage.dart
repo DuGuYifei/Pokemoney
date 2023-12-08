@@ -59,7 +59,7 @@ class _LedgerBookDetailsPageState extends State<LedgerBookDetailsPage> {
             const CollaboratorSection(),
             const SizedBox(height: 10),
             HistoryTransactionsSection(
-              transactions: transactionProvider.transactions,
+              transactions: transactionProvider.filteredTransactions,
               ledgerBook: currentLedgerBook,
             ),
             const SizedBox(height: 10),

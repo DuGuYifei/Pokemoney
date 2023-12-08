@@ -7,18 +7,21 @@ class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final String labelText;
   final bool obscureText;
+  final Widget? suffixIcon;
 
   /// Creates a custom text field widget.
   ///
   /// The [controller] parameter is used to control the text field's content.
   /// The [labelText] parameter provides a hint text to guide the user's input.
   /// The [obscureText] parameter determines whether the text is obscured, such as for password input.
+  /// The [suffixIcon] parameter is used to display an icon at the end of the text field.
   const CustomTextField({
     Key? key,
     this.headerText,
     required this.controller,
     required this.labelText,
     required this.obscureText,
+    this.suffixIcon,
   }) : super(key: key);
 
   @override
@@ -45,7 +48,7 @@ class CustomTextField extends StatelessWidget {
             width: 312,
             height: 45,
             child: TextField(
-              controller: controller, // Attach the controller here
+              controller: controller,
               obscureText: obscureText,
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
@@ -55,6 +58,7 @@ class CustomTextField extends StatelessWidget {
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                 ),
+                suffixIcon: suffixIcon,
               ),
             ),
           ),

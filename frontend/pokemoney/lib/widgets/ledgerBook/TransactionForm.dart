@@ -3,9 +3,10 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:pokemoney/model/barrel.dart' as pokemoney;
 import 'package:pokemoney/providers/FundProvider.dart';
+import 'package:pokemoney/providers/SubCategoryProvider.dart';
 import 'package:pokemoney/providers/TransactionProvider.dart';
-import 'package:pokemoney/providers/CategoryProvider.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class TransactionForm extends StatefulWidget {
   final pokemoney.LedgerBook ledgerBook;
@@ -18,6 +19,7 @@ class TransactionForm extends StatefulWidget {
 
 class _TransactionFormState extends State<TransactionForm> {
   final _formKey = GlobalKey<FormState>();
+
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
   final TextEditingController _invoiceNumberController = TextEditingController();
@@ -25,31 +27,62 @@ class _TransactionFormState extends State<TransactionForm> {
   final TextEditingController _commentController = TextEditingController();
 
   late String _selectedType;
-  late int _selectedCategoryId;
+  late int _selectedSubCategoryId;
   late int _selectedFundId;
   DateTime _selectedDate = DateTime.now();
-  List<DropdownMenuItem<int>> _categoryItems = [];
+  //List<DropdownMenuItem<int>> _categoryItems = [];
+  List<DropdownMenuItem<int>> _subCategoryItems = [];
   List<DropdownMenuItem<int>> _fundItems = [];
 
   @override
   void initState() {
     super.initState();
     _selectedType = 'Expense'; // Default transaction type
-    _selectedCategoryId = -1; // Initial value indicating category not yet selected
     _dateController.text = DateFormat.yMd().format(_selectedDate);
-    fetchAndUpdateCategories();
-    fetchAndUpdateFunds();
+    _selectedFundId = -1; // Initial value indicating fund not yet selected
+    _selectedSubCategoryId = -1; // Initial value indicating subcategory not yet selected
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateSubCategoriesAndFundPostFrame();
+      });
+
   }
 
+  // Updates categories after the frame is built
+void _updateSubCategoriesAndFundPostFrame() {
+  final subCategoryProvider = Provider.of<SubCategoryProvider>(context, listen: false);
+  final fundProvider = Provider.of<FundProvider>(context, listen: false);
+
+  subCategoryProvider.fetchAllSubCategoriesFromSyncAndUnsync().then((_) {
+    if (mounted) {
+      fetchAndUpdateSubCategories();
+    }
+  });
+
+  fundProvider.fetchAllFunds().then((_) {
+    if (mounted) {
+      fetchAndUpdateFunds();
+    }
+  });
+}
+
+
   // Fetches categories and updates dropdown items
-  void fetchAndUpdateCategories() {
-    final categoryProvider = Provider.of<CategoryProvider>(context, listen: false);
-    if (categoryProvider.categories.isEmpty) {
-      categoryProvider.fetchAllCategory().then((_) {
-        _updateCategoryItems(categoryProvider.categories);
+  void fetchAndUpdateSubCategories() {
+    final subCategoryProvider = Provider.of<SubCategoryProvider>(context, listen: false);
+    List<pokemoney.SubCategory> allSubCategories = [];
+
+    if (subCategoryProvider.subCategories.isEmpty) {
+      subCategoryProvider.fetchAllSubCategoriesFromSyncAndUnsync().then((_) {
+        allSubCategories = subCategoryProvider.subCategories.values
+            .expand((x) => x)
+            .toList(); //Flatten the Map into a Single List
+        _updateSubCategoryItems(allSubCategories);
       });
     } else {
-      _updateCategoryItems(categoryProvider.categories);
+      allSubCategories = subCategoryProvider.subCategories.values
+          .expand((x) => x)
+          .toList(); //Flatten the Map into a Single List
+      _updateSubCategoryItems(allSubCategories);
     }
   }
 
@@ -65,18 +98,25 @@ class _TransactionFormState extends State<TransactionForm> {
   }
 
   // Updates category dropdown items based on available categories
-  void _updateCategoryItems(List<pokemoney.Category> categories) {
-    if (categories.isNotEmpty) {
+  void _updateSubCategoryItems(List<pokemoney.SubCategory> subCategories) {
+    if (subCategories.isNotEmpty) {
       setState(() {
-        _selectedCategoryId = categories.first.id!;
-        _categoryItems = categories
-            .map((category) => DropdownMenuItem<int>(
-                  value: category.id,
+        _selectedSubCategoryId = subCategories.first.id!;
+        _subCategoryItems = subCategories
+            .map((subCategory) => DropdownMenuItem<int>(
+                  value: subCategory.id,
                   child: Row(
                     children: <Widget>[
-                      SvgPicture.asset(category.iconPath, width: 45, height: 45),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10), // Adjust the radius as needed
+                        child: SvgPicture.asset(
+                          subCategory.iconPath ?? 'assets/category_icons/custom_icon.svg',
+                          width: 45,
+                          height: 45,
+                        ),
+                      ),
                       const SizedBox(width: 10),
-                      Text(category.name),
+                      Text(subCategory.name),
                     ],
                   ),
                 ))
@@ -86,24 +126,102 @@ class _TransactionFormState extends State<TransactionForm> {
   }
 
   // Updates funds dropdown items based on available funds
-  void _updateFundItems(List<pokemoney.Fund> funds) {
+  void _updateFundItems(List<pokemoney.Fund> funds) async {
+    // Retrieve preferences
+    final prefs = await SharedPreferences.getInstance();
+    int? id = prefs.getInt('id');
+
     if (funds.isNotEmpty) {
       setState(() {
-        _selectedFundId = funds.first.id!;
-        _fundItems = funds
-            .map((fund) => DropdownMenuItem<int>(
-                  value: fund.id,
-                  child: Row(
-                    children: <Widget>[
-                      Text('\$ ${fund.balance.toString()}'),
-                      const SizedBox(width: 20),
-                      Text(fund.name),
-                    ],
-                  ),
-                ))
-            .toList();
+        _selectedFundId = funds.isNotEmpty ? funds.first.id! : -1;
+        _fundItems = [
+          ...funds.map((fund) => DropdownMenuItem<int>(
+                value: fund.id,
+                child: Row(
+                  children: <Widget>[
+                    Text('\$ ${fund.balance.toString()}'),
+                    const SizedBox(width: 20),
+                    Text(fund.name),
+                  ],
+                ),
+              )),
+          DropdownMenuItem<int>(
+            value: -1,
+            child: SizedBox(
+              width: 200,
+              child: ListTile(
+                leading: const Icon(Icons.add),
+                title: const Text('Add Fund'),
+                onTap: () {
+                  _showAddItemDialog(context, 'Fund', (name, balance) {
+                    final newFund = pokemoney.Fund(
+                      name: name,
+                      balance: balance,
+                      creationDate: DateTime.now(),
+                      owner: id!,
+                      editors: id.toString(),
+                      updateAt: DateTime.now(),
+                      delFlag: 0,
+                    );
+                    Provider.of<FundProvider>(context, listen: false).addFund(newFund).then((addedFundId) {
+                      setState(() {
+                        _selectedFundId =
+                            addedFundId; // Assuming addFund returns the ID of the newly added fund
+                        _updateFundItems(Provider.of<FundProvider>(context, listen: false).funds);
+                      });
+                    });
+                  });
+                },
+              ),
+            ),
+          ),
+        ];
       });
     }
+  }
+
+  void _showAddItemDialog(BuildContext context, String itemType, Function(String, double) onAdd) {
+    TextEditingController nameController = TextEditingController();
+    TextEditingController balanceController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Add $itemType'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              TextField(
+                controller: nameController,
+                decoration: InputDecoration(hintText: "$itemType Name"),
+              ),
+              if (itemType == 'Fund')
+                TextField(
+                  controller: balanceController,
+                  decoration: const InputDecoration(hintText: "Balance"),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            TextButton(
+              child: const Text('Add'),
+              onPressed: () {
+                String name = nameController.text;
+                double balance = itemType == 'Fund' ? double.tryParse(balanceController.text) ?? 0 : 0;
+                onAdd(name, balance);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   // Shows date picker dialog
@@ -123,67 +241,123 @@ class _TransactionFormState extends State<TransactionForm> {
   }
 
   // Validates and submits the form
-  void _submitForm(TransactionProvider transactionProvider) {
-    if (_formKey.currentState!.validate()) {
-      final pokemoney.Transaction newTransaction = pokemoney.Transaction(
-        ledgerBookId: widget.ledgerBook.id!,
-        fundId: _selectedFundId,
-        invoiceNumber: _invoiceNumberController.text,
-        billingDate: _selectedDate,
-        amount: double.parse(_amountController.text),
-        type: _selectedType == 'Other' ? _customTypeController.text : _selectedType,
-        categoryId: _selectedCategoryId,
-        comment: _commentController.text,
-      );
+  Future<void> _submitForm(TransactionProvider transactionProvider) async {
+    final subCategoryProvider = Provider.of<SubCategoryProvider>(context, listen: false);
 
-      transactionProvider.addTransaction(newTransaction).then((_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Transaction added successfully')),
-        );
-        transactionProvider.fetchTransactionsForLedgerBook(widget.ledgerBook.id!);
-        Navigator.of(context).pop();
-      }).catchError((error) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to add transaction: $error')),
-        );
+    // Retrieve preferences asynchronously before showing the dialog
+    final prefs = await SharedPreferences.getInstance();
+    int? id = prefs.getInt('id');
+
+    if (id == null) {
+      // Handle null id appropriately
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('User ID is not available')),
+      );
+      return;
+    }
+    // Wait for all subcategories to be fetched
+    await subCategoryProvider.fetchAllSubCategoriesFromSyncAndUnsync();
+
+    if (subCategoryProvider.subCategories.isEmpty) {
+      // Handle empty subcategory list
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No subcategories available')),
+      );
+      return;
+    }
+
+    List<pokemoney.SubCategory> allSubCategories = subCategoryProvider.subCategories.values
+        .expand((x) => x)
+        .toList(); // Flatten the Map into a Single List
+
+    if (subCategoryProvider.subCategories.isNotEmpty) {
+      subCategoryProvider.fetchAllSubCategoriesFromSyncAndUnsync().then((_) {
+        allSubCategories = subCategoryProvider.subCategories.values
+            .expand((x) => x)
+            .toList(); //Flatten the Map into a Single List
       });
+
+      // Handle the case where no matching subcategory is found
+      pokemoney.SubCategory? subCategory =
+          allSubCategories.firstWhere((subcategory) => subcategory.id == _selectedSubCategoryId, orElse: () {
+        // Throw an error indicating that no matching subcategory was found
+        throw Exception('No matching subcategory found with ID: $_selectedSubCategoryId');
+      });
+
+      if (_formKey.currentState?.validate() ?? false) {
+        final pokemoney.Transaction newTransaction = pokemoney.Transaction(
+          ledgerBookId: widget.ledgerBook.id!,
+          fundId: _selectedFundId,
+          invoiceNumber: _invoiceNumberController.text,
+          billingDate: _selectedDate,
+          amount: double.parse(_amountController.text),
+          type: _selectedType == 'Other' ? _customTypeController.text : _selectedType,
+          categoryId: subCategory.categoryId,
+          subCategoryId: _selectedSubCategoryId,
+          comment: _commentController.text,
+          updatedBy: id,
+          delFlag: 0,
+        );
+
+        transactionProvider.addTransaction(newTransaction).then((_) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Transaction added successfully')),
+          );
+          transactionProvider.fetchTransactionsForLedgerBook(widget.ledgerBook.id!);
+          Navigator.of(context).pop();
+        }).catchError((error) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to add transaction: $error')),
+          );
+        });
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Form validation failed')),
+        );
+      }
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Add Transaction')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Consumer<CategoryProvider>(
-          builder: (context, categoryProvider, child) {
-            _updateCategoriesPostFrame(categoryProvider);
-            return Consumer<TransactionProvider>(
-              builder: (context, transactionProvider, child) {
-                return Form(
-                  key: _formKey,
-                  child: _buildFormFields(context, transactionProvider),
-                );
-              },
-            );
-          },
-        ),
-      ),
-    );
-  }
+@override
+Widget build(BuildContext context) {
+  final subCategoryProvider = Provider.of<SubCategoryProvider>(context, listen: false);
+  final fundProvider = Provider.of<FundProvider>(context, listen: false);
+  final transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
 
-  // Updates categories after the frame is built
-  void _updateCategoriesPostFrame(CategoryProvider categoryProvider) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_categoryItems.isEmpty && categoryProvider.categories.isNotEmpty) {
-        _updateCategoryItems(categoryProvider.categories);
-      }
-    });
-  }
+  return Scaffold(
+    appBar: AppBar(title: const Text('Add Transaction')),
+    body: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: FutureBuilder(
+        future: Future.wait([
+          subCategoryProvider.fetchAllSubCategoriesFromSyncAndUnsync(),
+          fundProvider.fetchAllFunds(),
+        ]),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator(); // Show loading indicator
+          }
+
+          if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}'); // Handle error state
+          }
+
+          // Once data is fetched, build the form
+          return Form(
+            key: _formKey,
+            child: _buildFormFields(context, subCategoryProvider, fundProvider,transactionProvider),
+          );
+        },
+      ),
+    ),
+  );
+}
+
 
   // Builds the form fields
-  Widget _buildFormFields(BuildContext context, TransactionProvider transactionProvider) {
+Widget _buildFormFields(BuildContext context, SubCategoryProvider subCategoryProvider, FundProvider fundProvider, TransactionProvider transactionProvider) {
+  //fetchAndUpdateSubCategories(); // Call this to update items
+  //fetchAndUpdateFunds(); // Call this to update items
     return ListView(
       children: [
         _buildTextField(_invoiceNumberController, 'Invoice Number', 'Please enter the invoice number'),
@@ -202,8 +376,12 @@ class _TransactionFormState extends State<TransactionForm> {
             (value) => setState(() => _selectedType = value!)),
         if (_selectedType == 'Other')
           _buildTextField(_customTypeController, 'Custom Type', 'Please enter a type'),
-        _buildDropdownField<int>(_selectedCategoryId, 'Category', _categoryItems,
-            (value) => setState(() => _selectedCategoryId = value!)),
+        _buildDropdownField<int>(
+          _selectedSubCategoryId,
+          'Category',
+          _subCategoryItems,
+          (value) => setState(() => _selectedSubCategoryId = value!),
+        ),
         _buildDropdownField<int>(
             _selectedFundId, 'Fund', _fundItems, (value) => setState(() => _selectedFundId = value!)),
         _buildTextField(_commentController, 'comment', 'Please enter the amount',
@@ -235,8 +413,9 @@ class _TransactionFormState extends State<TransactionForm> {
       validator: validate
           ? (value) {
               if (value == null || value.isEmpty) return errorMessage;
-              if (keyboardType == TextInputType.number && double.tryParse(value) == null)
+              if (keyboardType == TextInputType.number && double.tryParse(value) == null) {
                 return 'Please enter a valid number';
+              }
               return null;
             }
           : null,
@@ -280,3 +459,85 @@ class _TransactionFormState extends State<TransactionForm> {
     super.dispose();
   }
 }
+
+// class CustomSubCategoryDropdown extends StatefulWidget {
+//   final List<pokemoney.SubCategory> subCategories;
+//   final Function(int) onSelected;
+
+//   const CustomSubCategoryDropdown({
+//     Key? key,
+//     required this.subCategories,
+//     required this.onSelected,
+//   }) : super(key: key);
+
+//   @override
+//   _CustomSubCategoryDropdownState createState() => _CustomSubCategoryDropdownState();
+// }
+
+// class _CustomSubCategoryDropdownState extends State<CustomSubCategoryDropdown> {
+//   List<pokemoney.SubCategory> filteredSubCategories = [];
+//   String searchValue = '';
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     filteredSubCategories = widget.subCategories;
+//   }
+
+//   void _filterSubCategories(String enteredKeyword) {
+//     List<pokemoney.SubCategory> results = [];
+//     if (enteredKeyword.isEmpty) {
+//       results = widget.subCategories;
+//     } else {
+//       results = widget.subCategories
+//           .where((subCategory) => subCategory.name.toLowerCase().contains(enteredKeyword.toLowerCase()))
+//           .toList();
+//     }
+
+//     setState(() {
+//       filteredSubCategories = results;
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return PopupMenuButton<int>(
+//       onSelected: widget.onSelected,
+//       itemBuilder: (BuildContext context) {
+//         return [
+//           PopupMenuItem(
+//             enabled: false,
+//             child: TextField(
+//               onChanged: (value) => _filterSubCategories(value),
+//               decoration: InputDecoration(
+//                 hintText: 'Search',
+//                 prefixIcon: Icon(Icons.search),
+//                 border: OutlineInputBorder(borderRadius: BorderRadius.circular(20)),
+//               ),
+//             ),
+//           ),
+//           ...filteredSubCategories.map((subCategory) {
+//             return PopupMenuItem<int>(
+//               value: subCategory.id,
+//               child: Text(subCategory.name),
+//             );
+//           }).toList(),
+//         ];
+//       },
+//       child: Container(
+//         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+//         decoration: BoxDecoration(
+//           borderRadius: BorderRadius.circular(5),
+//           border: Border.all(color: Colors.grey),
+//         ),
+//         child: Row(
+//           children: <Widget>[
+//             Text('Select SubCategory'),
+//             Spacer(),
+//             Icon(Icons.arrow_drop_down),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }

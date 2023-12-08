@@ -1,3 +1,4 @@
+
 class Fund {
   int? id;
   String name;
@@ -44,4 +45,27 @@ class Fund {
       delFlag: map['delFlag'],
     );
   }
+
+  //craete for me a fromJson method
+  static Fund fromJson(Map<String, dynamic> json) {
+    return Fund(
+      id: json['id'],
+      name: json['name'],
+      balance: json['balance'],
+      creationDate: DateTime.parse(json['creationDate']),
+      owner: json['owner'],
+      editors: json['editors'],
+      updateAt: DateTime.parse(json['updateAt']),
+      delFlag: json['delFlag'],
+    );
+  }
+  
+  // void test(String editors) {
+  //   List<int> editorList = editors.split(',').map((e) => int.parse(e)).toList();
+  //   for (int i = 0; i < editorList.length; i++) {
+  //     'select * from t_users where id = ?'
+  //     if null unknown
+  //   }
+  //   'select * from t_users where id in (${editorList.map((e) => '?').join(',')})';
+  // }
 }

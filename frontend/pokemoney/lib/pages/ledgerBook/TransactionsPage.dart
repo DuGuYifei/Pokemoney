@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pokemoney/model/barrel.dart';
 import 'package:pokemoney/pages/ledgerBook/EditTransactionPage.dart';
-import 'package:pokemoney/providers/FundProvider.dart';
 import 'package:pokemoney/providers/TransactionProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:pokemoney/constants/AppColors.dart';
@@ -24,7 +23,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
   String _selectedCategory = 'All'; // Default value for category filter
   bool _sortAscending = true; // Default value for sorting order
 
-  List<String> _categories = ['All', 'Restaurant', 'Transportation', 'Rent']; // Example categories
+  final List<String> _categories = ['All', 'Restaurant', 'Transportation', 'Rent']; // Example categories
 
   @override
   void initState() {
@@ -46,49 +45,19 @@ class _TransactionsPageState extends State<TransactionsPage> {
   void _onSearchChanged() {
     if (_searchController.text.isEmpty) {
       setState(() {
-        _filteredTransactions = Provider.of<TransactionProvider>(context, listen: false).transactions;
+        _filteredTransactions = Provider.of<TransactionProvider>(context, listen: false).filteredTransactions;
       });
     } else {
       setState(() {
-        _filteredTransactions =
-            Provider.of<TransactionProvider>(context, listen: false).transactions.where((transaction) {
-          return transaction.categoryId.toString().contains(_searchController.text.toLowerCase()) ||
+        _filteredTransactions = Provider.of<TransactionProvider>(context, listen: false)
+            .filteredTransactions
+            .where((transaction) {
+          return transaction.comment!.toLowerCase().contains(_searchController.text.toLowerCase()) ||
               transaction.invoiceNumber.toLowerCase().contains(_searchController.text.toLowerCase());
         }).toList();
       });
     }
   }
-
-  // void _applyFilterAndSort() {
-  //   // Get a reference to TransactionProvider
-  //   var transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
-
-  //   var transactions = transactionProvider.transactions;
-
-  //   // Filter transactions by selected category
-  //   if (_selectedCategory != 'All') {
-  //     transactions = transactions.where((transaction) {
-  //       String categoryName = transactionProvider.getCategoryNameForTransaction(transaction)?.name ?? '';
-  //       return categoryName == _selectedCategory;
-  //     }).toList();
-  //   }
-
-  //   // Sort transactions
-  //   transactions.sort((a, b) =>
-  //       _sortAscending ? a.billingDate.compareTo(b.billingDate) : b.billingDate.compareTo(a.billingDate));
-
-  //   // Apply search filter
-  //   if (_searchController.text.isNotEmpty) {
-  //     transactions = transactions.where((transaction) {
-  //       return transaction.categoryId.toString().contains(_searchController.text.toLowerCase()) ||
-  //           transaction.invoiceNumber.toLowerCase().contains(_searchController.text.toLowerCase());
-  //     }).toList();
-  //   }
-
-  //   setState(() {
-  //     _filteredTransactions = transactions;
-  //   });
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +69,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
         centerTitle: true,
         backgroundColor: AppColors.surfaceContainer,
       ),
-      backgroundColor: AppColors.surface,
+      backgroundColor: AppColors.whiteBackgorund,
       body: Container(
         child: Column(
           children: [
@@ -148,7 +117,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                   // This time we need to handle both cases when _filteredTransactions is empty or not
                   var transactionsToShow = _searchController.text.isNotEmpty
                       ? _filteredTransactions
-                      : transactionProvider.transactions;
+                      : transactionProvider.filteredTransactions;
 
                   if (transactionsToShow.isEmpty) {
                     // If the list is empty, display "No results"
@@ -219,9 +188,7 @@ class TransactionListItem extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {
-                  context
-                      .read<TransactionProvider>()
-                      .deleteTransaction(transaction);
+                  context.read<TransactionProvider>().deleteTransaction(transaction);
                   Navigator.of(ctx).pop();
                   onTransactionDeleted(); // Call the callback after deletion
                 },
@@ -284,10 +251,13 @@ class TransactionListItem extends StatelessWidget {
     return Card(
       child: ListTile(
         leading: category != null
-            ? SvgPicture.asset(
-                category.iconPath, // Use the iconPath from the Category object
-                width: 45,
-                height: 45,
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(10), // Adjust the radius as needed
+                child: SvgPicture.asset(
+                  category.iconPath,
+                  width: 50,
+                  height: 50,
+                ),
               )
             : const SizedBox(
                 width: 45,
@@ -295,7 +265,7 @@ class TransactionListItem extends StatelessWidget {
                 child: CircularProgressIndicator(), // Show a progress indicator while category is null
               ),
         title: Container(
-          padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
+          padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
           decoration: BoxDecoration(
             color: transaction.type == 'Income' ? Colors.green[100] : Colors.red[100],
             borderRadius: BorderRadius.circular(4.0),
@@ -312,12 +282,49 @@ class TransactionListItem extends StatelessWidget {
             ),
           ),
         ),
-        subtitle: Text('Invoice Number: ${transaction.invoiceNumber}'
-            '\nDate: ${DateFormat('yMMMd').format(transaction.billingDate)}'
-            '\nType: ${transaction.type}'
-            '\nFund: ${fund != null ? fund.name : ' fund is null'}'),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Invoice Number: ${transaction.invoiceNumber}'
+                '\nDate: ${DateFormat('yMMMd').format(transaction.billingDate)}'
+                '\nType: ${transaction.type}'
+                '\nFund: ${fund != null ? fund.name : ' fund is null'}'),
+            if (transaction.comment != null) Text('Comment: ${transaction.comment}')
+          ],
+        ),
         trailing: _buildPopupMenu(context),
       ),
     );
   }
 }
+
+  // void _applyFilterAndSort() {
+  //   // Get a reference to TransactionProvider
+  //   var transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
+
+  //   var transactions = transactionProvider.transactions;
+
+  //   // Filter transactions by selected category
+  //   if (_selectedCategory != 'All') {
+  //     transactions = transactions.where((transaction) {
+  //       String categoryName = transactionProvider.getCategoryNameForTransaction(transaction)?.name ?? '';
+  //       return categoryName == _selectedCategory;
+  //     }).toList();
+  //   }
+
+  //   // Sort transactions
+  //   transactions.sort((a, b) =>
+  //       _sortAscending ? a.billingDate.compareTo(b.billingDate) : b.billingDate.compareTo(a.billingDate));
+
+  //   // Apply search filter
+  //   if (_searchController.text.isNotEmpty) {
+  //     transactions = transactions.where((transaction) {
+  //       return transaction.categoryId.toString().contains(_searchController.text.toLowerCase()) ||
+  //           transaction.invoiceNumber.toLowerCase().contains(_searchController.text.toLowerCase());
+  //     }).toList();
+  //   }
+
+  //   setState(() {
+  //     _filteredTransactions = transactions;
+  //   });
+  // }

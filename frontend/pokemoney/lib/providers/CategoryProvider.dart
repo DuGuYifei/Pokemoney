@@ -13,19 +13,24 @@ class CategoryProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> fetchAllCategoryFromSyncAndUnsync() async {
+    _category = await _categoryService.getAllCategoryFromSyncAndUnsync();
+    notifyListeners();
+  }
+
   addCategory(pokemoney.Category category) async {
     await _categoryService.addCategory(category);
-    fetchAllCategory();
+    fetchAllCategoryFromSyncAndUnsync();
     print("Category added");
   }
 
   deleteCategory(int id) async {
     await _categoryService.deleteCategory(id);
-    fetchAllCategory();
+    fetchAllCategoryFromSyncAndUnsync();
   }
 
   updateCategory(pokemoney.Category category) async {
     await _categoryService.updateCategory(category);
-    fetchAllCategory(); // Re-fetch the list of categry after updating
+    fetchAllCategoryFromSyncAndUnsync(); // Re-fetch the list of categry after updating
   }
 }
