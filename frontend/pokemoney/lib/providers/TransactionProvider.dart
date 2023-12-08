@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:pokemoney/model/Fund.dart';
 import 'package:pokemoney/providers/FundProvider.dart';
 import 'package:pokemoney/services/TransactionService.dart';
 import 'package:pokemoney/providers/LedgerBookProvider.dart';
@@ -30,9 +29,9 @@ class TransactionProvider with ChangeNotifier {
 
   List<pokemoney.Transaction> _transactions = []; // List of transactions
   List<pokemoney.Transaction> _filteredTransactions = []; // List of filtered transactions
-  Map<int, pokemoney.Category> _categoryCache = {};
-  Map<int, pokemoney.Fund> _fundCache = {}; // Cache for funds
-  Map<int, pokemoney.LedgerBook> _ledgerBookCache = {}; // Cache for ledger books
+  final Map<int, pokemoney.Category> _categoryCache = {};
+  final Map<int, pokemoney.Fund> _fundCache = {}; // Cache for funds
+  final Map<int, pokemoney.LedgerBook> _ledgerBookCache = {}; // Cache for ledger books
 
 // Method to get all transactions
   List<pokemoney.Transaction> get transactions => _transactions;

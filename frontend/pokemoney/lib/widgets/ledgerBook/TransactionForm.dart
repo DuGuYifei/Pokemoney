@@ -5,7 +5,6 @@ import 'package:pokemoney/model/barrel.dart' as pokemoney;
 import 'package:pokemoney/providers/FundProvider.dart';
 import 'package:pokemoney/providers/SubCategoryProvider.dart';
 import 'package:pokemoney/providers/TransactionProvider.dart';
-import 'package:pokemoney/providers/CategoryProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -42,30 +41,30 @@ class _TransactionFormState extends State<TransactionForm> {
     _dateController.text = DateFormat.yMd().format(_selectedDate);
     _selectedFundId = -1; // Initial value indicating fund not yet selected
     _selectedSubCategoryId = -1; // Initial value indicating subcategory not yet selected
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateSubCategoriesAndFundPostFrame();
-    });
+      });
+
   }
 
   // Updates categories after the frame is built
-  void _updateSubCategoriesAndFundPostFrame() {
-    final subCategoryProvider = Provider.of<SubCategoryProvider>(context, listen: false);
-    final fundProvider = Provider.of<FundProvider>(context, listen: false);
+void _updateSubCategoriesAndFundPostFrame() {
+  final subCategoryProvider = Provider.of<SubCategoryProvider>(context, listen: false);
+  final fundProvider = Provider.of<FundProvider>(context, listen: false);
 
-    subCategoryProvider.fetchAllSubCategoriesFromSyncAndUnsync();
-    fundProvider.fetchAllFunds();
+  subCategoryProvider.fetchAllSubCategoriesFromSyncAndUnsync().then((_) {
+    if (mounted) {
+      fetchAndUpdateSubCategories();
+    }
+  });
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_subCategoryItems.isEmpty && subCategoryProvider.subCategories.isNotEmpty) {
-        fetchAndUpdateSubCategories();
-      }
+  fundProvider.fetchAllFunds().then((_) {
+    if (mounted) {
+      fetchAndUpdateFunds();
+    }
+  });
+}
 
-      if (_fundItems.isEmpty && fundProvider.funds.isNotEmpty) {
-        fetchAndUpdateFunds();
-      }
-    });
-  }
 
   // Fetches categories and updates dropdown items
   void fetchAndUpdateSubCategories() {
@@ -195,7 +194,7 @@ class _TransactionFormState extends State<TransactionForm> {
             children: <Widget>[
               TextField(
                 controller: nameController,
-                decoration: InputDecoration(hintText: "${itemType} Name"),
+                decoration: InputDecoration(hintText: "$itemType Name"),
               ),
               if (itemType == 'Fund')
                 TextField(
@@ -285,14 +284,6 @@ class _TransactionFormState extends State<TransactionForm> {
         throw Exception('No matching subcategory found with ID: $_selectedSubCategoryId');
       });
 
-      if (subCategory == null) {
-        // Handle null subcategory
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Subcategory not found')),
-        );
-        return;
-      }
-
       if (_formKey.currentState?.validate() ?? false) {
         final pokemoney.Transaction newTransaction = pokemoney.Transaction(
           ledgerBookId: widget.ledgerBook.id!,
@@ -327,26 +318,46 @@ class _TransactionFormState extends State<TransactionForm> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Add Transaction')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Consumer3<SubCategoryProvider, TransactionProvider, FundProvider>(
-          builder: (context, subCategoryProvider, transactionProvider, fundProvider, child) {
-            return Form(
-              key: _formKey,
-              child: _buildFormFields(context, transactionProvider),
-            );
-          },
-        ),
+@override
+Widget build(BuildContext context) {
+  final subCategoryProvider = Provider.of<SubCategoryProvider>(context, listen: false);
+  final fundProvider = Provider.of<FundProvider>(context, listen: false);
+  final transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
+
+  return Scaffold(
+    appBar: AppBar(title: const Text('Add Transaction')),
+    body: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: FutureBuilder(
+        future: Future.wait([
+          subCategoryProvider.fetchAllSubCategoriesFromSyncAndUnsync(),
+          fundProvider.fetchAllFunds(),
+        ]),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator(); // Show loading indicator
+          }
+
+          if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}'); // Handle error state
+          }
+
+          // Once data is fetched, build the form
+          return Form(
+            key: _formKey,
+            child: _buildFormFields(context, subCategoryProvider, fundProvider,transactionProvider),
+          );
+        },
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   // Builds the form fields
-  Widget _buildFormFields(BuildContext context, TransactionProvider transactionProvider) {
+Widget _buildFormFields(BuildContext context, SubCategoryProvider subCategoryProvider, FundProvider fundProvider, TransactionProvider transactionProvider) {
+  //fetchAndUpdateSubCategories(); // Call this to update items
+  //fetchAndUpdateFunds(); // Call this to update items
     return ListView(
       children: [
         _buildTextField(_invoiceNumberController, 'Invoice Number', 'Please enter the invoice number'),
@@ -402,8 +413,9 @@ class _TransactionFormState extends State<TransactionForm> {
       validator: validate
           ? (value) {
               if (value == null || value.isEmpty) return errorMessage;
-              if (keyboardType == TextInputType.number && double.tryParse(value) == null)
+              if (keyboardType == TextInputType.number && double.tryParse(value) == null) {
                 return 'Please enter a valid number';
+              }
               return null;
             }
           : null,

@@ -28,7 +28,7 @@ class AuthService {
         String? token = response.headers['authorization'];
         await secureStorage.saveToken(token!);
         var responseData = json.decode(response.body);
-        print("reposne date:" + responseData.toString());
+        print("reposne date:$responseData");
 
         User user = User.fromJson(responseData['data']);
         return user;

@@ -44,11 +44,11 @@ class RouteGenerator {
         );
       case loginPage:
         return MaterialPageRoute(
-          builder: (_) => LoginPage(),
+          builder: (_) => const LoginPage(),
         );
       case signUpPage:
         return MaterialPageRoute(
-          builder: (_) => SignUpPage(),
+          builder: (_) => const SignUpPage(),
         );
       case forgotPasswordPage:
         return MaterialPageRoute(

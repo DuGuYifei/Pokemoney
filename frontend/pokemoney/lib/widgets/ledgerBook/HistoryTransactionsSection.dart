@@ -72,7 +72,7 @@ class HistoryTransactionsSection extends StatelessWidget {
                 DataCell(Text(formattedDate)),
                 DataCell(
                   Container(
-                    padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
+                    padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
                     decoration: BoxDecoration(
                       color: transaction.type == 'Income' ? Colors.green[100] : Colors.red[100],
                       borderRadius: BorderRadius.circular(4.0),

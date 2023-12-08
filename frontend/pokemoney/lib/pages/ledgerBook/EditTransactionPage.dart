@@ -87,7 +87,7 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
                           height: 45,
                         ),
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Text(category.name),
                     ],
                   ),
@@ -161,10 +161,10 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Transaction'),
+        title: const Text('Edit Transaction'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Consumer<TransactionProvider>(
           builder: (context, provider, child) {
             return Form(
@@ -261,8 +261,9 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
       validator: validate
           ? (value) {
               if (value == null || value.isEmpty) return errorMessage;
-              if (keyboardType == TextInputType.number && double.tryParse(value) == null)
+              if (keyboardType == TextInputType.number && double.tryParse(value) == null) {
                 return 'Please enter a valid number';
+              }
               return null;
             }
           : null,

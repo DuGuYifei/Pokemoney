@@ -143,6 +143,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                 //username textfiled;
                 CustomTextField(
+                  key: const Key('usernameField'),
                   headerText: 'Username',
                   controller: usernameController,
                   labelText: 'Your username',
@@ -153,6 +154,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                 //Email textfield
                 CustomTextField(
+                  key: const Key('emailField'),
                   headerText: 'Email',
                   controller: emailController,
                   labelText: 'Your Email',
@@ -163,6 +165,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                 //password textfield
                 CustomTextField(
+                  key: const Key('passwordField'),
                   headerText: 'Password',
                   controller: passwordController,
                   labelText: 'Password',
@@ -183,6 +186,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                 //confirm password textfield
                 CustomTextField(
+                  key: const Key('confirmPasswordField'),
                   controller: confirmPasswordController,
                   labelText: 'Confirm password',
                   obscureText: !isPasswordVisible,
@@ -210,6 +214,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         height: 24.0,
                         width: 24.0,
                         child: Checkbox(
+                          key: const Key('termsCheckbox'),
                           fillColor: MaterialStateProperty.all<Color>(AppColors.primaryColor),
                           value: agree,
                           onChanged: (value) {
@@ -223,7 +228,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     CustomClickableText(
                         text: 'I have read and accpet terms and conditions',
                         onTap: () {
-                          // Navigate to another page or perform desired action
+                          // TODO: Navigate to another page for reading the terms and conditions
                         },
                         clickableText: 'terms and conditions')
                   ],
@@ -231,6 +236,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
                 const SizedBox(height: 15),
                 CustomButton(
+                  key: const Key('signUpButton'),
                   onPressed: agree && !isLoading ? () => signUserUp() : null,
                   textButton: 'Sign-up',
                 ),

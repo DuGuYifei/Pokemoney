@@ -28,7 +28,7 @@ class _CategoryPageState extends State<CategoryPage> {
   }
 
   void _showAddSubCategoryDialog(BuildContext context, int categoryId) {
-    TextEditingController _subCategoryNameController = TextEditingController();
+    TextEditingController subCategoryNameController = TextEditingController();
 
     showDialog(
       context: context,
@@ -36,7 +36,7 @@ class _CategoryPageState extends State<CategoryPage> {
         return AlertDialog(
           title: const Text('Add Subcategory'),
           content: TextField(
-            controller: _subCategoryNameController,
+            controller: subCategoryNameController,
             decoration: const InputDecoration(hintText: "Subcategory Name"),
           ),
           actions: <Widget>[
@@ -53,7 +53,7 @@ class _CategoryPageState extends State<CategoryPage> {
                 var newSubCategory = SubCategory(
                   // You need to generate an ID for the subcategory or handle it in your database logic
                   categoryId: categoryId,
-                  name: _subCategoryNameController.text,
+                  name: subCategoryNameController.text,
                   updateAt: DateTime.now(),
                   delFlag: 0,
                   iconPath: 'assets/icons/custom_icon.svg',

@@ -1,8 +1,12 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:pokemoney/model/barrel.dart';
 
 class DBHelper {
+  // Flag to determine the type of database to use
+  bool useInMemoryDatabase = false;
+
   static final DBHelper _instance = DBHelper.internal();
 
   factory DBHelper() => _instance;
@@ -13,8 +17,32 @@ class DBHelper {
 
   Future<Database> get db async {
     if (_db != null) return _db!;
-    _db = await initDb();
+
+    if (useInMemoryDatabase) {
+      _db = await initInMemoryDb(); // Use in-memory database for testing
+    } else {
+      _db = await initDb(); // Use real database
+    }
+
     return _db!;
+  }
+
+  // Method to initialize an in-memory database for testing
+  Future<Database> initInMemoryDb() async {
+    // Initialize sqflite for FFI (use only in tests)
+    sqfliteFfiInit();
+    var databaseFactory = databaseFactoryFfi;
+
+    String path = inMemoryDatabasePath;
+    var theDb = await databaseFactory.openDatabase(
+      path,
+      options: OpenDatabaseOptions(version: 1, onCreate: _onCreate),
+    );
+
+    // Insert initial categories, etc.
+    await insertInitialCategories(theDb);
+
+    return theDb;
   }
 
   Future<void> insertInitialCategories(Database db) async {

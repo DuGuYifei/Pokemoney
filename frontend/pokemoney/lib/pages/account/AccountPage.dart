@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:pokemoney/widgets/barrel.dart';
 import 'package:provider/provider.dart';
 import 'package:pokemoney/providers/AuthProvider.dart';
 import 'package:pokemoney/pages/register/LoginPage.dart';
@@ -34,7 +33,7 @@ class AccountPage extends StatelessWidget {
           icon: const Icon(Icons.logout),
           style: ButtonStyle(
             // make the size of the button bigger and add a login out icon to the left
-            minimumSize: MaterialStateProperty.all(Size(200, 50)),
+            minimumSize: MaterialStateProperty.all(const Size(200, 50)),
           ),
           onPressed: () {
             authProvider.logout();
@@ -54,22 +53,24 @@ class AccountPage extends StatelessWidget {
         const Text('Your are not logged in', style: TextStyle(fontSize: 20)),
         const Spacer(),
         ElevatedButton(
+          key: const Key('loginButton'),
           style: ButtonStyle(
             // make the size of the button bigger
-            minimumSize: MaterialStateProperty.all(Size(150, 40)),
+            minimumSize: MaterialStateProperty.all(const Size(150, 40)),
           ),
           onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) => LoginPage()));
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) => const LoginPage()));
           },
           child: const Text('Login', style: TextStyle(fontSize: 16)),
         ),
         ElevatedButton(
+          key: const Key('registerButton'),
           style: ButtonStyle(
             // make the size of the button bigger
-            minimumSize: MaterialStateProperty.all(Size(150, 40)),
+            minimumSize: MaterialStateProperty.all(const Size(150, 40)),
           ),
           onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) => SignUpPage()));
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) => const SignUpPage()));
           },
           child: const Text('Register', style: TextStyle(fontSize: 16)),
         ),

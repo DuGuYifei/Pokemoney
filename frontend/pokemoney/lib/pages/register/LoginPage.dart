@@ -3,13 +3,11 @@ import 'package:pokemoney/app.dart';
 import 'package:pokemoney/widgets/barrel.dart';
 import 'package:pokemoney/pages/barrel.dart';
 import 'package:pokemoney/constants/AppColors.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:provider/provider.dart';
 import 'package:pokemoney/providers/AuthProvider.dart';
 
 class LoginPage extends StatefulWidget {
-  LoginPage({super.key});
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -50,7 +48,7 @@ class _LoginPageState extends State<LoginPage> {
       } else {
         // On successful login, navigate to another page
         Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => App(),
+          builder: (context) => const App(),
         ));
       }
     } catch (error) {
@@ -181,7 +179,7 @@ class _LoginPageState extends State<LoginPage> {
                   textButton: 'Login',
                 ),
 
-                if (isLoading) CircularProgressIndicator(), // Display loading indicator when logging in
+                if (isLoading) const CircularProgressIndicator(), // Display loading indicator when logging in
 
                 const SizedBox(height: 20),
 

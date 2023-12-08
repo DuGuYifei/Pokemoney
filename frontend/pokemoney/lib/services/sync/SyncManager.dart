@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:graphql_flutter/graphql_flutter.dart';
 import 'package:pokemoney/services/sync/GraphQLClientService.dart';
 import 'package:pokemoney/services/sync/SyncResponseParser.dart'; // Parser for GraphQL responses
 import 'package:pokemoney/services/DatabaseService.dart';
@@ -39,7 +38,7 @@ class SyncManager {
   }
 
   Future<Map<String, dynamic>> _fetchUnsyncedData() async {
-    final db = await dbService;
+    final db = dbService;
 
     // Fetch data from each unsynced table
     List<Map<String, dynamic>> unsyncedUsers = await dbService.getUnsyncedUsers();
@@ -131,7 +130,7 @@ class SyncManager {
           content: const Text("Data has been successfully synchronized."),
           actions: <Widget>[
             TextButton(
-              child: Text("OK"),
+              child: const Text("OK"),
               onPressed: () {
                 Navigator.of(context).pop();
               },

@@ -3,7 +3,6 @@ import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:pokemoney/model/barrel.dart';
 import 'package:pokemoney/pages/ledgerBook/EditTransactionPage.dart';
-import 'package:pokemoney/providers/FundProvider.dart';
 import 'package:pokemoney/providers/TransactionProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:pokemoney/constants/AppColors.dart';
@@ -24,7 +23,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
   String _selectedCategory = 'All'; // Default value for category filter
   bool _sortAscending = true; // Default value for sorting order
 
-  List<String> _categories = ['All', 'Restaurant', 'Transportation', 'Rent']; // Example categories
+  final List<String> _categories = ['All', 'Restaurant', 'Transportation', 'Rent']; // Example categories
 
   @override
   void initState() {
@@ -46,12 +45,13 @@ class _TransactionsPageState extends State<TransactionsPage> {
   void _onSearchChanged() {
     if (_searchController.text.isEmpty) {
       setState(() {
-        _filteredTransactions = Provider.of<TransactionProvider>(context, listen: false).transactions;
+        _filteredTransactions = Provider.of<TransactionProvider>(context, listen: false).filteredTransactions;
       });
     } else {
       setState(() {
-        _filteredTransactions =
-            Provider.of<TransactionProvider>(context, listen: false).transactions.where((transaction) {
+        _filteredTransactions = Provider.of<TransactionProvider>(context, listen: false)
+            .filteredTransactions
+            .where((transaction) {
           return transaction.categoryId.toString().contains(_searchController.text.toLowerCase()) ||
               transaction.invoiceNumber.toLowerCase().contains(_searchController.text.toLowerCase());
         }).toList();
@@ -148,7 +148,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                   // This time we need to handle both cases when _filteredTransactions is empty or not
                   var transactionsToShow = _searchController.text.isNotEmpty
                       ? _filteredTransactions
-                      : transactionProvider.transactions;
+                      : transactionProvider.filteredTransactions;
 
                   if (transactionsToShow.isEmpty) {
                     // If the list is empty, display "No results"
@@ -296,7 +296,7 @@ class TransactionListItem extends StatelessWidget {
                 child: CircularProgressIndicator(), // Show a progress indicator while category is null
               ),
         title: Container(
-          padding: EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
+          padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
           decoration: BoxDecoration(
             color: transaction.type == 'Income' ? Colors.green[100] : Colors.red[100],
             borderRadius: BorderRadius.circular(4.0),
@@ -313,10 +313,16 @@ class TransactionListItem extends StatelessWidget {
             ),
           ),
         ),
-        subtitle: Text('Invoice Number: ${transaction.invoiceNumber}'
-            '\nDate: ${DateFormat('yMMMd').format(transaction.billingDate)}'
-            '\nType: ${transaction.type}'
-            '\nFund: ${fund != null ? fund.name : ' fund is null'}'),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Invoice Number: ${transaction.invoiceNumber}'
+                '\nDate: ${DateFormat('yMMMd').format(transaction.billingDate)}'
+                '\nType: ${transaction.type}'
+                '\nFund: ${fund != null ? fund.name : ' fund is null'}'),
+            if (transaction.comment != null) Text('Comment: ${transaction.comment}')
+          ],
+        ),
         trailing: _buildPopupMenu(context),
       ),
     );

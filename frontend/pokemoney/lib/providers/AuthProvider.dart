@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'dart:io';
 import 'package:pokemoney/model/barrel.dart';
 import 'package:pokemoney/services/AuthService.dart';
 import 'package:pokemoney/services/SecureStorage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart';
 
 class AuthProvider with ChangeNotifier {
   final AuthService _authService;

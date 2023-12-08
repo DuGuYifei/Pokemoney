@@ -87,8 +87,7 @@ class _AppState extends State<App> {
               padding: const EdgeInsets.only(right: 10.0),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  primary: AppColors.primaryColor,
-                  onPrimary: AppColors.whiteBackgorund,
+                  foregroundColor: AppColors.whiteBackgorund, backgroundColor: AppColors.primaryColor,
                 ),
                 onPressed: _onSyncButtonPressed,
                 child: Text('Sync'),
