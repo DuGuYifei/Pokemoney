@@ -94,7 +94,7 @@ public class UserService {
             throw new GenericNotFoundError("editor not found");
         }
         NotificationDto notificationDto = NotificationDto.getNotificationsFromNotificationModel(editorModel.getNotifications());
-        LeafResponseDto leafResponseDto = leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey( Constants.LEAF_HBASE_INVITATION).build());
+        LeafResponseDto leafResponseDto = leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(com.pokemoney.hadoop.hbase.Constants.LEAF_HBASE_INVITATION).build());
         Long invitationId = Long.parseLong(leafResponseDto.getId());
         EditorDto editorDto = new EditorDto(
                 editorId,
@@ -139,7 +139,7 @@ public class UserService {
             throw new GenericNotFoundError("editor not found");
         }
         NotificationDto notificationDto = NotificationDto.getNotificationsFromNotificationModel(editorModel.getNotifications());
-        LeafResponseDto leafResponseDto = leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey( Constants.LEAF_HBASE_INVITATION).build());
+        LeafResponseDto leafResponseDto = leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(com.pokemoney.hadoop.hbase.Constants.LEAF_HBASE_INVITATION).build());
         Long invitationId = Long.parseLong(leafResponseDto.getId());
         EditorDto editorDto = new EditorDto(
                 editorId,

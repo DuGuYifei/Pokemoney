@@ -1,7 +1,7 @@
 package com.pokemoney.hadoop.client.service;
 
 import com.pokemoney.hadoop.client.Constants;
-import com.pokemoney.hadoop.client.msgqueue.KafkaService;
+import com.pokemoney.hadoop.client.kafka.KafkaService;
 import com.pokemoney.hadoop.client.vo.PreprocessedSyncFunds;
 import com.pokemoney.hadoop.client.vo.ProcessedSyncFunds;
 import com.pokemoney.hadoop.hbase.dto.editor.EditorDto;
@@ -12,7 +12,6 @@ import com.pokemoney.hadoop.hbase.dto.operation.OperationDto;
 import com.pokemoney.hadoop.hbase.dto.sync.SyncFundInputDto;
 import com.pokemoney.hadoop.hbase.dto.user.UserDto;
 import com.pokemoney.hadoop.hbase.phoenix.dao.FundMapper;
-import com.pokemoney.hadoop.hbase.phoenix.dao.OperationMapper;
 import com.pokemoney.hadoop.hbase.phoenix.model.FundModel;
 import com.pokemoney.hadoop.hbase.phoenix.model.OperationModel;
 import com.pokemoney.hadoop.hbase.utils.RowKeyUtils;
@@ -125,7 +124,7 @@ public class FundService {
                         Long fundId = syncFundInputDto.getFundId();
                         String fundRowKey = RowKeyUtils.getFundRowKey(regionId.toString(), ownerId.toString(), fundId.toString());
                         preprocessSyncUpdateSituation(userDto, updateFundDtoList, syncFundInputDto, ownerId, fundRowKey, fundId, regionId);
-                        operationId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(Constants.LEAF_HBASE_OPERATION).build()).getId());
+                        operationId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(com.pokemoney.hadoop.hbase.Constants.LEAF_HBASE_OPERATION).build()).getId());
                         updateFundOperationDtoList.add(new OperationDto(
                                 RowKeyUtils.getRegionId(ownerId),
                                 ownerId,
@@ -141,12 +140,12 @@ public class FundService {
             }
             if (!isExist) {
                 Long fundId = syncFundInputDto.getFundId();
-                operationId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(Constants.LEAF_HBASE_OPERATION).build()).getId());
+                operationId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(com.pokemoney.hadoop.hbase.Constants.LEAF_HBASE_OPERATION).build()).getId());
                 Integer regionId = RowKeyUtils.getRegionId(ownerId);
                 String fundRowKey = RowKeyUtils.getFundRowKey(regionId.toString(), ownerId.toString(), fundId.toString());
                 if (fundId < com.pokemoney.hadoop.hbase.Constants.MIN_SNOWFLAKE_ID) {
                     userDto.getFundInfo().getFunds().add(fundRowKey);
-                    fundId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(Constants.LEAF_HBASE_FUND).build()).getId());
+                    fundId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(com.pokemoney.hadoop.hbase.Constants.LEAF_HBASE_FUND).build()).getId());
                     List<Long> editorIds = List.of(ownerId);
                     insertFundDtoList.add(new UpsertFundDto(
                             regionId,

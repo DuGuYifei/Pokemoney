@@ -5,7 +5,8 @@ dubbo:
     registry:
         address: nacos://localhost:8848
         group: dubbo-java-basic
-        parameters.register-consumer-url: true
+        parameters:
+            register-consumer-url: true
         subscribe: true
     protocol:
         name: tri

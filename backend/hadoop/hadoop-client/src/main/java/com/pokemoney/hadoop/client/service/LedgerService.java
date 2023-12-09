@@ -1,7 +1,7 @@
 package com.pokemoney.hadoop.client.service;
 
 import com.pokemoney.hadoop.client.Constants;
-import com.pokemoney.hadoop.client.msgqueue.KafkaService;
+import com.pokemoney.hadoop.client.kafka.KafkaService;
 import com.pokemoney.hadoop.client.vo.PreprocessedSyncLedgers;
 import com.pokemoney.hadoop.client.vo.ProcessedSyncLedgers;
 import com.pokemoney.hadoop.hbase.dto.editor.EditorDto;
@@ -12,7 +12,6 @@ import com.pokemoney.hadoop.hbase.dto.operation.OperationDto;
 import com.pokemoney.hadoop.hbase.dto.sync.SyncLedgerInputDto;
 import com.pokemoney.hadoop.hbase.dto.user.UserDto;
 import com.pokemoney.hadoop.hbase.phoenix.dao.LedgerMapper;
-import com.pokemoney.hadoop.hbase.phoenix.dao.OperationMapper;
 import com.pokemoney.hadoop.hbase.phoenix.model.LedgerModel;
 import com.pokemoney.hadoop.hbase.phoenix.model.OperationModel;
 import com.pokemoney.hadoop.hbase.utils.RowKeyUtils;
@@ -125,7 +124,7 @@ public class LedgerService {
                         Long ledgerId = syncLedgerInputDto.getLedgerId();
                         String ledgerRowKey = RowKeyUtils.getLedgerRowKey(regionId.toString(), ownerId.toString(), ledgerId.toString());
                         preprocessSyncUpdateSituation(userDto, updateLedgerDtoList, syncLedgerInputDto, ownerId, ledgerRowKey, ledgerId, regionId);
-                        operationId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(Constants.LEAF_HBASE_OPERATION).build()).getId());
+                        operationId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(com.pokemoney.hadoop.hbase.Constants.LEAF_HBASE_OPERATION).build()).getId());
                         updateLedgerOperationDtoList.add(new OperationDto(
                                 RowKeyUtils.getRegionId(ownerId),
                                 ownerId,
@@ -143,10 +142,10 @@ public class LedgerService {
                 Long ledgerId = syncLedgerInputDto.getLedgerId();
                 Integer regionId = RowKeyUtils.getRegionId(ownerId);
                 String ledgerRowKey = RowKeyUtils.getLedgerRowKey(regionId.toString(), ownerId.toString(), ledgerId.toString());
-                operationId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(Constants.LEAF_HBASE_OPERATION).build()).getId());
+                operationId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(com.pokemoney.hadoop.hbase.Constants.LEAF_HBASE_OPERATION).build()).getId());
                 if (ledgerId < com.pokemoney.hadoop.hbase.Constants.MIN_SNOWFLAKE_ID) {
                     userDto.getLedgerInfo().getLedgers().add(ledgerRowKey);
-                    ledgerId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(Constants.LEAF_HBASE_LEDGER_BOOK).build()).getId());
+                    ledgerId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(com.pokemoney.hadoop.hbase.Constants.LEAF_HBASE_LEDGER_BOOK).build()).getId());
                     insertLedgerDtoList.add(new UpsertLedgerDto(
                             regionId,
                             ownerId,

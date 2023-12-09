@@ -5,6 +5,9 @@ dubbo:
   registry:
     address: nacos://localhost:8848
     group: dubbo-java-basic
+    parameters:
+      register-consumer-url: true
+    subscribe: true
   protocol:
     name: tri
     port: 20950
@@ -24,3 +27,30 @@ spring:
   datasource:
     url: jdbc:phoenix:43.131.33.18:2181
     driver-class-name: org.apache.phoenix.jdbc.PhoenixDriver
+  kafka:
+    producer:
+      bootstrap-servers: 43.131.33.18:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      retries: 2
+    consumer:
+      bootstrap-servers: 43.131.33.18:9092
+      group-id: hadoop-service
+      key-deserializer: org.apache.kafka.common.serialization.StringSerializer
+      value-deserializer: org.apache.kafka.common.serialization.StringSerializer
+      max-poll-records: 100
+      enable-auto-commit: false
+    listener:
+      poll-timeout: 300000
+      concurrency: 4
+
+
+zookeeper:
+  connect-string: 43.131.33.18:2181
+  retry:
+    count: 3
+    time: 1000
+  session:
+    timeout: 60000
+  connection:
+    timeout: 15000

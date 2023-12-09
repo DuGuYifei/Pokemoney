@@ -61,3 +61,18 @@ spring:
   datasource:
     url: jdbc:phoenix:43.131.33.18:2181
     driver-class-name: org.apache.phoenix.jdbc.PhoenixDriver
+  kafka:
+    producer:
+      bootstrap-servers: 43.131.33.18:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+zookeeper:
+  connect-string: 43.131.33.18:2181
+  retry:
+    count: 3
+    time: 1000
+  session:
+    timeout: 60000
+  connection:
+    timeout: 15000

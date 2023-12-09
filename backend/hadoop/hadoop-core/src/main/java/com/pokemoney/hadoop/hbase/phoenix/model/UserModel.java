@@ -132,6 +132,8 @@ public class UserModel {
         public void setJsonCategories(String jsonCategories) {
             this.jsonCategories = jsonCategories;
             List<CategoryDto> categories = JsonUtils.categoryListFromJson(jsonCategories);
+            //TODO: 删除这里和synccontroller里的测试代码
+            System.out.println("\n\n\n\n\n\n测试\n\n\n\n\n\n\n");
             this.categories = categories.stream().collect(Collectors.toMap(CategoryDto::getCategoryId, obj-> obj));
         }
 
@@ -142,7 +144,7 @@ public class UserModel {
          */
         public void setJsonSubcategories(String jsonSubcategories) {
             this.jsonSubcategories = jsonSubcategories;
-            List<SubcategoryDto> subcategories = JsonUtils.subcategoryListFromJson(jsonSubcategories);
+            List<SubcategoryDto> subcategories = SubcategoryDto.subcategoryListFromJson(jsonSubcategories);
             this.subcategories = subcategories.stream().collect(Collectors.toMap(SubcategoryDto::getSubcategoryId, obj-> obj));
         }
     }

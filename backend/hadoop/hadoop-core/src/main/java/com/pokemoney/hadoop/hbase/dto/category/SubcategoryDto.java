@@ -1,7 +1,12 @@
 package com.pokemoney.hadoop.hbase.dto.category;
 
+import com.pokemoney.hadoop.hbase.utils.JsonUtils;
 import lombok.*;
 import org.apache.hbase.thirdparty.com.google.gson.annotations.SerializedName;
+import org.apache.hbase.thirdparty.com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
+import java.util.List;
 
 
 /**
@@ -37,4 +42,16 @@ public class SubcategoryDto {
      */
     @SerializedName("del_flag")
     private Integer delFlag;
+
+
+    /**
+     * Convert subcategory json to dto map
+     *
+     * @param json json string
+     * @return SubcategoryDto list
+     */
+    public static List<SubcategoryDto> subcategoryListFromJson(String json) {
+        Type type = new TypeToken<List<SubcategoryDto>>() {}.getType();
+        return JsonUtils.GSON.fromJson(json, type);
+    }
 }

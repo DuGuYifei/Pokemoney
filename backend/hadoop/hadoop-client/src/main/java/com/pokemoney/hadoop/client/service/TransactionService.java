@@ -2,7 +2,7 @@ package com.pokemoney.hadoop.client.service;
 
 import com.pokemoney.hadoop.client.Constants;
 import com.pokemoney.hadoop.client.exception.GenericGraphQlForbiddenException;
-import com.pokemoney.hadoop.client.msgqueue.KafkaService;
+import com.pokemoney.hadoop.client.kafka.KafkaService;
 import com.pokemoney.hadoop.client.vo.PreprocessedSyncTransactions;
 import com.pokemoney.hadoop.client.vo.ProcessedSyncTransactions;
 import com.pokemoney.hadoop.hbase.dto.filter.TransactionFilter;
@@ -15,7 +15,6 @@ import com.pokemoney.hadoop.hbase.enums.TransactionTypeEnum;
 import com.pokemoney.hadoop.hbase.phoenix.dao.FundMapper;
 import com.pokemoney.hadoop.hbase.phoenix.dao.LedgerMapper;
 import com.pokemoney.hadoop.hbase.phoenix.dao.TransactionMapper;
-import com.pokemoney.hadoop.hbase.phoenix.dao.OperationMapper;
 import com.pokemoney.hadoop.hbase.phoenix.model.*;
 import com.pokemoney.hadoop.hbase.utils.RowKeyUtils;
 import com.pokemoney.hadoop.hbase.utils.TransactionUtils;
@@ -48,11 +47,6 @@ public class TransactionService {
     private final TransactionMapper transactionMapper;
 
     /**
-     * The operation mapper.
-     */
-    private final OperationMapper operationMapper;
-
-    /**
      * The ledger mapper
      */
     private final LedgerMapper ledgerMapper;
@@ -82,7 +76,6 @@ public class TransactionService {
      * Instantiates a new Transaction  service.
      *
      * @param transactionMapper the transaction mapper
-     * @param operationMapper   the operation mapper
      * @param ledgerMapper      the ledger mapper
      * @param fundMapper        the fund mapper
      * @param sqlSessionFactory the sql session factory
@@ -90,9 +83,8 @@ public class TransactionService {
      * @param leafTriService    leaf api
      * @param kafkaService      kafka service
      */
-    public TransactionService(TransactionMapper transactionMapper, OperationMapper operationMapper, LedgerMapper ledgerMapper, FundMapper fundMapper, SqlSessionFactory sqlSessionFactory, ThreadPoolExecutor dtpSyncExecutor1, LeafTriService leafTriService, KafkaService kafkaService) {
+    public TransactionService(TransactionMapper transactionMapper, LedgerMapper ledgerMapper, FundMapper fundMapper, SqlSessionFactory sqlSessionFactory, ThreadPoolExecutor dtpSyncExecutor1, LeafTriService leafTriService, KafkaService kafkaService) {
         this.transactionMapper = transactionMapper;
-        this.operationMapper = operationMapper;
         this.ledgerMapper = ledgerMapper;
         this.fundMapper = fundMapper;
         this.sqlSessionFactory = sqlSessionFactory;
@@ -168,7 +160,7 @@ public class TransactionService {
                         String tableName = TransactionUtils.GetTableNameFromSnowflakeId(transactionId);
                         preprocessSyncUpsertSituation(updateTransactionDtoList, syncTransactionInputDto, tableName, ownerId, userId, transactionId, transactionRegionId);
                         // insert operation to user who write the transaction
-                        operationId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(Constants.LEAF_HBASE_OPERATION).build()).getId());
+                        operationId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(com.pokemoney.hadoop.hbase.Constants.LEAF_HBASE_OPERATION).build()).getId());
                         updateTransactionOperationDtoList.add(new OperationDto(
                                 userRegionId,
                                 userId,
@@ -184,10 +176,10 @@ public class TransactionService {
             }
             if (!isExist) {
                 Long transactionId = syncTransactionInputDto.getTransactionId();
-                operationId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(Constants.LEAF_HBASE_OPERATION).build()).getId());
+                operationId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(com.pokemoney.hadoop.hbase.Constants.LEAF_HBASE_OPERATION).build()).getId());
                 // insert to self
                 if (transactionId < com.pokemoney.hadoop.hbase.Constants.MIN_SNOWFLAKE_ID) {
-                    transactionId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(Constants.LEAF_HBASE_TRANSACTION).build()).getId());
+                    transactionId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(com.pokemoney.hadoop.hbase.Constants.LEAF_HBASE_TRANSACTION).build()).getId());
                     String tableName = TransactionUtils.GetTableNameFromSnowflakeId(transactionId);
                     preprocessSyncUpsertSituation(insertTransactionDtoList, syncTransactionInputDto, tableName, ownerId, userId, transactionId, transactionRegionId);
                     insertTransactionOperationDtoList.add(new OperationDto(

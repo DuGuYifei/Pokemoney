@@ -76,7 +76,7 @@ public class SubcategoryService {
         Long id = syncSubcategoryInputDto.getSubcategoryId();
         if (id < com.pokemoney.hadoop.hbase.Constants.MIN_SNOWFLAKE_ID) {
             try{
-                id = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(com.pokemoney.hadoop.client.Constants.LEAF_HBASE_SUBCATEGORY).build()).getId());
+                id = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(com.pokemoney.hadoop.hbase.Constants.LEAF_HBASE_SUBCATEGORY).build()).getId());
             } catch (Exception e) {
                 log.error("Get snowflake id error", e);
                 throw new RuntimeException("Get snowflake id error", e);
