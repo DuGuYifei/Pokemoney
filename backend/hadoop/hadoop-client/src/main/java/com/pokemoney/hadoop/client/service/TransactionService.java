@@ -1,24 +1,26 @@
 package com.pokemoney.hadoop.client.service;
 
 import com.pokemoney.hadoop.client.Constants;
+import com.pokemoney.hadoop.client.exception.GenericGraphQlForbiddenException;
+import com.pokemoney.hadoop.client.msgqueue.KafkaService;
 import com.pokemoney.hadoop.client.vo.PreprocessedSyncTransactions;
-import com.pokemoney.hadoop.hbase.dto.editor.EditorDto;
+import com.pokemoney.hadoop.client.vo.ProcessedSyncTransactions;
 import com.pokemoney.hadoop.hbase.dto.filter.TransactionFilter;
 import com.pokemoney.hadoop.hbase.dto.transaction.TransactionDto;
 import com.pokemoney.hadoop.hbase.dto.transaction.UpsertTransactionDto;
 import com.pokemoney.hadoop.hbase.dto.operation.OperationDto;
 import com.pokemoney.hadoop.hbase.dto.sync.SyncTransactionInputDto;
 import com.pokemoney.hadoop.hbase.dto.user.UserDto;
+import com.pokemoney.hadoop.hbase.enums.TransactionTypeEnum;
+import com.pokemoney.hadoop.hbase.phoenix.dao.FundMapper;
+import com.pokemoney.hadoop.hbase.phoenix.dao.LedgerMapper;
 import com.pokemoney.hadoop.hbase.phoenix.dao.TransactionMapper;
 import com.pokemoney.hadoop.hbase.phoenix.dao.OperationMapper;
-import com.pokemoney.hadoop.hbase.phoenix.model.TransactionModel;
-import com.pokemoney.hadoop.hbase.phoenix.model.OperationModel;
+import com.pokemoney.hadoop.hbase.phoenix.model.*;
 import com.pokemoney.hadoop.hbase.utils.RowKeyUtils;
+import com.pokemoney.hadoop.hbase.utils.TransactionUtils;
 import com.pokemoney.leaf.service.api.LeafGetRequestDto;
 import com.pokemoney.leaf.service.api.LeafTriService;
-import com.pokemoney.user.service.api.GetUserInfoRequestDto;
-import com.pokemoney.user.service.api.GetUserInfoResponseDto;
-import com.pokemoney.user.service.api.UserTriService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.ibatis.session.SqlSession;
@@ -26,10 +28,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -40,6 +39,10 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Service
 public class TransactionService {
     /**
+     * The kafka service.
+     */
+    private final KafkaService kafkaService;
+    /**
      * The transaction mapper.
      */
     private final TransactionMapper transactionMapper;
@@ -48,6 +51,16 @@ public class TransactionService {
      * The operation mapper.
      */
     private final OperationMapper operationMapper;
+
+    /**
+     * The ledger mapper
+     */
+    private final LedgerMapper ledgerMapper;
+
+    /**
+     * The fund mapper
+     */
+    private final FundMapper fundMapper;
 
     /**
      * The sql session factory.
@@ -66,38 +79,38 @@ public class TransactionService {
     private final LeafTriService leafTriService;
 
     /**
-     * user triple api
-     */
-    @DubboReference(version = "1.0.0", protocol = "tri", group = "user", timeout = 10000)
-    private final UserTriService userTriService;
-
-    /**
      * Instantiates a new Transaction  service.
      *
-     * @param transactionMapper      the transaction mapper
+     * @param transactionMapper the transaction mapper
      * @param operationMapper   the operation mapper
+     * @param ledgerMapper      the ledger mapper
+     * @param fundMapper        the fund mapper
      * @param sqlSessionFactory the sql session factory
      * @param dtpSyncExecutor1  the dynamic thread pool executor 1
      * @param leafTriService    leaf api
-     * @param userTriService    user api
+     * @param kafkaService      kafka service
      */
-    public TransactionService(TransactionMapper transactionMapper, OperationMapper operationMapper, SqlSessionFactory sqlSessionFactory, ThreadPoolExecutor dtpSyncExecutor1, LeafTriService leafTriService, UserTriService userTriService) {
+    public TransactionService(TransactionMapper transactionMapper, OperationMapper operationMapper, LedgerMapper ledgerMapper, FundMapper fundMapper, SqlSessionFactory sqlSessionFactory, ThreadPoolExecutor dtpSyncExecutor1, LeafTriService leafTriService, KafkaService kafkaService) {
         this.transactionMapper = transactionMapper;
         this.operationMapper = operationMapper;
+        this.ledgerMapper = ledgerMapper;
+        this.fundMapper = fundMapper;
         this.sqlSessionFactory = sqlSessionFactory;
         this.dtpSyncExecutor1 = dtpSyncExecutor1;
         this.leafTriService = leafTriService;
-        this.userTriService = userTriService;
+        this.kafkaService = kafkaService;
     }
 
     /**
      * Preprocess sync transaction.
      *
-     * @param userId the user id
+     * @param syncOperationId sync operation id
      * @param syncTransactionInputDtoList sync transaction input dto list {@link SyncTransactionInputDto}
+     * @param operationModelTargetTransactionList operation model target transaction list {@link OperationModel}
+     * @param userDto user dto {@link UserDto}
      * @return the preprocessed sync transactions {@link PreprocessedSyncTransactions}
      */
-    public PreprocessedSyncTransactions preprocessSyncTransaction(long syncOperationId, Long userId, String email, String username, SyncTransactionInputDto[] syncTransactionInputDtoList, LinkedList<OperationModel> operationModelTargetTransactionList, UserDto userDto) {
+    public PreprocessedSyncTransactions preprocessSyncTransaction(long syncOperationId, List<SyncTransactionInputDto> syncTransactionInputDtoList, LinkedList<OperationModel> operationModelTargetTransactionList, UserDto userDto) {
         PreprocessedSyncTransactions preprocessedSyncTransactions = new PreprocessedSyncTransactions(syncOperationId);
         List<UpsertTransactionDto> updateTransactionDtoList = preprocessedSyncTransactions.getUpdateTransactionDtoList();
         List<UpsertTransactionDto> insertTransactionDtoList = preprocessedSyncTransactions.getInsertTransactionDtoList();
@@ -106,32 +119,63 @@ public class TransactionService {
         List<OperationDto> insertTransactionOperationDtoList = preprocessedSyncTransactions.getInsertTransactionOperationDtoList();
         List<SyncTransactionInputDto> noPermissionUpdateTransactionInputDtoList = preprocessedSyncTransactions.getNoPermissionUpdateTransactionInputDtoList();
         Long operationId = preprocessedSyncTransactions.getCurOperationId();
+        Map<Long, LedgerModel> ledgerIdToModelMap = preprocessedSyncTransactions.getLedgerIdToModelMap();
+        Map<Long, FundModel> fundIdToModelMap = preprocessedSyncTransactions.getFundIdToModelMap();
         // if transaction in the sync already exist in un-sync option, and update date is bigger than the un-sync one, then use new one
+        List<Long> fundIds = userDto.getFundInfo().getFunds().stream().map(num -> Long.parseLong(num.split(com.pokemoney.hadoop.hbase.Constants.ROW_KEY_DELIMITER)[2])).toList();
+        List<Long> ledgerIds = userDto.getLedgerInfo().getLedgers().stream().map(num -> Long.parseLong(num.split(com.pokemoney.hadoop.hbase.Constants.ROW_KEY_DELIMITER)[2])).toList();
         for (SyncTransactionInputDto syncTransactionInputDto : syncTransactionInputDtoList) {
             boolean isExist = false;
-            Long ownerId = syncTransactionInputDto.getOwner();
-            if (ownerId.longValue() != userId.longValue()) {
+            Long fundIdOfSyncTransaction = syncTransactionInputDto.getFundId();
+            int fundInListIndex = fundIds.indexOf(fundIdOfSyncTransaction);
+            if (fundInListIndex == -1) {
                 noPermissionUpdateTransactionInputDtoList.add(syncTransactionInputDto);
                 continue;
             }
+            int ledgerInListIndex = ledgerIds.indexOf(syncTransactionInputDto.getLedgerId());
+            if (ledgerInListIndex == -1) {
+                noPermissionUpdateTransactionInputDtoList.add(syncTransactionInputDto);
+                continue;
+            }
+            FundModel fundModel = fundIdToModelMap.get(fundIdOfSyncTransaction);
+            if (fundModel == null) {
+                String[] fundRowKeySplit = userDto.getFundInfo().getFunds().get(fundInListIndex).split(com.pokemoney.hadoop.hbase.Constants.ROW_KEY_DELIMITER);
+                Integer fundRegionId = Integer.parseInt(fundRowKeySplit[0]);
+                Long fundOwnerId = Long.parseLong(fundRowKeySplit[1]);
+                fundModel = fundMapper.getFundByRowKey(fundRegionId, fundOwnerId, fundIdOfSyncTransaction, null);
+                fundIdToModelMap.put(fundIdOfSyncTransaction, fundModel);
+            }
+            LedgerModel ledgerModel = ledgerIdToModelMap.get(syncTransactionInputDto.getLedgerId());
+            if (ledgerModel == null) {
+                String[] ledgerRowKeySplit = userDto.getLedgerInfo().getLedgers().get(ledgerInListIndex).split(com.pokemoney.hadoop.hbase.Constants.ROW_KEY_DELIMITER);
+                Integer ledgerRegionId = Integer.parseInt(ledgerRowKeySplit[0]);
+                Long ledgerOwnerId = Long.parseLong(ledgerRowKeySplit[1]);
+                ledgerModel = ledgerMapper.getLedgerByRowKey(ledgerRegionId, ledgerOwnerId, syncTransactionInputDto.getLedgerId(), null);
+                ledgerIdToModelMap.put(syncTransactionInputDto.getLedgerId(), ledgerModel);
+            }
             Iterator<OperationModel> operationModelIterator = operationModelTargetTransactionList.iterator();
+            Long ownerId = ledgerModel.getLedgerInfo().getOwner();
+            Long userId = userDto.getUserId();
+            Integer transactionRegionId = ledgerModel.getRegionId();
+            Integer userRegionId = RowKeyUtils.getRegionId(userId);
             while (operationModelIterator.hasNext()) {
                 OperationModel operationModel = operationModelIterator.next();
                 if (operationModel.getOperationInfo().getId().equals(syncTransactionInputDto.getTransactionId())) {
                     isExist = true;
                     if (operationModel.getUpdateAt() < syncTransactionInputDto.getUpdateAt()) {
                         operationModelIterator.remove();
-                        Integer regionId = RowKeyUtils.getRegionId(ownerId);
                         Long transactionId = syncTransactionInputDto.getTransactionId();
-                        preprocessSyncUpdateSituation(userDto, updateTransactionDtoList, syncTransactionInputDto, ownerId, transactionId, regionId);
+                        String tableName = TransactionUtils.GetTableNameFromSnowflakeId(transactionId);
+                        preprocessSyncUpsertSituation(updateTransactionDtoList, syncTransactionInputDto, tableName, ownerId, userId, transactionId, transactionRegionId);
+                        // insert operation to user who write the transaction
                         operationId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(Constants.LEAF_HBASE_OPERATION).build()).getId());
                         updateTransactionOperationDtoList.add(new OperationDto(
-                                RowKeyUtils.getRegionId(ownerId),
-                                ownerId,
+                                userRegionId,
+                                userId,
                                 Long.MAX_VALUE - operationId,
-                                Long.toString(operationId),
-                                com.pokemoney.hadoop.hbase.Constants.LEDGER_BOOK_TABLE,
-                                RowKeyUtils.getTransactionRowKey(regionId.toString(), ownerId.toString(), transactionId.toString()),
+                                operationId,
+                                tableName,
+                                RowKeyUtils.getTransactionRowKey(transactionRegionId.toString(), userId.toString(), ledgerIds.toString(), ((Long)(Long.MAX_VALUE - transactionId)).toString()),
                                 syncTransactionInputDto.getUpdateAt()
                         ));
                     }
@@ -141,107 +185,99 @@ public class TransactionService {
             if (!isExist) {
                 Long transactionId = syncTransactionInputDto.getTransactionId();
                 operationId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(Constants.LEAF_HBASE_OPERATION).build()).getId());
+                // insert to self
                 if (transactionId < com.pokemoney.hadoop.hbase.Constants.MIN_SNOWFLAKE_ID) {
-                    userDto.getTransactionInfo().getTransactionIds().add(transactionId);
-                    transactionId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(Constants.LEAF_HBASE_LEDGER_BOOK).build()).getId());
-                    Integer regionId = RowKeyUtils.getRegionId(ownerId);
-                    insertTransactionDtoList.add(new UpsertTransactionDto(
-                            regionId,
-                            ownerId,
-                            transactionId,
-                            syncTransactionInputDto.getName(),
-                            ownerId,
-                            new ArrayList<>() {{
-                                add(ownerId);
-                            }},
-                            syncTransactionInputDto.getBalance(),
-                            syncTransactionInputDto.getCreateAt(),
-                            syncTransactionInputDto.getUpdateAt(),
-                            syncTransactionInputDto.getDelFlag()
-                    ));
+                    transactionId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(Constants.LEAF_HBASE_TRANSACTION).build()).getId());
+                    String tableName = TransactionUtils.GetTableNameFromSnowflakeId(transactionId);
+                    preprocessSyncUpsertSituation(insertTransactionDtoList, syncTransactionInputDto, tableName, ownerId, userId, transactionId, transactionRegionId);
                     insertTransactionOperationDtoList.add(new OperationDto(
-                            regionId,
-                            ownerId,
+                            userRegionId,
+                            userId,
                             Long.MAX_VALUE - operationId,
-                            Long.toString(operationId),
-                            com.pokemoney.hadoop.hbase.Constants.LEDGER_BOOK_TABLE,
-                            RowKeyUtils.getTransactionRowKey(regionId.toString(), ownerId.toString(), transactionId.toString()),
+                            operationId,
+                            tableName,
+                            RowKeyUtils.getTransactionRowKey(transactionRegionId.toString(), userId.toString(), ledgerIds.toString(), ((Long)(Long.MAX_VALUE - transactionId)).toString()),
                             syncTransactionInputDto.getUpdateAt()
                     ));
                     returnTransactionDtoList.add(new TransactionDto(
                             transactionId,
-                            syncTransactionInputDto.getName(),
-                            syncTransactionInputDto.getBalance(),
-                            ownerId,
-                            new ArrayList<>() {{
-                                add(new EditorDto(
-                                        userId,
-                                        email,
-                                        username
-                                ));
-                            }},
-                            syncTransactionInputDto.getCreateAt(),
+                            syncTransactionInputDto.getMoney(),
+                            syncTransactionInputDto.getTypeId(),
+                            syncTransactionInputDto.getRelevantEntity(),
+                            syncTransactionInputDto.getComment(),
+                            syncTransactionInputDto.getFundId(),
+                            syncTransactionInputDto.getCategoryId(),
+                            syncTransactionInputDto.getSubcategoryId(),
+                            syncTransactionInputDto.getLedgerId(),
+                            syncTransactionInputDto.getHappenAt(),
+                            userId,
                             syncTransactionInputDto.getUpdateAt(),
                             syncTransactionInputDto.getDelFlag()
                     ));
                 } else {
-                    Integer regionId = RowKeyUtils.getRegionId(ownerId);
-                    preprocessSyncUpdateSituation(userDto, updateTransactionDtoList, syncTransactionInputDto, ownerId, transactionId, regionId);
+                    String tableName = TransactionUtils.GetTableNameFromSnowflakeId(transactionId);
+                    preprocessSyncUpsertSituation(updateTransactionDtoList, syncTransactionInputDto, tableName, ownerId, userId, transactionId, transactionRegionId);
                     updateTransactionOperationDtoList.add(new OperationDto(
-                            regionId,
-                            ownerId,
+                            userRegionId,
+                            userId,
                             Long.MAX_VALUE - operationId,
-                            Long.toString(operationId),
-                            com.pokemoney.hadoop.hbase.Constants.LEDGER_BOOK_TABLE,
-                            RowKeyUtils.getTransactionRowKey(regionId.toString(), ownerId.toString(), transactionId.toString()),
+                            operationId,
+                            tableName,
+                            RowKeyUtils.getTransactionRowKey(transactionRegionId.toString(), ownerId.toString(), ledgerModel.getLedgerId().toString(), transactionId.toString()),
                             syncTransactionInputDto.getUpdateAt()
                     ));
                 }
             }
         }
+        preprocessedSyncTransactions.setCurOperationId(operationId);
         return preprocessedSyncTransactions;
     }
 
     /**
-     * Preprocess sync update situation.
+     * Preprocess sync upsert situation.
      *
-     * @param userDto user dto
-     * @param updateTransactionDtoList update transaction dto list
-     * @param syncTransactionInputDto sync transaction input dto
-     * @param ownerId owner id
-     * @param transactionId transaction id
-     * @param regionId region id
+     * @param updateOrInsertTransactionDtoList  update transaction dto list
+     * @param syncTransactionInputDto           sync transaction input dto
+     * @param tableName                         table name
+     * @param ownerId                           owner id
+     * @param userId                            user id
+     * @param transactionId                     transaction id
+     * @param transactionRegionId               region id
      */
-    private void preprocessSyncUpdateSituation(UserDto userDto, List<UpsertTransactionDto> updateTransactionDtoList, SyncTransactionInputDto syncTransactionInputDto, Long ownerId, Long transactionId, Integer regionId) {
-        if (userDto.getTransactionInfo().getTransactionIds().contains(transactionId)) {
-            if (syncTransactionInputDto.getDelFlag() == 1) {
-                userDto.getTransactionInfo().getTransactionIds().remove(transactionId);
-                userDto.getTransactionInfo().getDelTransactionIds().add(transactionId);
-            }
-        } else {
-            if (syncTransactionInputDto.getDelFlag() == 0) {
-                userDto.getTransactionInfo().getTransactionIds().add(transactionId);
-                userDto.getTransactionInfo().getDelTransactionIds().remove(transactionId);
-            }
-        }
-        updateTransactionDtoList.add(UpsertTransactionDto.builder()
-                .regionId(regionId)
+    private void preprocessSyncUpsertSituation(List<UpsertTransactionDto> updateOrInsertTransactionDtoList, SyncTransactionInputDto syncTransactionInputDto, String tableName, Long ownerId, Long userId, Long transactionId, Integer transactionRegionId) {
+        updateOrInsertTransactionDtoList.add(UpsertTransactionDto.builder()
+                .tableName(tableName)
+                .regionId(transactionRegionId)
                 .userId(ownerId)
                 .transactionId(transactionId)
-                .name(syncTransactionInputDto.getName())
-                .balance(syncTransactionInputDto.getBalance())
-                .owner(null)
-                .editors(null)
-                .createAt(null)
+                .money(syncTransactionInputDto.getMoney())
+                .typeId(syncTransactionInputDto.getTypeId())
+                .relevantEntity(syncTransactionInputDto.getRelevantEntity())
+                .comment(syncTransactionInputDto.getComment())
+                .fundId(syncTransactionInputDto.getFundId())
+                .categoryId(syncTransactionInputDto.getCategoryId())
+                .subcategoryId(syncTransactionInputDto.getSubcategoryId())
+                .ledgerId(syncTransactionInputDto.getLedgerId())
+                .happenAt(syncTransactionInputDto.getHappenAt())
+                .updateBy(userId)
                 .updateAt(syncTransactionInputDto.getUpdateAt())
                 .delFlag(syncTransactionInputDto.getDelFlag())
                 .build());
     }
 
-    public List<TransactionDto> syncTransaction (PreprocessedSyncTransactions preprocessedSyncTransactions, LinkedList<OperationModel> operationModelTargetTransactionList) throws SQLException {
+    /**
+     * Sync transaction.
+     *
+     * @param preprocessedSyncTransactions  preprocessed sync transactions {@link PreprocessedSyncTransactions}
+     * @param operationModelTargetTransactionList  operation model target transaction list {@link OperationModel}
+     * @param userDto user dto {@link UserDto}
+     * @return the processed sync transactions {@link ProcessedSyncTransactions}
+     * @throws SQLException sql exception
+     */
+    public ProcessedSyncTransactions syncTransaction (PreprocessedSyncTransactions preprocessedSyncTransactions, LinkedList<OperationModel> operationModelTargetTransactionList, UserDto userDto) throws SQLException {
         Future<Integer> insertFuture = dtpSyncExecutor1.submit(() -> {
             try {
-                return insertNewTransaction(preprocessedSyncTransactions.getInsertTransactionDtoList());
+                return insertNewTransaction(preprocessedSyncTransactions.getInsertTransactionDtoList(), preprocessedSyncTransactions.getFundIdToModelMap());
             } catch (SQLException e) {
                 log.error("insertNewTransaction error", e);
                 throw e;
@@ -250,9 +286,9 @@ public class TransactionService {
         Future<List<TransactionDto>> updateFuture = dtpSyncExecutor1.submit(() -> {
             try(SqlSession session = sqlSessionFactory.openSession(false)) {
                 try {
-                    updateTransactionByRowKey(preprocessedSyncTransactions.getUpdateTransactionDtoList());
+                    updateTransactionsByRowKey(preprocessedSyncTransactions.getUpdateTransactionDtoList(), preprocessedSyncTransactions.getFundIdToModelMap());
                     session.commit();
-                    Future<List<TransactionDto>> transactionDtoFromUpdateOperationDtoFuture = dtpSyncExecutor1.submit(() -> getTransactionsByUpdateOperationDtoListAndBroadcastToEditors(preprocessedSyncTransactions.getUpdateTransactionOperationDtoList()));
+                    Future<List<TransactionDto>> transactionDtoFromUpdateOperationDtoFuture = dtpSyncExecutor1.submit(() -> getTransactionsByUpdateOperationDtoListAndBroadcastToEditors(preprocessedSyncTransactions.getUpdateTransactionOperationDtoList(), preprocessedSyncTransactions.getLedgerIdToModelMap(), preprocessedSyncTransactions.getFundIdToModelMap(), userDto.getUserId()));
                     preprocessedSyncTransactions.getReturnTransactionDtoList().addAll(getTransactionsByOperationModelList(operationModelTargetTransactionList));
                     try {
                         preprocessedSyncTransactions.getReturnTransactionDtoList().addAll(transactionDtoFromUpdateOperationDtoFuture.get());
@@ -270,7 +306,12 @@ public class TransactionService {
         });
         try {
             insertFuture.get();
-            return updateFuture.get();
+            return new ProcessedSyncTransactions(
+                    updateFuture.get(),
+                    preprocessedSyncTransactions.getNoPermissionUpdateTransactionInputDtoList(),
+                    preprocessedSyncTransactions.getFundIdToModelMap(),
+                    preprocessedSyncTransactions.getCurOperationId()
+            );
         } catch (Exception e) {
             log.error("syncTransaction error", e);
             throw new SQLException(e);
@@ -288,7 +329,7 @@ public class TransactionService {
         List<TransactionDto> transactionDtoList = new ArrayList<>();
         try {
             for (OperationModel operationModel : operationModelList) {
-                transactionDtoList.add(selectTransactionDtoByRowKey(operationModel.getOperationInfo().getTargetRowKey()));
+                transactionDtoList.add(selectTransactionDtoByRowKeyAndTableName(operationModel.getOperationInfo().getTargetRowKey(), operationModel.getOperationInfo().getTargetTable()));
             }
         } catch (Exception e) {
             log.error("getTransactionsByOperationList error", e);
@@ -300,33 +341,28 @@ public class TransactionService {
     /**
      * Get transactions by update operation list and broadcast to other editors.
      *
-     * @param updateOperationDtoList operation model list
+     * @param updateOperationDtoList operation dto list of self
+     * @param ledgerIdToModelMap ledger id to model map
+     * @param fundIdToModelMap fund id to model map
+     * @param userId user id
      * @return transaction dto list
      */
-    public List<TransactionDto> getTransactionsByUpdateOperationDtoListAndBroadcastToEditors(List<OperationDto> updateOperationDtoList) throws SQLException {
+    public List<TransactionDto> getTransactionsByUpdateOperationDtoListAndBroadcastToEditors(List<OperationDto> updateOperationDtoList,
+                                                                                             Map<Long, LedgerModel> ledgerIdToModelMap,
+                                                                                             Map<Long, FundModel> fundIdToModelMap,
+                                                                                             Long userId
+    ) throws SQLException {
         try(SqlSession session = sqlSessionFactory.openSession(false)) {
             try {
                 List<TransactionDto> transactionDtoList = new ArrayList<>();
                 for (OperationDto updateOperationDto : updateOperationDtoList) {
-                    TransactionDto selectedUpdateTransactionDto = selectTransactionDtoByRowKey(updateOperationDto.getTargetRowKey());
+                    TransactionDto selectedUpdateTransactionDto = selectTransactionDtoByRowKeyAndTableName(updateOperationDto.getTargetRowKey(), updateOperationDto.getTargetTable());
                     transactionDtoList.add(selectedUpdateTransactionDto);
-                    if (selectedUpdateTransactionDto.getEditors().size() > 1) {
-                        for (EditorDto editorDto : selectedUpdateTransactionDto.getEditors()) {
-                            if (editorDto.getUserId().equals(selectedUpdateTransactionDto.getOwner())) {
-                                continue;
-                            }
-                            long broadcastOperationId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(Constants.LEAF_HBASE_OPERATION).build()).getId());
-                            OperationDto operationDto = new OperationDto(
-                                    RowKeyUtils.getRegionId(editorDto.getUserId()),
-                                    editorDto.getUserId(),
-                                    Long.MAX_VALUE - broadcastOperationId,
-                                    Long.toString(broadcastOperationId),
-                                    com.pokemoney.hadoop.hbase.Constants.LEDGER_BOOK_TABLE,
-                                    updateOperationDto.getTargetRowKey(),
-                                    updateOperationDto.getUpdateAt()
-                            );
-                            operationMapper.insertOperation(operationDto);
-                        }
+                    List<Long> transactionEditorIds = ledgerIdToModelMap.get(selectedUpdateTransactionDto.getLedgerId()).getLedgerInfo().getEditors();
+                    List<Long> fundEditorIds = fundIdToModelMap.get(selectedUpdateTransactionDto.getFundId()).getFundInfo().getEditors();
+                    if (transactionEditorIds.size() > 1 || fundEditorIds.size() > 1) {
+                        broadcastOperationToEditors(userId, updateOperationDto, transactionEditorIds);
+                        broadcastOperationToEditors(userId, updateOperationDto, fundEditorIds);
                     }
                 }
                 session.commit();
@@ -340,18 +376,49 @@ public class TransactionService {
     }
 
     /**
+     * Insert operation to editors.
+     *
+     * @param userId                    user id
+     * @param selfUpdateOperationDto    update operation dto
+     * @param editorIds                 editor ids
+     */
+    private void broadcastOperationToEditors(Long userId, OperationDto selfUpdateOperationDto, List<Long> editorIds){
+        for (Long editorId : editorIds) {
+            if (editorId.equals(userId)) {
+                continue;
+            }
+            kafkaService.sendNewOperationMessage(
+                    editorId,
+                    selfUpdateOperationDto.getTargetTable(),
+                    selfUpdateOperationDto.getTargetRowKey(),
+                    selfUpdateOperationDto.getUpdateAt()
+            );
+        }
+    }
+
+    /**
      * Insert new transactions.
      *
      * @param insertTransactionDtoList insert transaction dto list {@link UpsertTransactionDto}
      * @return the number of rows affected
      * @throws SQLException sql exception
      */
-    public int insertNewTransaction (List<UpsertTransactionDto> insertTransactionDtoList) throws SQLException {
+    public int insertNewTransaction (List<UpsertTransactionDto> insertTransactionDtoList, Map<Long, FundModel> fundIdToModelMap) throws SQLException {
         int affectedRows = 0;
         try(SqlSession session = sqlSessionFactory.openSession(false)) {
             try {
                 for (UpsertTransactionDto upsertTransactionDto : insertTransactionDtoList) {
                     affectedRows += transactionMapper.insertTransaction(upsertTransactionDto);
+                    FundModel fundModel = fundIdToModelMap.get(upsertTransactionDto.getFundId());
+                    if (Math.abs(upsertTransactionDto.getMoney()) < 1e-6f) {
+                        continue;
+                    }
+                    if (TransactionTypeEnum.isPositive(upsertTransactionDto.getTypeId())) {
+                        fundModel.getFundInfo().setBalance(fundModel.getFundInfo().getBalance() + upsertTransactionDto.getMoney());
+                    } else {
+                        fundModel.getFundInfo().setBalance(fundModel.getFundInfo().getBalance() - upsertTransactionDto.getMoney());
+                    }
+                    fundModel.getUpdateInfo().setUpdateAt(upsertTransactionDto.getUpdateAt());
                 }
                 session.commit();
             } catch (Exception e) {
@@ -370,11 +437,28 @@ public class TransactionService {
      * @return the number of rows affected
      * @throws SQLException sql exception
      */
-    public int updateTransactionByRowKey (List<UpsertTransactionDto> updateTransactionDtoList) throws SQLException {
+    public int updateTransactionsByRowKey(List<UpsertTransactionDto> updateTransactionDtoList, Map<Long, FundModel> fundIdToModelMap) throws SQLException {
         int affectedRows = 0;
         try {
             for (UpsertTransactionDto upsertTransactionDto : updateTransactionDtoList) {
-                affectedRows += transactionMapper.updateTransactionByRowKey(upsertTransactionDto);
+                if (Math.abs(upsertTransactionDto.getMoney()) > 1e-6f) {
+                    TransactionModel oldTransactionModel = transactionMapper.getTransactionByRowKeyAndTableName(
+                            upsertTransactionDto.getTableName(),
+                            upsertTransactionDto.getRegionId(),
+                            upsertTransactionDto.getLedgerId(),
+                            upsertTransactionDto.getUserId(),
+                            Long.MAX_VALUE - upsertTransactionDto.getTransactionId(),
+                            null
+                    );
+                    FundModel fundModel = fundIdToModelMap.get(upsertTransactionDto.getFundId());
+                    boolean isOldTransactionPositive = TransactionTypeEnum.isPositive(oldTransactionModel.getTransactionInfo().getTypeId());
+                    boolean isNewTransactionPositive = TransactionTypeEnum.isPositive(upsertTransactionDto.getTypeId());
+                    fundModel.getFundInfo().setBalance(fundModel.getFundInfo().getBalance()
+                            + (isOldTransactionPositive ? -oldTransactionModel.getTransactionInfo().getMoney() : oldTransactionModel.getTransactionInfo().getMoney())
+                            + (isNewTransactionPositive ? upsertTransactionDto.getMoney() : -upsertTransactionDto.getMoney()));
+                    fundModel.getUpdateInfo().setUpdateAt(upsertTransactionDto.getUpdateAt());
+                }
+                affectedRows += transactionMapper.updateTransaction(upsertTransactionDto);
             }
         } catch (Exception e) {
             log.error("updateTransactionByRowKey error", e);
@@ -390,9 +474,10 @@ public class TransactionService {
      * @return transaction dto
      * @throws SQLException sql exception
      */
-    public TransactionDto selectTransactionDtoByRowKey (String rowKey) throws SQLException {
+    public TransactionDto selectTransactionDtoByRowKeyAndTableName(String rowKey, String tableName) throws SQLException {
         String[] rowKeyParams = rowKey.split(com.pokemoney.hadoop.hbase.Constants.ROW_KEY_DELIMITER);
-        TransactionModel transactionModel = transactionMapper.getTransactionByRowKey(Integer.parseInt(rowKeyParams[0]), Long.parseLong(rowKeyParams[1]), Long.parseLong(rowKeyParams[2]), null);
+        Long reverseTransactionId = Long.parseLong(rowKeyParams[3]);
+        TransactionModel transactionModel = transactionMapper.getTransactionByRowKeyAndTableName(tableName, Integer.parseInt(rowKeyParams[0]), Long.parseLong(rowKeyParams[1]), Long.parseLong(rowKeyParams[2]), reverseTransactionId, null);
         return getTransactionDtoFromTransactionModel(transactionModel);
     }
 
@@ -400,33 +485,41 @@ public class TransactionService {
      * Get transaction.
      *
      * @param transactionId transaction id
-     * @param userId user id
      * @param selectedFieldsName the selected fields name
      * @return transaction dto
      * @throws SQLException sql exception
      */
-    public TransactionDto getTransaction(Long transactionId, Long userId, List<String> selectedFieldsName) throws SQLException {
-        Integer regionId = RowKeyUtils.getRegionId(userId);
-        TransactionModel transactionModel = transactionMapper.getTransactionByRowKey(regionId, userId, transactionId, selectedFieldsName);
+    public TransactionDto getTransaction(UserModel userModel, Long transactionId, Long ledgerId, List<String> selectedFieldsName) throws SQLException {
+        Long ledgerOwnerId = null;
+        Integer regionId = null;
+        for (String ledgerRowKeyInUserModel : userModel.getLedgerInfo().getLedgers()) {
+            String[] ledgerRowKeyInUserModelSplit = ledgerRowKeyInUserModel.split(com.pokemoney.hadoop.hbase.Constants.ROW_KEY_DELIMITER);
+            if (ledgerRowKeyInUserModelSplit[2].equals(ledgerId.toString())) {
+                regionId = Integer.parseInt(ledgerRowKeyInUserModelSplit[0]);
+                ledgerOwnerId = Long.parseLong(ledgerRowKeyInUserModelSplit[1]);
+                break;
+            }
+        }
+        if (ledgerOwnerId == null) {
+            throw new SQLException("ledgerId not found in userModel");
+        }
+        String tableName = TransactionUtils.GetTableNameFromSnowflakeId(transactionId);
+        Long reverseTransactionId = Long.MAX_VALUE - transactionId;
+        TransactionModel transactionModel = transactionMapper.getTransactionByRowKeyAndTableName(tableName, regionId, ledgerId, ledgerOwnerId, reverseTransactionId, selectedFieldsName);
         return getTransactionDtoFromTransactionModel(transactionModel);
     }
 
     /**
-     * Get transactions.
+     * Get transactions by filter.
      *
-     * @param userId user id
      * @param transactionFilter transaction filter
-     * @param selectedFieldsName the selected fields name
+     * @param userId user id
+     * @param ledgerId ledger id
      * @return transaction dto list
+     * @throws GenericGraphQlForbiddenException generic graph ql forbidden exception
      */
-    public List<TransactionDto> getTransactions(Long userId, TransactionFilter transactionFilter, List<String> selectedFieldsName) throws SQLException {
-        Integer regionId = RowKeyUtils.getRegionId(userId);
-        List<TransactionModel> transactionModelList = transactionMapper.getTransactionsByUserAndFilter(regionId, userId, transactionFilter, selectedFieldsName);
-        List<TransactionDto> transactionDtoList = new ArrayList<>();
-        for (TransactionModel transactionModel : transactionModelList) {
-            transactionDtoList.add(getTransactionDtoFromTransactionModel(transactionModel));
-        }
-        return transactionDtoList;
+    public List<TransactionDto> getTransactionsByFilter(TransactionFilter transactionFilter, Long userId, Long ledgerId) throws GenericGraphQlForbiddenException {
+        throw new GenericGraphQlForbiddenException("not yet support for user now");
     }
 
     /**
@@ -437,25 +530,18 @@ public class TransactionService {
      * @throws SQLException sql exception
      */
     private TransactionDto getTransactionDtoFromTransactionModel(TransactionModel transactionModel) throws SQLException {
-        List<EditorDto> editors = new ArrayList<>();
-        java.sql.Array editorsArray = transactionModel.getTransactionInfo().getEditors();
-        Long[] editorIds = (Long[]) editorsArray.getArray();
-        for (Long editorId : editorIds) {
-            GetUserInfoResponseDto getUserInfoResponseDto = userTriService.getUserInfo(GetUserInfoRequestDto.newBuilder().setUserId(editorId).build());
-            editors.add(new EditorDto(
-                    editorId,
-                    getUserInfoResponseDto.getEmail(),
-                    getUserInfoResponseDto.getUsername()
-            ));
-        }
-        editorsArray.free();
         return new TransactionDto(
-                transactionModel.getTransactionId(),
-                transactionModel.getTransactionInfo().getName(),
-                transactionModel.getTransactionInfo().getBalance(),
-                transactionModel.getTransactionInfo().getOwner(),
-                editors,
-                transactionModel.getTransactionInfo().getCreateAt(),
+                transactionModel.getTransactionInfo().getId(),
+                transactionModel.getTransactionInfo().getMoney(),
+                transactionModel.getTransactionInfo().getTypeId(),
+                transactionModel.getTransactionInfo().getRelevantEntity(),
+                transactionModel.getTransactionInfo().getComment(),
+                transactionModel.getTransactionInfo().getFundId(),
+                transactionModel.getTransactionInfo().getCategoryId(),
+                transactionModel.getTransactionInfo().getSubcategoryId(),
+                transactionModel.getTransactionInfo().getLedgerId(),
+                transactionModel.getTransactionInfo().getHappenAt(),
+                transactionModel.getUpdateBy(),
                 transactionModel.getUpdateInfo().getUpdateAt(),
                 transactionModel.getUpdateInfo().getDelFlag()
         );

@@ -3,6 +3,7 @@ package com.pokemoney.hadoop.client.controller.graphql;
 import com.pokemoney.hadoop.client.exception.GenericGraphQlForbiddenException;
 import com.pokemoney.hadoop.client.service.AuthService;
 import com.pokemoney.hadoop.client.service.LedgerService;
+import com.pokemoney.hadoop.hbase.dto.fund.FundDto;
 import com.pokemoney.hadoop.hbase.dto.ledger.LedgerDto;
 import com.pokemoney.hadoop.hbase.dto.filter.LedgerFilter;
 import graphql.schema.DataFetchingEnvironment;
@@ -52,13 +53,18 @@ public class LedgerBookController {
      */
     @QueryMapping
     public LedgerDto getLedger(@Argument Long ledgerId, @Argument Long userId, DataFetchingEnvironment env, @ContextValue("auth") String auth) throws SQLException, GenericGraphQlForbiddenException {
-        List<String> selectedFieldsName = authService.preHandleRequest(userId, env, auth);
-        try {
-            return ledgerService.getLedger(ledgerId, userId, selectedFieldsName);
-        } catch (SQLException e) {
-            log.error("getLedger error", e);
-            throw e;
-        }
+//        authService.verifyUser(userId, auth);
+//        List<String> selectedFieldsName = env.getSelectionSet().getFields()
+//                .stream()
+//                .map(selectedField -> LedgerDto.FIELD_NAME_MAPPING.get(selectedField.getName()))
+//                .toList();
+//        try {
+//            return ledgerService.getLedger(ledgerId, userId, selectedFieldsName);
+//        } catch (SQLException e) {
+//            log.error("getLedger error", e);
+//            throw e;
+//        }
+        throw new GenericGraphQlForbiddenException("You are not authorized to access this resource");
     }
 
     /**
@@ -71,12 +77,13 @@ public class LedgerBookController {
      */
     @QueryMapping
     public List<LedgerDto> getLedgers(@Argument LedgerFilter filter, @Argument Long userId, DataFetchingEnvironment env, @ContextValue("auth") String auth) throws SQLException, GenericGraphQlForbiddenException {
-        List<String> selectedFieldsName = authService.preHandleRequest(userId, env, auth);
-        try {
-            return ledgerService.getLedgers(userId, filter, selectedFieldsName);
-        } catch (SQLException e) {
-            log.error("getLedgers error", e);
-            throw e;
-        }
+//        List<String> selectedFieldsName = authService.preHandleRequest(userId, env, auth);
+//        try {
+//            return ledgerService.getLedgersByFilter(userId, filter, selectedFieldsName);
+//        } catch (SQLException e) {
+//            log.error("getLedgers error", e);
+//            throw e;
+//        }
+        throw new GenericGraphQlForbiddenException("Not support for user yet");
     }
 }

@@ -30,6 +30,6 @@ input TransactionFilter {
 }
 
 extend type Query {
-    getTransaction(transactionId: ID!, userId: ID!): Transaction!
-    getTransactions(filter: TransactionFilter!, userId: ID!): [Transaction]!
+    getTransaction(transactionId: ID!, userId: ID!, ledgerId: ID!): Transaction!
+    getTransactions(filter: TransactionFilter!, userId: ID!, ledgerId: ID!): [Transaction]!
 }

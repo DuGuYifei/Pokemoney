@@ -46,29 +46,35 @@ public class UserSqlProvider {
         if (upsertUserDto.getEmail() != null) {
             sql.append(", user_info.email");
         }
+        if (upsertUserDto.getUpdateUserInfoAt() != null) {
+            sql.append(", user_info.update_at");
+        }
         if (upsertUserDto.getFundInfo() != null) {
-            if (upsertUserDto.getFundInfo().getFundIds() != null) {
+            if (upsertUserDto.getFundInfo().getFunds() != null) {
                 sql.append(", fund_info.funds");
             }
-            if (upsertUserDto.getFundInfo().getDelFundIds() != null) {
+            if (upsertUserDto.getFundInfo().getDelFunds() != null) {
                 sql.append(", fund_info.del_funds");
             }
         }
         if (upsertUserDto.getLedgerInfo() != null) {
-            if (upsertUserDto.getLedgerInfo().getLedgerIds() != null) {
+            if (upsertUserDto.getLedgerInfo().getLedgers() != null) {
                 sql.append(", ledger_info.ledgers");
             }
-            if (upsertUserDto.getLedgerInfo().getDelLedgerIds() != null) {
+            if (upsertUserDto.getLedgerInfo().getDelLedgers() != null) {
                 sql.append(", ledger_info.del_ledgers");
             }
         }
         if (upsertUserDto.getAppInfo() != null) {
             if (upsertUserDto.getAppInfo().getJsonCategories() != null) {
-                sql.append(", app_info.jsonCategories");
+                sql.append(", app_info.categories");
             }
             if (upsertUserDto.getAppInfo().getJsonSubcategories() != null) {
-                sql.append(", app_info.jsonSubcategories");
+                sql.append(", app_info.subcategories");
             }
+        }
+        if (upsertUserDto.getNotificationJson() != null) {
+            sql.append(", notifications.new_notify");
         }
         sql.append(") VALUES (#{regionId}, #{userId}");
         if (upsertUserDto.getName() != null) {
@@ -77,20 +83,23 @@ public class UserSqlProvider {
         if (upsertUserDto.getEmail() != null) {
             sql.append(", #{email}");
         }
+        if (upsertUserDto.getUpdateUserInfoAt() != null) {
+            sql.append(", #{updateUserInfoAt}");
+        }
         if (upsertUserDto.getFundInfo() != null) {
-            if (upsertUserDto.getFundInfo().getFundIds() != null) {
-                sql.append(", #{fundInfo.fundIds}");
+            if (upsertUserDto.getFundInfo().getFunds() != null) {
+                sql.append(", #{fundInfo.funds, typeHandler = com.pokemoney.hadoop.hbase.phoenix.handler.StringListToArrayTypeHandler}");
             }
-            if (upsertUserDto.getFundInfo().getDelFundIds() != null) {
-                sql.append(", #{fundInfo.delFundIds}");
+            if (upsertUserDto.getFundInfo().getDelFunds() != null) {
+                sql.append(", #{fundInfo.delFunds, typeHandler = com.pokemoney.hadoop.hbase.phoenix.handler.StringListToArrayTypeHandler}");
             }
         }
         if (upsertUserDto.getLedgerInfo() != null) {
-            if (upsertUserDto.getLedgerInfo().getLedgerIds() != null) {
-                sql.append(", #{ledgerInfo.ledgerIds}");
+            if (upsertUserDto.getLedgerInfo().getLedgers() != null) {
+                sql.append(", #{ledgerInfo.ledgers, typeHandler = com.pokemoney.hadoop.hbase.phoenix.handler.StringListToArrayTypeHandler}");
             }
-            if (upsertUserDto.getLedgerInfo().getDelLedgerIds() != null) {
-                sql.append(", #{ledgerInfo.delLedgerIds}");
+            if (upsertUserDto.getLedgerInfo().getDelLedgers() != null) {
+                sql.append(", #{ledgerInfo.delLedgers, typeHandler = com.pokemoney.hadoop.hbase.phoenix.handler.StringListToArrayTypeHandler}");
             }
         }
         if (upsertUserDto.getAppInfo() != null) {
@@ -100,6 +109,9 @@ public class UserSqlProvider {
             if (upsertUserDto.getAppInfo().getJsonSubcategories() != null) {
                 sql.append(", #{appInfo.jsonSubcategories}");
             }
+        }
+        if (upsertUserDto.getNotificationJson() != null) {
+            sql.append(", #{notificationJson}");
         }
         sql.append(")");
         return sql.toString();

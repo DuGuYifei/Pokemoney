@@ -2,22 +2,28 @@ package com.pokemoney.hadoop.client.service;
 
 import com.pokemoney.hadoop.client.Constants;
 import com.pokemoney.hadoop.client.vo.DividedOperationLists;
-import com.pokemoney.hadoop.hbase.dto.ledger.UpsertLedgerDto;
+import com.pokemoney.hadoop.hbase.dto.editor.EditorDto;
+import com.pokemoney.hadoop.hbase.dto.fund.FundDto;
+import com.pokemoney.hadoop.hbase.dto.ledger.LedgerDto;
 import com.pokemoney.hadoop.hbase.dto.operation.OperationDto;
 import com.pokemoney.hadoop.hbase.phoenix.dao.OperationMapper;
 import com.pokemoney.hadoop.hbase.phoenix.model.OperationModel;
 import com.pokemoney.hadoop.hbase.utils.RowKeyUtils;
+import com.pokemoney.leaf.service.api.LeafGetRequestDto;
+import com.pokemoney.leaf.service.api.LeafTriService;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
  * Operation table service
  */
+@Slf4j
 @Service
 public class OperationService {
     /**
@@ -31,14 +37,22 @@ public class OperationService {
     private final SqlSessionFactory sqlSessionFactory;
 
     /**
+     * leaf triple service
+     */
+    @DubboReference(version = "1.0.0", protocol = "tri", group = "leaf", timeout = 10000)
+    private final LeafTriService leafTriService;
+
+    /**
      * Constructor
      *
      * @param operationMapper   operation mapper
      * @param sqlSessionFactory sql session factory
+     * @param leafTriService    leaf triple service
      */
-    public OperationService(OperationMapper operationMapper, SqlSessionFactory sqlSessionFactory) {
+    public OperationService(OperationMapper operationMapper, SqlSessionFactory sqlSessionFactory, LeafTriService leafTriService) {
         this.operationMapper = operationMapper;
         this.sqlSessionFactory = sqlSessionFactory;
+        this.leafTriService = leafTriService;
     }
 
     /**
@@ -108,13 +122,4 @@ public class OperationService {
         }
         return dividedOperationLists;
     }
-
-    public int insertOperationOfLedgerToOtherEditor(UpsertLedgerDto upsertLedgerDto) {
-        OperationDto operationDto = new OperationDto(
-
-        );
-        return operationMapper.insertOperationToOtherEditor(upsertLedgerDto);
-    }
-
-    public int
 }

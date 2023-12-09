@@ -2,7 +2,7 @@ package com.pokemoney.hadoop.hbase.phoenix.model;
 
 import lombok.*;
 
-import java.sql.Array;
+import java.util.List;
 
 /**
  * The ledger book model.
@@ -58,9 +58,9 @@ public class LedgerModel {
          */
         private Long owner;
         /**
-         * The ledger editors.
+         * The ledger editors. Array of user id.
          */
-        private Array editors;
+        private List<Long> editors;
         /**
          * The ledger created at. Milliseconds since epoch 1970-01-01 00:00:00 UTC.
          */

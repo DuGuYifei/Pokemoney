@@ -1,0 +1,26 @@
+server:
+  port: 8085
+
+dubbo:
+  registry:
+    address: nacos://localhost:8848
+    group: dubbo-java-basic
+  protocol:
+    name: tri
+    port: 20950
+  application:
+    name: hadoop-service
+    qos-port: 22225
+  config-center:
+    address: nacos://localhost:8848
+    group: dubbo-java-hadoop-service
+  metadata-report:
+    address: nacos://localhost:8848
+    group: dubbo-java-hadoop-service
+  provider:
+    load-balance: p2c
+
+spring:
+  datasource:
+    url: jdbc:phoenix:43.131.33.18:2181
+    driver-class-name: org.apache.phoenix.jdbc.PhoenixDriver

@@ -11,17 +11,17 @@ import java.util.List;
  */
 @Data
 @Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserLedgerBookInfoDto {
     /**
      * ledger book IDs
      */
-    private List<Long> ledgerIds;
+    private List<String> ledgers;
     /**
      * deleted ledger book IDs
      */
-    private List<Long> delLedgerIds;
+    private List<String> delLedgers;
 
     /**
      * from ledger book model
@@ -31,8 +31,8 @@ public class UserLedgerBookInfoDto {
      */
     public static UserLedgerBookInfoDto fromLedgerBookModel(UserModel.LedgerInfoModel ledgerBookModel) {
         return UserLedgerBookInfoDto.builder()
-                .ledgerIds(Arrays.stream(ledgerBookModel.getLedgers()).toList())
-                .delLedgerIds(Arrays.stream(ledgerBookModel.getDelLedgers()).toList())
+                .ledgers(ledgerBookModel.getLedgers())
+                .delLedgers(ledgerBookModel.getDelLedgers())
                 .build();
     }
 }

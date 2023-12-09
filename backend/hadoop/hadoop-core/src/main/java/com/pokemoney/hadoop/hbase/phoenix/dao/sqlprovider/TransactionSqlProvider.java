@@ -20,9 +20,13 @@ public class TransactionSqlProvider {
         List<String> selectedFieldsName = (List<String>) params.get("selectedFieldsName");
         SQL sql = new SQL()
                 .FROM("#{tableName}")
-                .WHERE("(region_id, user_id, transaction_id) = (#{regionId}, #{userId}, #{transactionId}");
-        for (String selectedFieldName : selectedFieldsName) {
-            sql.SELECT(selectedFieldName);
+                .WHERE("(region_id, user_id, ledger_id_rk, transaction_id) = (#{regionId}, #{userId}, #{ledgerId}, #{transactionId}");
+        if (selectedFieldsName == null || selectedFieldsName.isEmpty()) {
+            sql.SELECT("*");
+        } else {
+            for (String selectedFieldName : selectedFieldsName) {
+                sql.SELECT(selectedFieldName);
+            }
         }
         return sql.toString();
     }
@@ -34,7 +38,7 @@ public class TransactionSqlProvider {
      * @return the string of sql
      */
     public String buildSqlUpdateTransaction(UpsertTransactionDto upsertTransactionDto) {
-        StringBuilder sql = new StringBuilder("UPSERT INTO #{tableName} (region_id, user_id, reverse_transaction_id");
+        StringBuilder sql = new StringBuilder("UPSERT INTO #{tableName} (region_id, user_id, ledger_id_rk, reverse_transaction_id");
         if (upsertTransactionDto.getMoney() != null) {
             sql.append(", transaction_info.money");
         }
@@ -62,13 +66,16 @@ public class TransactionSqlProvider {
         if (upsertTransactionDto.getHappenAt() != null) {
             sql.append(", transaction_info.happen_at");
         }
+        if (upsertTransactionDto.getUpdateBy() != null) {
+            sql.append(", update_info.update_by");
+        }
         if (upsertTransactionDto.getUpdateAt() != null) {
             sql.append(", update_info.update_at");
         }
         if (upsertTransactionDto.getDelFlag() != null) {
             sql.append(", update_info.del_flag");
         }
-        sql.append(") VALUES (#{regionId}, #{userId}, #{reverseTransactionId}");
+        sql.append(") VALUES (#{regionId}, #{userId}, #{ledgerId} ,#{reverseTransactionId}");
         if (upsertTransactionDto.getMoney() != null) {
             sql.append(", #{money}");
         }
@@ -95,6 +102,9 @@ public class TransactionSqlProvider {
         }
         if (upsertTransactionDto.getHappenAt() != null) {
             sql.append(", #{happenAt}");
+        }
+        if (upsertTransactionDto.getUpdateBy() != null) {
+            sql.append(", #{updateBy}");
         }
         if (upsertTransactionDto.getUpdateAt() != null) {
             sql.append(", #{updateAt}");

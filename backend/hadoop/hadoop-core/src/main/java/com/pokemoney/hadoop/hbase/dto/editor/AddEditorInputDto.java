@@ -13,9 +13,13 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AddEditorInputDto {
     /**
+     * User id
+     */
+    private Long invitorId;
+    /**
      * email of editor
      */
-    private String email;
+    private String invitedEmail;
     /**
      * Ledger id or fund id
      */

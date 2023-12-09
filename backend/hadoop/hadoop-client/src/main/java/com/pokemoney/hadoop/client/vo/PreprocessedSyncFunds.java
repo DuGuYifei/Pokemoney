@@ -23,7 +23,7 @@ public class PreprocessedSyncFunds {
     /**
      * Update fund dto list.
      */
-    private  List<UpsertFundDto> updateFundDtoList = new ArrayList<>();
+    private List<UpsertFundDto> updateFundDtoList = new ArrayList<>();
     /**
      * Insert fund dto list.
      */
@@ -35,7 +35,7 @@ public class PreprocessedSyncFunds {
     /**
      * Update fund operation dto list.
      */
-    private  List<OperationDto> updateFundOperationDtoList = new ArrayList<>();
+    private List<OperationDto> updateFundOperationDtoList = new ArrayList<>();
     /**
      * Insert fund operation dto list.
      */

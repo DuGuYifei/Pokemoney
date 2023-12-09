@@ -103,12 +103,34 @@ public class UserTriServiceImpl implements UserTriService {
     @Override
     public GetUserInfoResponseDto getUserInfo(GetUserInfoRequestDto request) {
         long userId = request.getUserId();
-        UserEntity userEntity = userService.ge(userId);
+        UserEntity userEntity = userService.getUserById(userId);
         if (userEntity == null) {
             throw new StatusRpcException(UserTriRpcException.USER_NOT_FOUND);
         }
         return GetUserInfoResponseDto.newBuilder()
                 .setUserId(userId)
+                .setEmail(userEntity.getEmail())
+                .setUsername(userEntity.getUsername())
+                .setRole(userEntity.getUserRole().getRoleName())
+                .setPermission(userEntity.getServicePermission().toString())
+                .build();
+    }
+
+    /**
+     * Get user info by email.
+     *
+     * @param request {@link GetUserInfoByEmailRequestDto}
+     * @return {@link GetUserInfoResponseDto}
+     */
+    @Override
+    public GetUserInfoResponseDto getUserInfoByEmail(GetUserInfoByEmailRequestDto request) {
+        String email = request.getEmail();
+        UserEntity userEntity = userService.getUserByEmail(email);
+        if (userEntity == null) {
+            throw new StatusRpcException(UserTriRpcException.USER_NOT_FOUND);
+        }
+        return GetUserInfoResponseDto.newBuilder()
+                .setUserId(userEntity.getId())
                 .setEmail(userEntity.getEmail())
                 .setUsername(userEntity.getUsername())
                 .setRole(userEntity.getUserRole().getRoleName())

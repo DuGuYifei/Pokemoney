@@ -11,9 +11,13 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RemoveEditorInputDto {
     /**
+     * User id
+     */
+    private Long invitorId;
+    /**
      * user ID of editor
      */
-    private Long userId;
+    private Long RemovedId;
     /**
      * Ledger id or fund id
      */

@@ -2,23 +2,30 @@ package com.pokemoney.hadoop.client.controller.graphql;
 
 import com.pokemoney.hadoop.client.exception.GenericGraphQlForbiddenException;
 import com.pokemoney.hadoop.client.service.*;
-import com.pokemoney.hadoop.client.vo.DividedOperationLists;
-import com.pokemoney.hadoop.client.vo.PreprocessedSyncFunds;
-import com.pokemoney.hadoop.client.vo.PreprocessedSyncLedgers;
+import com.pokemoney.hadoop.client.vo.*;
+import com.pokemoney.hadoop.hbase.dto.category.CategoryDto;
 import com.pokemoney.hadoop.hbase.dto.category.SubcategoryDto;
-import com.pokemoney.hadoop.hbase.dto.operation.OperationDto;
+import com.pokemoney.hadoop.hbase.dto.fund.FundDto;
+import com.pokemoney.hadoop.hbase.dto.ledger.LedgerDto;
 import com.pokemoney.hadoop.hbase.dto.sync.*;
+import com.pokemoney.hadoop.hbase.dto.transaction.TransactionDto;
+import com.pokemoney.hadoop.hbase.dto.user.UpsertUserAppInfoDto;
+import com.pokemoney.hadoop.hbase.dto.user.UpsertUserDto;
 import com.pokemoney.hadoop.hbase.dto.user.UserDto;
+import com.pokemoney.hadoop.hbase.enums.CategoryEnum;
+import com.pokemoney.hadoop.hbase.phoenix.model.FundModel;
 import com.pokemoney.hadoop.hbase.phoenix.model.OperationModel;
 import com.pokemoney.hadoop.hbase.phoenix.model.UserModel;
+import com.pokemoney.hadoop.hbase.utils.JsonUtils;
+import com.pokemoney.hadoop.hbase.utils.RowKeyUtils;
 import com.pokemoney.user.service.api.VerifyUserJwtWithServiceNameResponseDto;
-import graphql.schema.DataFetchingEnvironment;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.ContextValue;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.stereotype.Controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
@@ -85,6 +92,10 @@ public class SyncController {
         this.operationService = operationService;
         this.dtpSyncExecutor1 = dtpSyncExecutor1;
     }
+    @MutationMapping
+    public String test(@Argument String arg) {
+        return "Hello world!";
+    }
 
     /**
      * sync data
@@ -98,29 +109,33 @@ public class SyncController {
      * @return sync response {@link SyncResponseDto}
      * @throws GenericGraphQlForbiddenException generic graphql forbidden exception
      */
-    @MutationMapping
+    @MutationMapping(name = "syncAll")
     public SyncResponseDto syncAll(
             @Argument Long maxOperationId,
             @Argument SyncUserInputDto user,
-            @Argument SyncFundInputDto[] fund,
-            @Argument SyncLedgerInputDto[] ledger,
-            @Argument SyncTransactionInputDto[] transaction,
-            @Argument SyncSubcategoryInputDto[] subcategory,
-            DataFetchingEnvironment env,
+            @Argument List<SyncFundInputDto> fund,
+            @Argument List<SyncLedgerInputDto> ledger,
+            @Argument List<SyncTransactionInputDto> transaction,
+            @Argument List<SyncSubcategoryInputDto> subcategory,
             @ContextValue("auth") String auth
     ) throws GenericGraphQlForbiddenException {
         long userId = user.getUserId();
         // verify auth
         VerifyUserJwtWithServiceNameResponseDto verifiedUserInfo = authService.verifyUser(userId, auth);
+        System.out.println("verifiedUserInfo: " + verifiedUserInfo);
         // get user model from db
         Future<UserModel> userModelFuture = dtpSyncExecutor1.submit(() -> userService.getUserByUserId(userId));
+        System.out.println("userModelFuture: " + userModelFuture);
         // get all operations which operationId > maxOperationId
         Future<List<OperationModel>> operationModelLinkedListFuture = dtpSyncExecutor1.submit(() -> operationService.getOperationsByOperationId(userId, maxOperationId));
+        System.out.println("operationModelLinkedListFuture: " + operationModelLinkedListFuture);
         UserModel userModel;
         List<OperationModel> operationModelLinkedList;
+        Long returnMaxOperationId = maxOperationId;
         try {
             userModel = userModelFuture.get();
             operationModelLinkedList = operationModelLinkedListFuture.get();
+            System.out.println("userModel: " + userModel);
         } catch (Exception e) {
             log.error("syncAll error when get user model and opt model list. ", e);
             throw new GenericGraphQlForbiddenException("server is busy, please try later~~");
@@ -134,54 +149,104 @@ public class SyncController {
             throw new GenericGraphQlForbiddenException("Something went wrong, please try later~~");
         }
         // sync subcategory
-        Future<Map<String, SubcategoryDto>> subcategoryFuture = dtpSyncExecutor1.submit(() -> subcategoryService.syncSubcategory(subcategory, userModel));
+        Future<List<SubcategoryDto>> subcategoryFuture = dtpSyncExecutor1.submit(() -> subcategoryService.syncSubcategory(subcategory, userModel));
+        System.out.println("subcategoryFuture: " + subcategoryFuture);
         DividedOperationLists dividedOperationLists = operationService.divideOperationList(operationModelLinkedList);
         UserDto userDto = UserDto.fromUserModel(userModel);
         userDto.setEmail(verifiedUserInfo.getEmail());
-        userDto.setName(verifiedUserInfo.getUsername());
+        userDto.setName(userModel.getUserInfo().getName());
+        Long userInfoUpdateAt = userModel.getUserInfo().getUpdateUserInfoAt();
+        if (!userDto.getName().equals(user.getName())) {
+            if (user.getUpdateAt() > userInfoUpdateAt) {
+                userDto.setName(user.getName());
+                userInfoUpdateAt = user.getUpdateAt();
+            }
+        }
         // sync Fund
-        Future<PreprocessedSyncFunds> fundFuture = dtpSyncExecutor1.submit(() -> fundService.syncFund(fundService.preprocessSyncFund(maxOperationId, fund, dividedOperationLists.getFundOperationList(), userDto), dividedOperationLists.getFundOperationList()));
+        Future<ProcessedSyncFunds> fundFuture = dtpSyncExecutor1.submit(() -> fundService.syncFund(fundService.preprocessSyncFund(maxOperationId, fund, dividedOperationLists.getFundOperationList(), userDto), dividedOperationLists.getFundOperationList()));
         // sync Ledger
-        Future<PreprocessedSyncLedgers> ledgerFuture = dtpSyncExecutor1.submit(() -> ledgerService.syncLedger(ledgerService.preprocessSyncLedger(maxOperationId, ledger, dividedOperationLists.getLedgerOperationList(), userDto), dividedOperationLists.getLedgerOperationList()));
+        Future<ProcessedSyncLedgers> ledgerFuture = dtpSyncExecutor1.submit(() -> ledgerService.syncLedger(ledgerService.preprocessSyncLedger(maxOperationId, ledger, dividedOperationLists.getLedgerOperationList(), userDto), dividedOperationLists.getLedgerOperationList()));
         // update user dto
-        Map<String, SubcategoryDto> subcategoryDtoMap;
-        PreprocessedSyncFunds preprocessedSyncFunds;
-        PreprocessedSyncLedgers preprocessedSyncLedgers;
+        List<SubcategoryDto> subcategoryDtoList;
+        List<FundDto> returnSyncFunds;
+        List<LedgerDto> returnSyncLedgers;
         try {
-            subcategoryDtoMap = subcategoryFuture.get();
+            subcategoryDtoList = subcategoryFuture.get();
         } catch (Exception e) {
             log.error("syncAll error when get subcategory from future. userId: {}", userId, e);
             throw new GenericGraphQlForbiddenException("Something went wrong. You can try again and it will be faster this time!");
         }
+        userDto.getAppInfo().setSubcategories(subcategoryDtoList);
         try {
-            preprocessedSyncFunds = fundFuture.get();
+            ProcessedSyncFunds processedSyncFunds = fundFuture.get();
+            returnSyncFunds = processedSyncFunds.getProcessedSyncFunds();
+            returnMaxOperationId = Long.max(processedSyncFunds.getMaxOperationId(), returnMaxOperationId);
         } catch (Exception e) {
             log.error("syncAll error when get fund from future. userId: {}", userId, e);
             throw new GenericGraphQlForbiddenException("Something went wrong. You can try again and it will be faster this time!");
         }
         try {
-            preprocessedSyncLedgers = ledgerFuture.get();
+            ProcessedSyncLedgers processedSyncLedgers = ledgerFuture.get();
+            returnSyncLedgers = processedSyncLedgers.getProcessedSyncLedgers();
+            returnMaxOperationId = Long.max(processedSyncLedgers.getMaxOperationId(), returnMaxOperationId);
         } catch (Exception e) {
             log.error("syncAll error when get ledger from future. userId: {}", userId, e);
             throw new GenericGraphQlForbiddenException("Something went wrong. You can try again and it will be faster this time!");
         }
-        // insert operation
-        Future<Integer> operationFuture = dtpSyncExecutor1.submit(() -> operationService.insertOperations(new List[]{
-                preprocessedSyncFunds.getUpdateFundOperationDtoList(),
-                preprocessedSyncFunds.getInsertFundOperationDtoList(),
-                preprocessedSyncLedgers.getUpdateLedgerOperationDtoList(),
-                preprocessedSyncLedgers.getInsertLedgerOperationDtoList()}
-        ));
-        // insert update to other editor
+        // sync transaction
+        Future<ProcessedSyncTransactions> transactionFuture = dtpSyncExecutor1.submit(() -> transactionService.syncTransaction(transactionService.preprocessSyncTransaction(maxOperationId, transaction, dividedOperationLists.getTransactionOperationList(), userDto), dividedOperationLists.getTransactionOperationList(), userDto));
+        List<TransactionDto> returnSyncTransactions;
+        try {
+            ProcessedSyncTransactions processedSyncTransactions = transactionFuture.get();
+            returnSyncTransactions = processedSyncTransactions.getProcessedSyncTransactions();
+            returnMaxOperationId = Long.max(processedSyncTransactions.getMaxOperationId(), returnMaxOperationId);
+            Map<Long, FundModel> fundModelWithNewBalanceMap = processedSyncTransactions.getFundModels();
+            // go through fundModelWithNewBalanceMap, if returnSyncFunds contains fundModelWithNewBalanceMap's fundId, update returnSyncFunds's balance, else add fundModelWithNewBalanceMap to returnSyncFunds
+            List<FundModel> returnSyncFundModels = new ArrayList<>();
+            for (Map.Entry<Long, FundModel> entry : fundModelWithNewBalanceMap.entrySet()) {
+                Long fundId = entry.getKey();
+                FundModel fundModel = entry.getValue();
+                boolean isFound = false;
+                for (FundDto fundDto : returnSyncFunds) {
+                    if (fundDto.getFundId().equals(fundId)) {
+                        fundDto.setBalance(fundModel.getFundInfo().getBalance());
+                        isFound = true;
+                        break;
+                    }
+                }
+                if (!isFound) {
+                    returnSyncFundModels.add(fundModel);
+                }
+            }
+            returnSyncFunds = fundService.addFundModelListToFundDtoListDoUpdateAndBroadcast(returnSyncFundModels, returnSyncFunds);
+        } catch (Exception e) {
+            log.error("syncAll error when get transaction from future. userId: {}", userId, e);
+            throw new GenericGraphQlForbiddenException("Something went wrong. You can try again and it will be faster this time!");
+        }
+        List<CategoryDto> categoryDtoList = CategoryEnum.getInitCategoryDtoList();
+        UpsertUserDto upsertUserDto = new UpsertUserDto(
+                RowKeyUtils.getRegionId(userId),
+                userDto.getUserId(),
+                userDto.getEmail(),
+                userDto.getName(),
+                userInfoUpdateAt,
+                userDto.getFundInfo(),
+                userDto.getLedgerInfo(),
+                // app info
+                UpsertUserAppInfoDto.builder().jsonCategories(null).jsonSubcategories(JsonUtils.GSON.toJson(subcategoryDtoList)).build(),
+                userDto.getNotification().generateJsonString()
+        );
+        userService.updateUser(upsertUserDto);
 
-
-        userDto.getAppInfo().setSubcategories(subcategoryDtoMap.values().stream().toList());
-
-        // 遍历ledger时候，如果有operation包含一样的ledgerId,且更新时间大于ledger，则更新ledger
-        // 遍历subcategory时候，如果有operation包含一样的subcategoryId,且更新时间大于subcategory，则更新subcategory
-        // 如果有更新就把新的subcategory json 化放到user table的subcategory字段
-        // 遍历transaction时候，如果有operation包含一样的transactionId,且更新时间大于transaction，则更新transaction
-        //
-        return null;
+        return new SyncResponseDto(
+                userDto,
+                returnSyncFunds,
+                returnSyncLedgers,
+                returnSyncTransactions,
+                categoryDtoList,
+                subcategoryDtoList,
+                userDto.getNotification(),
+                returnMaxOperationId
+        );
     }
 }

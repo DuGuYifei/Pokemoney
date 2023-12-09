@@ -4,6 +4,7 @@ import com.pokemoney.hadoop.hbase.dto.filter.LedgerFilter;
 import com.pokemoney.hadoop.hbase.dto.ledger.UpsertLedgerDto;
 import com.pokemoney.hadoop.hbase.Constants;
 import com.pokemoney.hadoop.hbase.phoenix.dao.sqlprovider.LedgerSqlProvider;
+import com.pokemoney.hadoop.hbase.phoenix.handler.LongListToArrayTypeHandler;
 import com.pokemoney.hadoop.hbase.phoenix.model.LedgerModel;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.type.JdbcType;
@@ -32,7 +33,7 @@ public interface LedgerMapper {
             @Result(property = "ledgerInfo.name", column = "ledger_info.name"),
             @Result(property = "ledgerInfo.budget", column = "ledger_info.budget"),
             @Result(property = "ledgerInfo.owner", column = "ledger_info.owner"),
-            @Result(property = "ledgerInfo.editors", column = "ledger_info.editors", jdbcType = JdbcType.ARRAY, typeHandler = StringTypeHandler.class),
+            @Result(property = "ledgerInfo.editors", column = "ledger_info.editors", jdbcType = JdbcType.ARRAY, typeHandler = LongListToArrayTypeHandler.class),
             @Result(property = "ledgerInfo.createTime", column = "ledger_info.create_time"),
             @Result(property = "updateInfo.updateAt", column = "update_info.update_at"),
             @Result(property = "updateInfo.delFlag", column = "update_info.del_flag")
@@ -59,7 +60,7 @@ public interface LedgerMapper {
      * @param upsertLedgerDto insert ledger dto {@link UpsertLedgerDto}
      * @return the number of rows affected
      */
-    @Insert("UPSERT INTO " + Constants.LEDGER_BOOK_TABLE + " (region_id, user_id, ledger_id, ledger_info.name, ledger_info.budget, ledger_info.owner, ledger_info.editors, update_info.update_at, update_info.del_flag) VALUES (#{regionId}, #{userId}, #{ledgerId}, #{name}, #{budget}, #{owner}, #{editors, jdbcType=ARRAY, typeHandler=org.apache.ibatis.type.ArrayTypeHandler}, #{updateAt}, #{delFlag})")
+    @Insert("UPSERT INTO " + Constants.LEDGER_BOOK_TABLE + " (region_id, user_id, ledger_id, ledger_info.name, ledger_info.budget, ledger_info.owner, ledger_info.editors, update_info.update_at, update_info.del_flag) VALUES (#{regionId}, #{userId}, #{ledgerId}, #{name}, #{budget}, #{owner}, #{editors, jdbcType=ARRAY, typeHandler=com.pokemoney.hadoop.hbase.phoenix.handler.LongListToArrayTypeHandler}, #{updateAt}, #{delFlag})")
     int insertLedger(UpsertLedgerDto upsertLedgerDto);
 
     /**

@@ -5,6 +5,7 @@ import com.pokemoney.hadoop.hbase.dto.category.SubcategoryDto;
 import com.pokemoney.hadoop.hbase.dto.fund.FundDto;
 import com.pokemoney.hadoop.hbase.dto.ledger.LedgerDto;
 import com.pokemoney.hadoop.hbase.dto.transaction.TransactionDto;
+import com.pokemoney.hadoop.hbase.dto.user.NotificationDto;
 import com.pokemoney.hadoop.hbase.dto.user.UserDto;
 import lombok.*;
 
@@ -15,7 +16,7 @@ import java.util.List;
  */
 @Data
 @Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SyncResponseDto {
     /**
@@ -45,7 +46,7 @@ public class SyncResponseDto {
     /**
      * notifications dto
      */
-    private List<NotificationDto> notifications;
+    private NotificationDto notifications;
     /**
      * operation ID
      */

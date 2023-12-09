@@ -8,14 +8,14 @@ import org.apache.hbase.thirdparty.com.google.gson.annotations.SerializedName;
  */
 @Data
 @Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CategoryDto {
     /**
      * category ID.
      */
     @SerializedName("category_id")
-    private Long categoryId;
+    private Integer categoryId;
     /**
      * category name.
      */

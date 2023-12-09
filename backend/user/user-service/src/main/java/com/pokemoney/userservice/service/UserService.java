@@ -2,6 +2,8 @@ package com.pokemoney.userservice.service;
 
 import com.pokemoney.commons.http.errors.GenericForbiddenError;
 import com.pokemoney.commons.http.errors.GenericInternalServerError;
+import com.pokemoney.hadoop.service.api.HadoopTriService;
+import com.pokemoney.hadoop.service.api.InsertUserRequestDto;
 import com.pokemoney.leaf.service.api.*;
 import com.pokemoney.redis.service.api.*;
 import com.pokemoney.redis.service.api.exceptions.RedisRpcException;
@@ -50,14 +52,24 @@ public class UserService {
     private final RedisTriService redisTriService;
 
     /**
+     * Hadoop triple protocol service.
+     */
+    @DubboReference(version = "1.0.0", protocol = "tri", group = "hadoop", timeout = 10000)
+    private final HadoopTriService hadoopTriService;
+
+    /**
      * Constructor.
      *
-     * @param userRepository        Repository of t_users table.
+     * @param userRepository   Repository of t_users table.
+     * @param leafTriService   Leaf triple protocol service.
+     * @param redisTriService  Redis triple protocol service.
+     * @param hadoopTriService Hadoop triple protocol service.
      */
-    public UserService(UserRepository userRepository, LeafTriService leafTriService, RedisTriService redisTriService) {
+    public UserService(UserRepository userRepository, LeafTriService leafTriService, RedisTriService redisTriService, HadoopTriService hadoopTriService) {
         this.userRepository = userRepository;
         this.leafTriService = leafTriService;
         this.redisTriService = redisTriService;
+        this.hadoopTriService = hadoopTriService;
     }
 
     /**
@@ -101,8 +113,18 @@ public class UserService {
     public UserEntity createUser(RequestRegisterCommonUserDto requestRegisterCommonUserDto, RoleEntity roleEntity, BigInteger permission) {
         LeafResponseDto leafResponseDto = leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(Constants.USER_IN_LEAF_KEY).build());
         String snowflakeIdStr = leafResponseDto.getId();
-        Long snowflakeId = Long.parseLong(snowflakeIdStr);
+        long snowflakeId = Long.parseLong(snowflakeIdStr);
         UserEntity userEntity = UserEntity.fromRegisterUserDto(requestRegisterCommonUserDto, snowflakeId, roleEntity, permission);
+        try {
+            hadoopTriService.insertUser(InsertUserRequestDto.newBuilder()
+                    .setUserId(snowflakeId)
+                    .setUsername(requestRegisterCommonUserDto.getUsername())
+                    .setEmail(requestRegisterCommonUserDto.getEmail())
+                    .build()
+            );
+        } catch (Exception e) {
+            log.error("Failed to send request to insert user in hadoop.", e);
+        }
         return save(userEntity);
     }
 
@@ -238,7 +260,17 @@ public class UserService {
      * @param id id
      * @return UserEntity
      */
-    public UserEntity ge(long id) {
+    public UserEntity getUserById(long id) {
         return userRepository.findById(id).orElse(null);
+    }
+
+    /**
+     * Get userEntity by email.
+     *
+     * @param email email
+     * @return UserEntity
+     */
+    public UserEntity getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
     }
 }

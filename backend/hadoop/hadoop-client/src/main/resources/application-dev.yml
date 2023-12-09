@@ -10,7 +10,7 @@ dubbo:
     subscribe: true
   protocol:
     name: tri
-    port: 20910
+    port: 20940
   application:
     name: hadoop-client
     qos-port: 22224

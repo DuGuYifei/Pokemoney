@@ -16,19 +16,19 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PUBLIC)
 public class LedgerDto {
-    /**
-     * ledger book field from request to database field mapping.
-     */
-    public static final Map<String, String> FIELD_NAME_MAPPING = new HashMap<>() {{
-        put("ledgerId", "ledger_id");
-        put("name", "ledger_info.name");
-        put("budget", "ledger_info.budget");
-        put("editors", "ledger_info.editors");
-        put("owner", "ledger_info.owner");
-        put("createAt", "ledger_info.create_at");
-        put("updateAt", "update_info.update_at");
-        put("delFlag", "update_info.del_flag");
-    }};
+//    /**
+//     * ledger book field from request to database field mapping.
+//     */
+//    public static final Map<String, String> FIELD_NAME_MAPPING = new HashMap<>() {{
+//        put("ledgerId", "ledger_id");
+//        put("name", "ledger_info.name");
+//        put("budget", "ledger_info.budget");
+//        put("editors", "ledger_info.editors");
+//        put("owner", "ledger_info.owner");
+//        put("createAt", "ledger_info.create_at");
+//        put("updateAt", "update_info.update_at");
+//        put("delFlag", "update_info.del_flag");
+//    }};
     /**
      * ledger book ID.
      */

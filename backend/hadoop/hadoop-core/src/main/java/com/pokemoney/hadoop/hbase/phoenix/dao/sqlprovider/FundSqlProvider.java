@@ -23,8 +23,12 @@ public class FundSqlProvider {
         SQL sql = new SQL()
                 .FROM(Constants.FUND_TABLE)
                 .WHERE("(region_id, user_id, fund_id) = (#{regionId}, #{userId}, #{fundId}");
-        for (String selectedFieldName : selectedFieldsName) {
-            sql.SELECT(selectedFieldName);
+        if (selectedFieldsName == null || selectedFieldsName.isEmpty()) {
+            sql.SELECT("*");
+        } else {
+            for (String selectedFieldName : selectedFieldsName) {
+                sql.SELECT(selectedFieldName);
+            }
         }
         return sql.toString();
     }
@@ -41,8 +45,12 @@ public class FundSqlProvider {
         SQL sql = new SQL()
                 .FROM(Constants.FUND_TABLE)
                 .WHERE("region_id = #{regionId} AND user_id = #{userId}");
-        for (String selectedFieldName : selectedFieldsName) {
-            sql.SELECT(selectedFieldName);
+        if (selectedFieldsName == null || selectedFieldsName.isEmpty()) {
+            sql.SELECT("*");
+        } else {
+            for (String selectedFieldName : selectedFieldsName) {
+                sql.SELECT(selectedFieldName);
+            }
         }
         if (fundFilter == null) {
             return sql.toString();
@@ -120,7 +128,7 @@ public class FundSqlProvider {
             sql.append(", #{owner}");
         }
         if (upsertFundDto.getEditors() != null) {
-            sql.append(", #{editors}");
+            sql.append(", #{editors, jdbcType=ARRAY,typeHandler=com.pokemoney.hadoop.hbase.phoenix.handler.LongListToArrayTypeHandler}");
         }
         if (upsertFundDto.getCreateAt() != null) {
             sql.append(", #{createAt}");

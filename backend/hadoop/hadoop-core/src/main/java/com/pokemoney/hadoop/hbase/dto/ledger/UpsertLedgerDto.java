@@ -1,8 +1,6 @@
 package com.pokemoney.hadoop.hbase.dto.ledger;
 
-import com.pokemoney.hadoop.hbase.dto.editor.EditorDto;
 import lombok.*;
-
 
 import java.util.List;
 
@@ -37,7 +35,6 @@ public class UpsertLedgerDto {
     /**
      * editors of the editors of ledger book.
      */
-    //TODO: Check ledger and fund whether need use Array or sql.Array
     private List<Long> editors;
     /**
      * amount

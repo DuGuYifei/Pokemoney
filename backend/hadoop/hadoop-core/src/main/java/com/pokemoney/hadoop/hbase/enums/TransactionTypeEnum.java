@@ -29,9 +29,9 @@ public enum TransactionTypeEnum {
      */
     PAYABLE_BACKS(6),
     /**
-     * self_transfer
+     * self_transfer_from
      */
-    SELF_TRANSFER(7);
+    SELF_TRANSFER_FROM(7);
 
     /**
      * value
@@ -54,5 +54,9 @@ public enum TransactionTypeEnum {
      */
     public int getValue() {
         return value;
+    }
+
+    public static boolean isPositive(Integer typeId) {
+        return typeId == INCOME.getValue() || typeId == PAYABLE.getValue() || typeId == RECEIVABLE_BACKS.getValue();
     }
 }

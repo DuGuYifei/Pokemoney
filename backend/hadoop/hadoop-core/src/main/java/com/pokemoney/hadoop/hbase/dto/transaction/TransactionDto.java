@@ -1,5 +1,6 @@
 package com.pokemoney.hadoop.hbase.dto.transaction;
 
+import com.pokemoney.hadoop.hbase.utils.RowKeyUtils;
 import lombok.*;
 
 /**
@@ -7,7 +8,7 @@ import lombok.*;
  */
 @Data
 @Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TransactionDto {
     /**
@@ -33,7 +34,7 @@ public class TransactionDto {
     /**
      * fund ID of this transaction.
      */
-    private String fundId;
+    private Long fundId;
     /**
      * category ID of this transaction.
      */
@@ -41,15 +42,19 @@ public class TransactionDto {
     /**
      * subcategory ID of this transaction.
      */
-    private String subcategoryId;
+    private Long subcategoryId;
     /**
      * ledger book ID of this transaction.
      */
-    private String ledgerId;
+    private Long ledgerId;
     /**
      * happen time of this transaction.
      */
     private Long happenAt;
+    /**
+     * update by whom
+     */
+    private Long updateBy;
     /**
      * update time of this transaction.
      */
@@ -57,5 +62,5 @@ public class TransactionDto {
     /**
      * deleted flag of this transaction.
      */
-    private Boolean delFlag;
+    private Integer delFlag;
 }

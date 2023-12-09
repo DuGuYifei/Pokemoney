@@ -27,23 +27,23 @@ public class PreprocessedSyncLedgers {
     /**
      * Insert ledger dto list.
      */
-    private  List<UpsertLedgerDto> insertLedgerDtoList = new ArrayList<>();
+    private List<UpsertLedgerDto> insertLedgerDtoList = new ArrayList<>();
     /**
      * Return ledger dto list.
      */
-    private  List<LedgerDto> returnLedgerDtoList = new ArrayList<>();
+    private List<LedgerDto> returnLedgerDtoList = new ArrayList<>();
     /**
      * Update ledger operation dto list.
      */
-    private  List<OperationDto> updateLedgerOperationDtoList = new ArrayList<>();
+    private List<OperationDto> updateLedgerOperationDtoList = new ArrayList<>();
     /**
      * Insert ledger operation dto list.
      */
-    private  List<OperationDto> insertLedgerOperationDtoList = new ArrayList<>();
+    private List<OperationDto> insertLedgerOperationDtoList = new ArrayList<>();
     /**
      * No permission update ledger input dto list.
      */
-    private  List<SyncLedgerInputDto> noPermissionUpdateLedgerInputDtoList = new ArrayList<>();
+    private List<SyncLedgerInputDto> noPermissionUpdateLedgerInputDtoList = new ArrayList<>();
 
     /**
      * Constructor

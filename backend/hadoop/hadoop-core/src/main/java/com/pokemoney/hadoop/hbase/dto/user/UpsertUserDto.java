@@ -7,7 +7,7 @@ import lombok.*;
  */
 @Data
 @Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UpsertUserDto {
     /**
@@ -27,6 +27,10 @@ public class UpsertUserDto {
      */
     private String name;
     /**
+     * update user info at
+     */
+    private Long updateUserInfoAt;
+    /**
      * fund info
      */
     private UserFundInfoDto fundInfo;
@@ -38,4 +42,8 @@ public class UpsertUserDto {
      * App info
      */
     private UpsertUserAppInfoDto appInfo;
+    /**
+     * Notification in json
+     */
+    private String notificationJson;
 }

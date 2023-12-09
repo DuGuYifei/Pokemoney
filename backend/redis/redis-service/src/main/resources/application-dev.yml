@@ -7,9 +7,9 @@ dubbo:
     group: dubbo-java-basic
   protocol:
     name: tri
-    port: 20900
+    port: 20930
   application:
-    name: redis-service-provider
+    name: redis-service
     qos-port: 22223
   config-center:
     address: nacos://localhost:8848

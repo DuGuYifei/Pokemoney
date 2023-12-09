@@ -1,6 +1,5 @@
 package com.pokemoney.hadoop.hbase.dto.fund;
 
-import com.pokemoney.hadoop.hbase.dto.editor.EditorDto;
 import lombok.*;
 
 

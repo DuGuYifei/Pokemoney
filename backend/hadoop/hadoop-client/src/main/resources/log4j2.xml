@@ -73,7 +73,7 @@
         <!-- root -->
         <Root level="info">
             <AppenderRef ref="consoleAppender" />
-            <AppenderRef ref="infoFileAppender" />
+            <AppenderRef ref="infoFileAppender" level="info"/>
             <AppenderRef ref="errorJsonAppender" level="error"/>
         </Root>
 

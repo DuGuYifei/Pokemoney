@@ -66,7 +66,6 @@ public class LeafTriServiceImpl implements LeafTriService {
      */
     @Override
     public LeafResponseDto getSnowflakeId(LeafGetRequestDto request) {
-        System.out.println("getSnowflakeId");
         String key = request.getKey();
         String res = get(key, snowflakeService.getId(key));
         return LeafResponseDto.newBuilder().setId(res).build();

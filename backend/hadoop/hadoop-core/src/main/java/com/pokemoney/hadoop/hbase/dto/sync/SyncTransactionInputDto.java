@@ -35,7 +35,7 @@ public class SyncTransactionInputDto {
     /**
      * fund ID
      */
-    private String fundId;
+    private Long fundId;
     /**
      * category ID
      */

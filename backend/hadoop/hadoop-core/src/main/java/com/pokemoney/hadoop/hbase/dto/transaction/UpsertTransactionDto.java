@@ -52,7 +52,7 @@ public class UpsertTransactionDto {
     /**
      * fund ID of this transaction.
      */
-    private String fundId;
+    private Long fundId;
     /**
      * category ID of this transaction.
      */
@@ -60,15 +60,19 @@ public class UpsertTransactionDto {
     /**
      * subcategory ID of this transaction.
      */
-    private String subcategoryId;
+    private Long subcategoryId;
     /**
      * ledger book ID of this transaction.
      */
-    private String ledgerId;
+    private Long ledgerId;
     /**
      * happen time of this transaction.
      */
     private Long happenAt;
+    /**
+     * update by whom
+     */
+    private Long updateBy;
     /**
      * update time of this transaction.
      */
@@ -76,5 +80,5 @@ public class UpsertTransactionDto {
     /**
      * deleted flag of this transaction.
      */
-    private Boolean delFlag;
+    private Integer delFlag;
 }

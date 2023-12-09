@@ -9,9 +9,19 @@ import reactor.core.publisher.Mono;
 
 import java.util.Collections;
 
+/**
+ * GraphQlRequestHeaderInterceptor
+ */
 public class GraphQlRequestHeaderInterceptor implements WebGraphQlInterceptor {
+    /**
+     * Intercept for auth header
+     *
+     * @param request request
+     * @param chain   chain
+     * @return Mono<WebGraphQlResponse>
+     */
     @Override
-    public @NonNull Mono<WebGraphQlResponse> intercept(WebGraphQlRequest request, Chain chain) {
+    public @NonNull Mono<WebGraphQlResponse> intercept(WebGraphQlRequest request, @NonNull Chain chain) {
         String value = request.getHeaders().getFirst("Authorization");
         if (value == null) {
             value = "";

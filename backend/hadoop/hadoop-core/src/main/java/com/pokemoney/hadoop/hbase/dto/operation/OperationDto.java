@@ -26,7 +26,7 @@ public class OperationDto {
     /**
      * The operation id
      */
-    private String operationId;
+    private Long operationId;
     /**
      * The operation target table name
      */

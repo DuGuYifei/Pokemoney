@@ -5,7 +5,9 @@ import com.pokemoney.hadoop.hbase.dto.category.SubcategoryDto;
 import com.pokemoney.hadoop.hbase.utils.JsonUtils;
 import lombok.*;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * The user model.
@@ -46,6 +48,11 @@ public class UserModel {
     private AppInfoModel appInfo;
 
     /**
+     * Notification info.
+     */
+    private NotificationModel notifications;
+
+    /**
      * User info
      */
     @Getter
@@ -59,6 +66,10 @@ public class UserModel {
          * User email.
          */
         private String email;
+        /**
+         * Update user info at.
+         */
+        private Long updateUserInfoAt;
     }
     /**
      * Fund info
@@ -67,13 +78,13 @@ public class UserModel {
     @Setter
     public static class FundInfoModel {
         /**
-         * Fund IDs.
+         * Fund RowKey.
          */
-        private Long[] funds;
+        private List<String> funds;
         /**
-         * Deleted fund IDs.
+         * Deleted fund RowKey.
          */
-        private Long[] delFunds;
+        private List<String> delFunds;
     }
     /**
      * Ledger book info
@@ -82,13 +93,13 @@ public class UserModel {
     @Setter
     public static class LedgerInfoModel {
         /**
-         * Ledger book IDs.
+         * Ledger book RowKey.
          */
-        private Long[] ledgers;
+        private List<String> ledgers;
         /**
-         * Deleted ledger book IDs.
+         * Deleted ledger book RowKey.
          */
-        private Long[] delLedgers;
+        private List<String> delLedgers;
     }
     /**
      * App info
@@ -99,7 +110,7 @@ public class UserModel {
         /**
          * category map
          */
-        private Map<String, CategoryDto> categories;
+        private Map<Integer, CategoryDto> categories;
         /**
          * category list in json
          */
@@ -107,7 +118,7 @@ public class UserModel {
         /**
          * subcategory map
          */
-        private Map<String, SubcategoryDto> subcategories;
+        private Map<Long, SubcategoryDto> subcategories;
         /**
          * subcategory list in json
          */
@@ -120,7 +131,8 @@ public class UserModel {
          */
         public void setJsonCategories(String jsonCategories) {
             this.jsonCategories = jsonCategories;
-            this.categories = JsonUtils.categoryFromJson(jsonCategories);
+            List<CategoryDto> categories = JsonUtils.categoryListFromJson(jsonCategories);
+            this.categories = categories.stream().collect(Collectors.toMap(CategoryDto::getCategoryId, obj-> obj));
         }
 
         /**
@@ -130,7 +142,20 @@ public class UserModel {
          */
         public void setJsonSubcategories(String jsonSubcategories) {
             this.jsonSubcategories = jsonSubcategories;
-            this.subcategories = JsonUtils.subcategoryFromJson(jsonSubcategories);
+            List<SubcategoryDto> subcategories = JsonUtils.subcategoryListFromJson(jsonSubcategories);
+            this.subcategories = subcategories.stream().collect(Collectors.toMap(SubcategoryDto::getSubcategoryId, obj-> obj));
         }
+    }
+
+    /**
+     * Notification model
+     */
+    @Getter
+    @Setter
+    public static class NotificationModel {
+        /**
+         * Notification json string.
+         */
+        private String notificationsJson;
     }
 }

@@ -2,7 +2,7 @@ package com.pokemoney.hadoop.hbase.phoenix.model;
 
 import lombok.*;
 
-import java.sql.Array;
+import java.util.List;
 
 /**
  * The fund model.
@@ -56,7 +56,7 @@ public class FundModel {
         /**
          * Fund editors.
          */
-        private Array editors;
+        private List<Long> editors;
         /**
          * Fund owner.
          */

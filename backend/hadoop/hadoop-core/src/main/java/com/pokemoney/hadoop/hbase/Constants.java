@@ -23,7 +23,7 @@ public class Constants {
     /**
      * The constant table name for transaction.
      */
-    public static final String TRANSACTION_TABLE_PREFIX = "t_transactions";
+    public static final String TRANSACTION_TABLE_PREFIX = "t_transactions_";
     /**
      * The constant row key delimiter for composite row key.
      */
@@ -31,5 +31,9 @@ public class Constants {
     /**
      * The minimum snowflake id. 2023-11-30
      */
-    public static final Long MIN_SNOWFLAKE_ID = 1729999999999999999L;
+    public static final Long MIN_SNOWFLAKE_ID = 1729999999999999999L; //2023-11-30
+    /**
+     * The twepoch for snowflake id.
+     */
+    public static final Long TW_EPOCH = 1288834974657L; // 2010-11-04
 }

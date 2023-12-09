@@ -51,7 +51,7 @@ public class AuthService {
                         .setUserId(userId)
                         .setJwt(auth)
                         .setServiceName(System.getProperty("spring.application.name"))
-                        .setNeedRole("admin")
+                        .setNeedRole("user")
                         .build()
         );
         if (verifyUserJwtWithServiceResponseDto.getResponseCommonPart().getStatus() <= 0) {
@@ -65,16 +65,10 @@ public class AuthService {
      * Pre handle request.
      *
      * @param userId user id
-     * @param env    data fetching environment
      * @param auth   auth
-     * @return selected fields name
      * @throws GenericGraphQlForbiddenException generic graphql forbidden exception
      */
-    public List<String> preHandleRequest(Long userId, DataFetchingEnvironment env, String auth) throws GenericGraphQlForbiddenException {
+    public void preHandleRequest(Long userId, String auth) throws GenericGraphQlForbiddenException {
         verifyUser(userId, auth);
-        return env.getSelectionSet().getFields()
-                .stream()
-                .map(selectedField -> FundDto.FIELD_NAME_MAPPING.get(selectedField.getName()))
-                .toList();
     }
 }

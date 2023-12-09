@@ -52,13 +52,18 @@ public class FundController {
      */
     @QueryMapping
     public FundDto getFund(@Argument Long fundId, @Argument Long userId, DataFetchingEnvironment env, @ContextValue("auth") String auth) throws SQLException, GenericGraphQlForbiddenException {
-        List<String> selectedFieldsName = authService.preHandleRequest(userId, env, auth);
-        try {
-            return fundService.getFund(fundId, userId, selectedFieldsName);
-        } catch (SQLException e) {
-            log.error("getFund error", e);
-            throw e;
-        }
+//        authService.verifyUser(userId, auth);
+//        List<String> selectedFieldsName = env.getSelectionSet().getFields()
+//                .stream()
+//                .map(selectedField -> FundDto.FIELD_NAME_MAPPING.get(selectedField.getName()))
+//                .toList();
+//        try {
+//            return fundService.getFund(fundId, userId, selectedFieldsName);
+//        } catch (SQLException e) {
+//            log.error("getFund error", e);
+//            throw e;
+//        }
+        throw new GenericGraphQlForbiddenException("Not support for user yet");
     }
 
     /**
@@ -71,12 +76,13 @@ public class FundController {
      */
     @QueryMapping
     public List<FundDto> getFunds(@Argument FundFilter filter, @Argument Long userId, DataFetchingEnvironment env, @ContextValue("auth") String auth) throws SQLException, GenericGraphQlForbiddenException {
-        List<String> selectedFieldsName = authService.preHandleRequest(userId, env, auth);
-        try {
-            return fundService.getFunds(userId, filter, selectedFieldsName);
-        } catch (SQLException e) {
-            log.error("getFunds error", e);
-            throw e;
-        }
+//        List<String> selectedFieldsName = authService.preHandleRequest(userId, env, auth);
+//        try {
+//            return fundService.getFundsByFilter(userId, filter, selectedFieldsName);
+//        } catch (SQLException e) {
+//            log.error("getFunds error", e);
+//            throw e;
+//        }
+        throw new GenericGraphQlForbiddenException("Not support for user yet");
     }
 }

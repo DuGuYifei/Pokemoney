@@ -18,7 +18,7 @@ public class RowKeyUtils {
     }
 
     /**
-     * Get user id from snowflake id.
+     * Get ledger row key
      *
      * @param regionId Region id.
      * @param userId Snowflake id.
@@ -30,7 +30,7 @@ public class RowKeyUtils {
     }
 
     /**
-     * Get fund id from snowflake id.
+     * Get fund row key
      *
      * @param regionId Region id.
      * @param userId Snowflake id.
@@ -39,5 +39,18 @@ public class RowKeyUtils {
      */
     public static String getFundRowKey(String regionId, String userId, String fundId) {
         return regionId + Constants.ROW_KEY_DELIMITER + userId + Constants.ROW_KEY_DELIMITER + fundId;
+    }
+
+    /**
+     * Get transaction row key
+     *
+     * @param regionId Region id.
+     * @param userId Snowflake id.
+     * @param ledgerId Ledger id.
+     * @param transactionId Transaction id.
+     * @return Row key.
+     */
+    public static String getTransactionRowKey(String regionId, String userId, String ledgerId, String transactionId) {
+        return regionId + Constants.ROW_KEY_DELIMITER + userId + Constants.ROW_KEY_DELIMITER + ledgerId + Constants.ROW_KEY_DELIMITER + transactionId;
     }
 }

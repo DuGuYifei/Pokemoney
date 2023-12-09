@@ -1,5 +1,7 @@
 package com.pokemoney.hadoop.hbase.utils;
 
+import com.pokemoney.hadoop.hbase.Constants;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -16,7 +18,7 @@ public class TransactionUtils {
     public static String GetTableNameFromTimestamp(Long millis) {
         Date date = new Date(millis);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy_MM");
-        return "t_transactions_" + simpleDateFormat.format(date);
+        return Constants.TRANSACTION_TABLE_PREFIX + simpleDateFormat.format(date);
     }
 
     /**
@@ -26,6 +28,6 @@ public class TransactionUtils {
      * @return the table name
      */
     public static String GetTableNameFromSnowflakeId(Long snowflakeId) {
-        return GetTableNameFromTimestamp(snowflakeId >> 22);
+        return GetTableNameFromTimestamp(snowflakeId >> 22 + Constants.TW_EPOCH);
     }
 }

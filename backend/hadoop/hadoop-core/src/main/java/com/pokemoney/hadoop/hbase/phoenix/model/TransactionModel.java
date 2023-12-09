@@ -23,9 +23,14 @@ public class TransactionModel {
     private Long userId;
 
     /**
+     * ledger book id of Row key.
+     */
+    private Long ledgerId;
+
+    /**
      * reverse transaction id of Row key.
      */
-    private String reverseTransactionId;
+    private Long reverseTransactionId;
 
     /**
      * The transaction info.
@@ -89,11 +94,6 @@ public class TransactionModel {
         /**
          * The transaction happen at. Milliseconds since epoch 1970-01-01 00:00:00 UTC.
          */
-        private Date happenAt;
-    }
-
-    public void generateReverseTransactionId(Long transactionId) {
-        long reverseTransactionIdLong = Long.MAX_VALUE - transactionId;
-        this.reverseTransactionId = String.valueOf(reverseTransactionIdLong);
+        private Long happenAt;
     }
 }

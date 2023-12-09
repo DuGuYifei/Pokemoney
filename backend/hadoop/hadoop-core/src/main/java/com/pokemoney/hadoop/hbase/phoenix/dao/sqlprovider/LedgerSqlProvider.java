@@ -45,8 +45,12 @@ public class LedgerSqlProvider {
         SQL sql = new SQL()
                 .FROM(Constants.LEDGER_BOOK_TABLE)
                 .WHERE("region_id = #{regionId} AND user_id = #{userId}");
-        for (String selectedFieldName : selectedFieldsName) {
-            sql.SELECT(selectedFieldName);
+        if (selectedFieldsName == null || selectedFieldsName.isEmpty()) {
+            sql.SELECT("*");
+        } else {
+            for (String selectedFieldName : selectedFieldsName) {
+                sql.SELECT(selectedFieldName);
+            }
         }
         if (ledgerFilter == null) {
             return sql.toString();
@@ -124,7 +128,7 @@ public class LedgerSqlProvider {
             sql.append(", #{owner}");
         }
         if (upsertLedgerDto.getEditors() != null) {
-            sql.append(", #{editors, jdbcType=ARRAY, typeHandler=org.apache.ibatis.type.ArrayTypeHandler}");
+            sql.append(", #{editors, jdbcType=ARRAY, typeHandler=com.pokemoney.hadoop.hbase.phoenix.handler.LongListToArrayTypeHandler}");
         }
         if (upsertLedgerDto.getCreateAt() != null) {
             sql.append(", #{createAt}");

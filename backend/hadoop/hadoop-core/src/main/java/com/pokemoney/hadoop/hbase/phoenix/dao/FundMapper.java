@@ -4,10 +4,10 @@ import com.pokemoney.hadoop.hbase.Constants;
 import com.pokemoney.hadoop.hbase.dto.filter.FundFilter;
 import com.pokemoney.hadoop.hbase.dto.fund.UpsertFundDto;
 import com.pokemoney.hadoop.hbase.phoenix.dao.sqlprovider.FundSqlProvider;
+import com.pokemoney.hadoop.hbase.phoenix.handler.LongListToArrayTypeHandler;
 import com.pokemoney.hadoop.hbase.phoenix.model.FundModel;
 import org.apache.ibatis.annotations.*;
 import org.apache.ibatis.type.JdbcType;
-import org.apache.ibatis.type.StringTypeHandler;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public interface FundMapper {
             @Result(property = "fundInfo.name", column = "fund_info.name"),
             @Result(property = "fundInfo.balance", column = "fund_info.balance"),
             @Result(property = "fundInfo.owner", column = "fund_info.owner"),
-            @Result(property = "fundInfo.editors", column = "fund_info.editors", jdbcType = JdbcType.ARRAY, typeHandler = StringTypeHandler.class),
+            @Result(property = "fundInfo.editors", column = "fund_info.editors", jdbcType = JdbcType.ARRAY, typeHandler = LongListToArrayTypeHandler.class),
             @Result(property = "fundInfo.createAt", column = "fund_info.create_at"),
             @Result(property = "updateInfo.updateAt", column = "update_info.update_at"),
             @Result(property = "updateInfo.delFlag", column = "update_info.del_flag")
@@ -59,7 +59,7 @@ public interface FundMapper {
      * @param upsertFundDto the fund dto {@link UpsertFundDto}
      * @return the number of rows affected by the insert
      */
-    @Insert("UPSERT INTO " + Constants.FUND_TABLE + " (region_id, user_id, fund_id, fund_info.name, fund_info.balance, fund_info.owner, fund_info.editors, fund_info.create_at, update_info.update_at, update_info.del_flag) VALUES (#{regionId}, #{userId}, #{fundId}, #{name}, #{balance}, #{owner}, #{editors, jdbcType=ARRAY,typeHandler=org.apache.ibatis.type.ArrayTypeHandler}, #{createAt}, #{updateAt}, #{delFlag})")
+    @Insert("UPSERT INTO " + Constants.FUND_TABLE + " (region_id, user_id, fund_id, fund_info.name, fund_info.balance, fund_info.owner, fund_info.editors, fund_info.create_at, update_info.update_at, update_info.del_flag) VALUES (#{regionId}, #{userId}, #{fundId}, #{name}, #{balance}, #{owner}, #{editors, jdbcType=ARRAY,typeHandler=com.pokemoney.hadoop.hbase.phoenix.handler.LongListToArrayTypeHandler}, #{createAt}, #{updateAt}, #{delFlag})")
     int insertFund(UpsertFundDto upsertFundDto);
 
     /**

@@ -1,6 +1,6 @@
 package com.pokemoney.hadoop.client.service;
 
-import com.pokemoney.hadoop.hbase.Constants;
+import com.pokemoney.hadoop.client.Constants;
 import com.pokemoney.hadoop.hbase.dto.category.SubcategoryDto;
 import com.pokemoney.hadoop.hbase.dto.sync.SyncSubcategoryInputDto;
 import com.pokemoney.hadoop.hbase.phoenix.model.UserModel;
@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,16 +40,19 @@ public class SubcategoryService {
      *
      * @param syncSubcategoryInputDtos sync subcategory input dto
      * @param userModel                user model
-     * @return subcategory dto map
+     * @return subcategory dto list
      */
-    public Map<String, SubcategoryDto> syncSubcategory(SyncSubcategoryInputDto[] syncSubcategoryInputDtos, UserModel userModel) {
-        Map<String, SubcategoryDto> subcategoryDtoMap = new HashMap<>();
+    public List<SubcategoryDto> syncSubcategory(List<SyncSubcategoryInputDto> syncSubcategoryInputDtos, UserModel userModel) {
+        Map<Long, SubcategoryDto> subcategoryDtoMap = new HashMap<>();
         for (SyncSubcategoryInputDto syncSubcategoryInputDto : syncSubcategoryInputDtos) {
+            if (syncSubcategoryInputDto.getSubcategoryId() <= Constants.MAX_PRESET_SUBCATEGORY_ID) {
+                continue;
+            }
             SubcategoryDto subcategoryDto = fromSyncSubcategoryInputDto(syncSubcategoryInputDto);
-            subcategoryDtoMap.put(subcategoryDto.getSubcategoryId().toString(), subcategoryDto);
+            subcategoryDtoMap.put(subcategoryDto.getSubcategoryId(), subcategoryDto);
         }
-        Map<String, SubcategoryDto> modelSubcategoryDtoMap = userModel.getAppInfo().getSubcategories();
-        for (Map.Entry<String, SubcategoryDto> modelEntry : modelSubcategoryDtoMap.entrySet()) {
+        Map<Long, SubcategoryDto> modelSubcategoryDtoMap = userModel.getAppInfo().getSubcategories();
+        for (Map.Entry<Long, SubcategoryDto> modelEntry : modelSubcategoryDtoMap.entrySet()) {
             SubcategoryDto modelDto = modelEntry.getValue();
             SubcategoryDto subcategoryDto = subcategoryDtoMap.get(modelEntry.getKey());
             if (subcategoryDto == null) {
@@ -61,7 +63,7 @@ public class SubcategoryService {
                 }
             }
         }
-        return subcategoryDtoMap;
+        return subcategoryDtoMap.values().stream().toList();
     }
 
     /**
@@ -72,7 +74,7 @@ public class SubcategoryService {
      */
     public SubcategoryDto fromSyncSubcategoryInputDto(SyncSubcategoryInputDto syncSubcategoryInputDto) {
         Long id = syncSubcategoryInputDto.getSubcategoryId();
-        if (id < Constants.MIN_SNOWFLAKE_ID) {
+        if (id < com.pokemoney.hadoop.hbase.Constants.MIN_SNOWFLAKE_ID) {
             try{
                 id = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(com.pokemoney.hadoop.client.Constants.LEAF_HBASE_SUBCATEGORY).build()).getId());
             } catch (Exception e) {

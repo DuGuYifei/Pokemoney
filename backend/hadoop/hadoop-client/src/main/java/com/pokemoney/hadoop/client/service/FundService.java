@@ -1,7 +1,9 @@
 package com.pokemoney.hadoop.client.service;
 
 import com.pokemoney.hadoop.client.Constants;
+import com.pokemoney.hadoop.client.msgqueue.KafkaService;
 import com.pokemoney.hadoop.client.vo.PreprocessedSyncFunds;
+import com.pokemoney.hadoop.client.vo.ProcessedSyncFunds;
 import com.pokemoney.hadoop.hbase.dto.editor.EditorDto;
 import com.pokemoney.hadoop.hbase.dto.filter.FundFilter;
 import com.pokemoney.hadoop.hbase.dto.fund.FundDto;
@@ -37,14 +39,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 @Service
 public class FundService {
     /**
+     * The Kafka service.
+     */
+    private final KafkaService kafkaService;
+    /**
      * The fund mapper.
      */
     private final FundMapper fundMapper;
-
-    /**
-     * The operation mapper.
-     */
-    private final OperationMapper operationMapper;
 
     /**
      * The sql session factory.
@@ -71,16 +72,16 @@ public class FundService {
     /**
      * Instantiates a new Fund  service.
      *
-     * @param fundMapper      the fund mapper
-     * @param operationMapper   the operation mapper
+     * @param kafkaService      the kafka service
+     * @param fundMapper        the fund mapper
      * @param sqlSessionFactory the sql session factory
      * @param dtpSyncExecutor1  the dynamic thread pool executor 1
      * @param leafTriService    leaf api
      * @param userTriService    user api
      */
-    public FundService(FundMapper fundMapper, OperationMapper operationMapper, SqlSessionFactory sqlSessionFactory, ThreadPoolExecutor dtpSyncExecutor1, LeafTriService leafTriService, UserTriService userTriService) {
+    public FundService(KafkaService kafkaService, FundMapper fundMapper, SqlSessionFactory sqlSessionFactory, ThreadPoolExecutor dtpSyncExecutor1, LeafTriService leafTriService, UserTriService userTriService) {
+        this.kafkaService = kafkaService;
         this.fundMapper = fundMapper;
-        this.operationMapper = operationMapper;
         this.sqlSessionFactory = sqlSessionFactory;
         this.dtpSyncExecutor1 = dtpSyncExecutor1;
         this.leafTriService = leafTriService;
@@ -90,12 +91,13 @@ public class FundService {
     /**
      * Preprocess sync fund.
      *
+     * @param syncOperationId sync operation id
      * @param syncFundInputDtoList sync fund input dto list {@link SyncFundInputDto}
      * @param operationModelTargetFundList operation model target fund list {@link OperationModel}
      * @param userDto user dto {@link UserDto}
      * @return the preprocessed sync funds {@link PreprocessedSyncFunds}
      */
-    public PreprocessedSyncFunds preprocessSyncFund(Long syncOperationId, SyncFundInputDto[] syncFundInputDtoList, LinkedList<OperationModel> operationModelTargetFundList, UserDto userDto) {
+    public PreprocessedSyncFunds preprocessSyncFund(Long syncOperationId, List<SyncFundInputDto> syncFundInputDtoList, LinkedList<OperationModel> operationModelTargetFundList, UserDto userDto) {
         PreprocessedSyncFunds preprocessedSyncFunds = new PreprocessedSyncFunds(syncOperationId);
         List<UpsertFundDto> updateFundDtoList = preprocessedSyncFunds.getUpdateFundDtoList();
         List<UpsertFundDto> insertFundDtoList = preprocessedSyncFunds.getInsertFundDtoList();
@@ -121,13 +123,14 @@ public class FundService {
                         operationModelIterator.remove();
                         Integer regionId = RowKeyUtils.getRegionId(ownerId);
                         Long fundId = syncFundInputDto.getFundId();
-                        preprocessSyncUpdateSituation(userDto, updateFundDtoList, syncFundInputDto, ownerId, fundId, regionId);
+                        String fundRowKey = RowKeyUtils.getFundRowKey(regionId.toString(), ownerId.toString(), fundId.toString());
+                        preprocessSyncUpdateSituation(userDto, updateFundDtoList, syncFundInputDto, ownerId, fundRowKey, fundId, regionId);
                         operationId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(Constants.LEAF_HBASE_OPERATION).build()).getId());
                         updateFundOperationDtoList.add(new OperationDto(
                                 RowKeyUtils.getRegionId(ownerId),
                                 ownerId,
                                 Long.MAX_VALUE - operationId,
-                                Long.toString(operationId),
+                                operationId,
                                 com.pokemoney.hadoop.hbase.Constants.FUND_TABLE,
                                 RowKeyUtils.getFundRowKey(regionId.toString(), ownerId.toString(), fundId.toString()),
                                 syncFundInputDto.getUpdateAt()
@@ -139,19 +142,19 @@ public class FundService {
             if (!isExist) {
                 Long fundId = syncFundInputDto.getFundId();
                 operationId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(Constants.LEAF_HBASE_OPERATION).build()).getId());
+                Integer regionId = RowKeyUtils.getRegionId(ownerId);
+                String fundRowKey = RowKeyUtils.getFundRowKey(regionId.toString(), ownerId.toString(), fundId.toString());
                 if (fundId < com.pokemoney.hadoop.hbase.Constants.MIN_SNOWFLAKE_ID) {
-                    userDto.getFundInfo().getFundIds().add(fundId);
+                    userDto.getFundInfo().getFunds().add(fundRowKey);
                     fundId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(Constants.LEAF_HBASE_FUND).build()).getId());
-                    Integer regionId = RowKeyUtils.getRegionId(ownerId);
+                    List<Long> editorIds = List.of(ownerId);
                     insertFundDtoList.add(new UpsertFundDto(
                             regionId,
                             ownerId,
                             fundId,
                             syncFundInputDto.getName(),
                             ownerId,
-                            new ArrayList<>() {{
-                                add(ownerId);
-                            }},
+                            editorIds,
                             syncFundInputDto.getBalance(),
                             syncFundInputDto.getCreateAt(),
                             syncFundInputDto.getUpdateAt(),
@@ -161,7 +164,7 @@ public class FundService {
                             regionId,
                             ownerId,
                             Long.MAX_VALUE - operationId,
-                            Long.toString(operationId),
+                            operationId,
                             com.pokemoney.hadoop.hbase.Constants.FUND_TABLE,
                             RowKeyUtils.getFundRowKey(regionId.toString(), ownerId.toString(), fundId.toString()),
                             syncFundInputDto.getUpdateAt()
@@ -183,13 +186,12 @@ public class FundService {
                             syncFundInputDto.getDelFlag()
                     ));
                 } else {
-                    Integer regionId = RowKeyUtils.getRegionId(ownerId);
-                    preprocessSyncUpdateSituation(userDto, updateFundDtoList, syncFundInputDto, ownerId, fundId, regionId);
+                    preprocessSyncUpdateSituation(userDto, updateFundDtoList, syncFundInputDto, ownerId, fundRowKey, fundId, regionId);
                     updateFundOperationDtoList.add(new OperationDto(
                             regionId,
                             ownerId,
                             Long.MAX_VALUE - operationId,
-                            Long.toString(operationId),
+                            operationId,
                             com.pokemoney.hadoop.hbase.Constants.FUND_TABLE,
                             RowKeyUtils.getFundRowKey(regionId.toString(), ownerId.toString(), fundId.toString()),
                             syncFundInputDto.getUpdateAt()
@@ -211,16 +213,16 @@ public class FundService {
      * @param fundId fund id
      * @param regionId region id
      */
-    private void preprocessSyncUpdateSituation(UserDto userDto, List<UpsertFundDto> updateFundDtoList, SyncFundInputDto syncFundInputDto, Long ownerId, Long fundId, Integer regionId) {
-        if (userDto.getFundInfo().getFundIds().contains(fundId)) {
+    private void preprocessSyncUpdateSituation(UserDto userDto, List<UpsertFundDto> updateFundDtoList, SyncFundInputDto syncFundInputDto, Long ownerId, String fundRowKey, Long fundId, Integer regionId) {
+        if (userDto.getFundInfo().getFunds().contains(fundRowKey)) {
             if (syncFundInputDto.getDelFlag() == 1) {
-                userDto.getFundInfo().getFundIds().remove(fundId);
-                userDto.getFundInfo().getDelFundIds().add(fundId);
+                userDto.getFundInfo().getFunds().remove(fundRowKey);
+                userDto.getFundInfo().getDelFunds().add(fundRowKey);
             }
         } else {
             if (syncFundInputDto.getDelFlag() == 0) {
-                userDto.getFundInfo().getFundIds().add(fundId);
-                userDto.getFundInfo().getDelFundIds().remove(fundId);
+                userDto.getFundInfo().getFunds().add(fundRowKey);
+                userDto.getFundInfo().getDelFunds().remove(fundRowKey);
             }
         }
         updateFundDtoList.add(UpsertFundDto.builder()
@@ -228,7 +230,7 @@ public class FundService {
                 .userId(ownerId)
                 .fundId(fundId)
                 .name(syncFundInputDto.getName())
-                .balance(syncFundInputDto.getBalance())
+                .balance(null)
                 .owner(null)
                 .editors(null)
                 .createAt(null)
@@ -237,7 +239,15 @@ public class FundService {
                 .build());
     }
 
-    public PreprocessedSyncFunds syncFund (PreprocessedSyncFunds preprocessedSyncFunds, LinkedList<OperationModel> operationModelTargetFundList) throws SQLException {
+    /**
+     * Sync fund.
+     *
+     * @param preprocessedSyncFunds preprocessed sync funds
+     * @param operationModelTargetFundList operation model target fund list {@link OperationModel}
+     * @return processed sync funds {@link ProcessedSyncFunds}
+     * @throws SQLException sql exception
+     */
+    public ProcessedSyncFunds syncFund (PreprocessedSyncFunds preprocessedSyncFunds, LinkedList<OperationModel> operationModelTargetFundList) throws SQLException {
         Future<Integer> insertFuture = dtpSyncExecutor1.submit(() -> {
             try {
                 return insertNewFund(preprocessedSyncFunds.getInsertFundDtoList());
@@ -246,10 +256,10 @@ public class FundService {
                 throw e;
             }
         });
-        Future<PreprocessedSyncFunds> updateFuture = dtpSyncExecutor1.submit(() -> {
+        Future<List<FundDto>> updateFuture = dtpSyncExecutor1.submit(() -> {
             try(SqlSession session = sqlSessionFactory.openSession(false)) {
                 try {
-                    updateFundByRowKey(preprocessedSyncFunds.getUpdateFundDtoList());
+                    updateFundsByRowKey(preprocessedSyncFunds.getUpdateFundDtoList());
                     session.commit();
                     Future<List<FundDto>> fundDtoFromUpdateOperationDtoFuture = dtpSyncExecutor1.submit(() -> getFundsByUpdateOperationDtoListAndBroadcastToEditors(preprocessedSyncFunds.getUpdateFundOperationDtoList()));
                     preprocessedSyncFunds.getReturnFundDtoList().addAll(getFundsByOperationModelList(operationModelTargetFundList));
@@ -259,7 +269,7 @@ public class FundService {
                         log.error("extract from getFundsByUpdateOperationDtoListAndBroadcastToEditors error", e);
                         throw new SQLException(e);
                     }
-                    return preprocessedSyncFunds;
+                    return preprocessedSyncFunds.getReturnFundDtoList();
                 } catch (SQLException e) {
                     log.error("updateFundByRowKey or broadcast error", e);
                     session.rollback();
@@ -269,7 +279,7 @@ public class FundService {
         });
         try {
             insertFuture.get();
-            return updateFuture.get();
+            return new ProcessedSyncFunds(updateFuture.get(), preprocessedSyncFunds.getNoPermissionUpdateFundInputDtoList(), preprocessedSyncFunds.getCurOperationId());
         } catch (Exception e) {
             log.error("syncFund error", e);
             throw new SQLException(e);
@@ -314,17 +324,12 @@ public class FundService {
                             if (editorDto.getUserId().equals(selectedUpdateFundDto.getOwner())) {
                                 continue;
                             }
-                            long broadcastOperationId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(Constants.LEAF_HBASE_OPERATION).build()).getId());
-                            OperationDto operationDto = new OperationDto(
-                                    RowKeyUtils.getRegionId(editorDto.getUserId()),
+                            kafkaService.sendNewOperationMessage(
                                     editorDto.getUserId(),
-                                    Long.MAX_VALUE - broadcastOperationId,
-                                    Long.toString(broadcastOperationId),
-                                    com.pokemoney.hadoop.hbase.Constants.FUND_TABLE,
+                                    updateOperationDto.getTargetTable(),
                                     updateOperationDto.getTargetRowKey(),
                                     updateOperationDto.getUpdateAt()
                             );
-                            operationMapper.insertOperation(operationDto);
                         }
                     }
                 }
@@ -369,7 +374,7 @@ public class FundService {
      * @return the number of rows affected
      * @throws SQLException sql exception
      */
-    public int updateFundByRowKey (List<UpsertFundDto> updateFundDtoList) throws SQLException {
+    public int updateFundsByRowKey(List<UpsertFundDto> updateFundDtoList) throws SQLException {
         int affectedRows = 0;
         try {
             for (UpsertFundDto upsertFundDto : updateFundDtoList) {
@@ -405,20 +410,33 @@ public class FundService {
      * @throws SQLException sql exception
      */
     public FundDto getFund(Long fundId, Long userId, List<String> selectedFieldsName) throws SQLException {
-        Integer regionId = RowKeyUtils.getRegionId(userId);
-        FundModel fundModel = fundMapper.getFundByRowKey(regionId, userId, fundId, selectedFieldsName);
+        FundModel fundModel = getFundModel(fundId, userId, selectedFieldsName);
         return getFundDtoFromFundModel(fundModel);
     }
 
     /**
-     * Get funds.
+     * Get fund model.
+     *
+     * @param fundId fund id
+     * @param userId user id
+     * @param selectedFieldsName the selected fields name
+     * @return fund model
+     * @throws SQLException sql exception
+     */
+    public FundModel getFundModel(Long fundId, Long userId, List<String> selectedFieldsName) throws SQLException {
+        Integer regionId = RowKeyUtils.getRegionId(userId);
+        return fundMapper.getFundByRowKey(regionId, userId, fundId, selectedFieldsName);
+    }
+
+    /**
+     * Get funds by filter.
      *
      * @param userId user id
      * @param fundFilter fund filter
      * @param selectedFieldsName the selected fields name
      * @return fund dto list
      */
-    public List<FundDto> getFunds(Long userId, FundFilter fundFilter, List<String> selectedFieldsName) throws SQLException {
+    public List<FundDto> getFundsByFilter(Long userId, FundFilter fundFilter, List<String> selectedFieldsName) throws SQLException {
         Integer regionId = RowKeyUtils.getRegionId(userId);
         List<FundModel> fundModelList = fundMapper.getFundsByUserAndFilter(regionId, userId, fundFilter, selectedFieldsName);
         List<FundDto> fundDtoList = new ArrayList<>();
@@ -436,27 +454,67 @@ public class FundService {
      * @throws SQLException sql exception
      */
     private FundDto getFundDtoFromFundModel(FundModel fundModel) throws SQLException {
-        List<EditorDto> editors = new ArrayList<>();
-        java.sql.Array editorsArray = fundModel.getFundInfo().getEditors();
-        Long[] editorIds = (Long[]) editorsArray.getArray();
+        List<Long> editorIds = fundModel.getFundInfo().getEditors();
+        List<EditorDto> editorDtoList = new ArrayList<>();
         for (Long editorId : editorIds) {
             GetUserInfoResponseDto getUserInfoResponseDto = userTriService.getUserInfo(GetUserInfoRequestDto.newBuilder().setUserId(editorId).build());
-            editors.add(new EditorDto(
+            editorDtoList.add(new EditorDto(
                     editorId,
                     getUserInfoResponseDto.getEmail(),
                     getUserInfoResponseDto.getUsername()
             ));
         }
-        editorsArray.free();
         return new FundDto(
                 fundModel.getFundId(),
                 fundModel.getFundInfo().getName(),
                 fundModel.getFundInfo().getBalance(),
                 fundModel.getFundInfo().getOwner(),
-                editors,
+                editorDtoList,
                 fundModel.getFundInfo().getCreateAt(),
                 fundModel.getUpdateInfo().getUpdateAt(),
                 fundModel.getUpdateInfo().getDelFlag()
         );
+    }
+
+    /**
+     * Add fund model to fund dto list and broadcast.
+     *
+     * @param fundModels fund model
+     * @param returnSyncFunds return sync funds
+     * @return fund dto list
+     */
+    public List<FundDto> addFundModelListToFundDtoListDoUpdateAndBroadcast(List<FundModel> fundModels, List<FundDto> returnSyncFunds) {
+        try (SqlSession session = sqlSessionFactory.openSession(false)) {
+            try {
+                for (FundModel fundModel : fundModels) {
+                    returnSyncFunds.add(getFundDtoFromFundModel(fundModel));
+                    kafkaService.sendNewOperationMessage(
+                            fundModel.getFundInfo().getOwner(),
+                            com.pokemoney.hadoop.hbase.Constants.FUND_TABLE,
+                            RowKeyUtils.getFundRowKey(fundModel.getRegionId().toString(), fundModel.getFundInfo().getOwner().toString(), fundModel.getFundId().toString()),
+                            fundModel.getUpdateInfo().getUpdateAt()
+                    );
+                    UpsertFundDto upsertFundDto = UpsertFundDto.builder()
+                            .regionId(fundModel.getRegionId())
+                            .userId(fundModel.getFundInfo().getOwner())
+                            .fundId(fundModel.getFundId())
+                            .name(fundModel.getFundInfo().getName())
+                            .balance(fundModel.getFundInfo().getBalance())
+                            .owner(fundModel.getFundInfo().getOwner())
+                            .editors(fundModel.getFundInfo().getEditors())
+                            .createAt(fundModel.getFundInfo().getCreateAt())
+                            .updateAt(fundModel.getUpdateInfo().getUpdateAt())
+                            .delFlag(fundModel.getUpdateInfo().getDelFlag())
+                            .build();
+                    fundMapper.updateFundByRowKey(upsertFundDto);
+                }
+                session.commit();
+            } catch (Exception e) {
+                log.error("addFundModelListToFundDtoListDoUpdateAndBroadcast error", e);
+                session.rollback();
+                throw new RuntimeException(e);
+            }
+        }
+        return returnSyncFunds;
     }
 }

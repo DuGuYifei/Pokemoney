@@ -73,7 +73,6 @@ public class JwtService {
      */
     public void storeJwtStatus(String jwt, UserEntity userEntity, String jwtId) {
         // The service should still work when there is no redis, this service can verify jwt. So use try catch.
-        // TODO: change key with user id, 不然一个人会有很多token，并不安全
         try {
             Map<String, String> map = new HashMap<>();
             map.put("id", jwtId);

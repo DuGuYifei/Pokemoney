@@ -11,17 +11,17 @@ import java.util.List;
  */
 @Data
 @Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserFundInfoDto {
     /**
-     * fund IDs
+     * fund row keys
      */
-    private List<Long> fundIds;
+    private List<String> funds;
     /**
-     * deleted fund IDs
+     * deleted fund row keys
      */
-    private List<Long> delFundIds;
+    private List<String> delFunds;
 
     /**
      * from fund model
@@ -31,8 +31,8 @@ public class UserFundInfoDto {
      */
     public static UserFundInfoDto fromFundModel(UserModel.FundInfoModel fundModel) {
         return UserFundInfoDto.builder()
-                .fundIds(Arrays.stream(fundModel.getFunds()).toList())
-                .delFundIds(Arrays.stream(fundModel.getDelFunds()).toList())
+                .funds(fundModel.getFunds())
+                .delFunds(fundModel.getDelFunds())
                 .build();
     }
 }

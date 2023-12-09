@@ -12,7 +12,11 @@ import org.springframework.context.annotation.ComponentScan;
 })
 @EnableDubbo
 public class LeafServiceApplication {
-
+	/**
+	 * Application main entry point.
+	 *
+	 * @param args The arguments.
+	 */
 	public static void main(String[] args) {
 		SpringApplication.run(LeafServiceApplication.class, args);
 	}

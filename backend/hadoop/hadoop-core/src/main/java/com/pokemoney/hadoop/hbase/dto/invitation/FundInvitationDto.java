@@ -8,7 +8,7 @@ import lombok.*;
  */
 @Data
 @Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FundInvitationDto {
     /**
@@ -23,4 +23,22 @@ public class FundInvitationDto {
      * The ID of fund.
      */
     private Long fundId;
+
+    /**
+     * The ID of ledger.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof FundInvitationDto that)) return false;
+        return id.equals(that.id);
+    }
+
+    /**
+     * The hash code of invitation.
+     */
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

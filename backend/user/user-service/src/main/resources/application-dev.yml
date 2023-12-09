@@ -9,9 +9,9 @@ dubbo:
         subscribe: true
     protocol:
         name: tri
-        port: 20880
+        port: 20910
     application:
-        name: user-service-provider
+        name: user-service
         qos-port: 22221
     config-center:
         address: nacos://localhost:8848

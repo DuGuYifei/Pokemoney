@@ -33,6 +33,14 @@ public interface OperationMapper {
     @Select("SELECT region_id, user_id, reverse_operation_id, operation_info.id, operation_info.target_table, DISTINCT operation_info.target_row_key, update_info.update_at FROM " + Constants.OPERATION_TABLE + " WHERE region_id = #{regionId} AND user_id = #{userId} AND reverse_operation_id < #{reverseOperationId} LIMIT #{limit}")
     List<OperationModel> getOperationsLowerReverseIdDistinctTargetRowKeyWithLimit(@Param("regionId") Integer regionId, @Param("userId") Long userId, @Param("operationId") Long reverseOperationId, @Param("limit") int limit);
 
+    /**
+     * Get operation which has bigger operation id than the given operation id.
+     *
+     * @param regionId region id
+     * @param userId user id
+     * @param reverseOperationId operation id which is long.max_value - operation id
+     * @return operation model list
+     */
     @ResultMap("operationResultMap")
     @Select("SELECT region_id, user_id, reverse_operation_id, operation_info.id, operation_info.target_table, DISTINCT operation_info.target_row_key, update_info.update_at FROM " + Constants.OPERATION_TABLE + " WHERE region_id = #{regionId} AND user_id = #{userId} AND reverse_operation_id < #{reverseOperationId}")
     List<OperationModel> getOperationsLowerReverseIdDistinctTargetRowKey(@Param("regionId") Integer regionId, @Param("userId") Long userId, @Param("operationId") Long reverseOperationId);

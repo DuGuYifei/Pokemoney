@@ -7,11 +7,10 @@ import org.springframework.context.annotation.ComponentScan;
 
 /**
  * This class is the main class of the redis-service.
- * TODO: use gRPC to accelerate the speed of communication between services.
  */
 @SpringBootApplication
 @EnableDubbo
-@ComponentScan(basePackages = {"com.pokemoney.redis.service", "com.pokemoney.redis.service.api", "com.pokemoney.commons.http", "com.pokemoney.commons.config"})
+@ComponentScan(basePackages = {"com.pokemoney.redis.service", "com.pokemoney.commons.config"})
 public class RedisServiceApplication {
     /**
      * Application main entry point.
