@@ -27,16 +27,21 @@ dubbo:
 
 spring:
     datasource:
-        url: jdbc:h2:mem:test_db
-        driverClassName: org.h2.Driver
-        username: admin
-        password: admin
+        url: jdbc:mysql://127.0.0.1:3306/db_user?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=UTC
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        username: root
+#        password:
+# H2
+#        url: jdbc:h2:mem:test_db
+#        driverClassName: org.h2.Driver
+#        username: admin
+#        password: admin
     jpa:
-        database-platform: org.hibernate.dialect.H2Dialect
+        database-platform: org.hibernate.dialect.MySQL8Dialect
         generate-ddl: true
         hibernate.ddl-auto: update
-        open-in-view: false
-    h2.console.enabled: true
+#        open-in-view: false
+#    h2.console.enabled: true
     mail:
         host: smtp.gmail.com
         port: 587

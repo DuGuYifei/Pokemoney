@@ -21,9 +21,9 @@ public class UserSqlProvider {
         List<String> selectedFieldsName = (List<String>) params.get("selectedFieldsName");
         SQL sql = new SQL()
                 .FROM(Constants.USER_TABLE)
-                .WHERE("(region_id, user_id) = (#{regionId}, #{userId}");
+                .WHERE("(region_id, user_id) = (#{regionId}, #{userId})");
         if (selectedFieldsName == null || selectedFieldsName.isEmpty()) {
-            sql.SELECT("*");
+            sql.SELECT("region_id, user_id, user_info.name, user_info.email, user_info.update_at, fund_info.funds, fund_info.del_funds, ledger_info.ledgers, ledger_info.del_ledgers, app_info.categories, app_info.subcategories, notifications.new_notify");
         } else {
             for (String selectedFieldName : selectedFieldsName) {
                 sql.SELECT(selectedFieldName);
@@ -50,18 +50,18 @@ public class UserSqlProvider {
             sql.append(", user_info.update_at");
         }
         if (upsertUserDto.getFundInfo() != null) {
-            if (upsertUserDto.getFundInfo().getFunds() != null) {
+            if (upsertUserDto.getFundInfo().getFunds() != null && !upsertUserDto.getFundInfo().getFunds().isEmpty()) {
                 sql.append(", fund_info.funds");
             }
-            if (upsertUserDto.getFundInfo().getDelFunds() != null) {
+            if (upsertUserDto.getFundInfo().getDelFunds() != null && !upsertUserDto.getFundInfo().getDelFunds().isEmpty()) {
                 sql.append(", fund_info.del_funds");
             }
         }
         if (upsertUserDto.getLedgerInfo() != null) {
-            if (upsertUserDto.getLedgerInfo().getLedgers() != null) {
+            if (upsertUserDto.getLedgerInfo().getLedgers() != null && !upsertUserDto.getLedgerInfo().getLedgers().isEmpty()) {
                 sql.append(", ledger_info.ledgers");
             }
-            if (upsertUserDto.getLedgerInfo().getDelLedgers() != null) {
+            if (upsertUserDto.getLedgerInfo().getDelLedgers() != null && !upsertUserDto.getLedgerInfo().getDelLedgers().isEmpty()) {
                 sql.append(", ledger_info.del_ledgers");
             }
         }
@@ -87,26 +87,26 @@ public class UserSqlProvider {
             sql.append(", #{updateUserInfoAt}");
         }
         if (upsertUserDto.getFundInfo() != null) {
-            if (upsertUserDto.getFundInfo().getFunds() != null) {
+            if (upsertUserDto.getFundInfo().getFunds() != null && !upsertUserDto.getFundInfo().getFunds().isEmpty()) {
                 sql.append(", #{fundInfo.funds, typeHandler = com.pokemoney.hadoop.hbase.phoenix.handler.StringListToArrayTypeHandler}");
             }
-            if (upsertUserDto.getFundInfo().getDelFunds() != null) {
+            if (upsertUserDto.getFundInfo().getDelFunds() != null && !upsertUserDto.getFundInfo().getDelFunds().isEmpty()) {
                 sql.append(", #{fundInfo.delFunds, typeHandler = com.pokemoney.hadoop.hbase.phoenix.handler.StringListToArrayTypeHandler}");
             }
         }
         if (upsertUserDto.getLedgerInfo() != null) {
-            if (upsertUserDto.getLedgerInfo().getLedgers() != null) {
+            if (upsertUserDto.getLedgerInfo().getLedgers() != null && !upsertUserDto.getLedgerInfo().getLedgers().isEmpty()) {
                 sql.append(", #{ledgerInfo.ledgers, typeHandler = com.pokemoney.hadoop.hbase.phoenix.handler.StringListToArrayTypeHandler}");
             }
-            if (upsertUserDto.getLedgerInfo().getDelLedgers() != null) {
+            if (upsertUserDto.getLedgerInfo().getDelLedgers() != null && !upsertUserDto.getLedgerInfo().getDelLedgers().isEmpty()) {
                 sql.append(", #{ledgerInfo.delLedgers, typeHandler = com.pokemoney.hadoop.hbase.phoenix.handler.StringListToArrayTypeHandler}");
             }
         }
         if (upsertUserDto.getAppInfo() != null) {
-            if (upsertUserDto.getAppInfo().getJsonCategories() != null) {
+            if (upsertUserDto.getAppInfo().getJsonCategories() != null && !upsertUserDto.getAppInfo().getJsonCategories().isEmpty()) {
                 sql.append(", #{appInfo.jsonCategories}");
             }
-            if (upsertUserDto.getAppInfo().getJsonSubcategories() != null) {
+            if (upsertUserDto.getAppInfo().getJsonSubcategories() != null && !upsertUserDto.getAppInfo().getJsonSubcategories().isEmpty()) {
                 sql.append(", #{appInfo.jsonSubcategories}");
             }
         }

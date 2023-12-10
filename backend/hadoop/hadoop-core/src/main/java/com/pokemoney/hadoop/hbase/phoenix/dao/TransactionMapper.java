@@ -27,19 +27,19 @@ public interface TransactionMapper {
             @Result(property = "userId", column = "user_id"),
             @Result(property = "ledgerId", column = "ledger_id"),
             @Result(property = "reverseTransactionId", column = "reverse_transaction_id"),
-            @Result(property = "transactionInfo.id", column = "transaction_info.transaction_id"),
-            @Result(property = "transactionInfo.money", column = "transaction_info.money"),
-            @Result(property = "transactionInfo.typeId", column = "transaction_info.type_id"),
-            @Result(property = "transactionInfo.relevantEntity", column = "transaction_info.relevant_entity"),
-            @Result(property = "transactionInfo.comment", column = "transaction_info.comment"),
-            @Result(property = "transactionInfo.fundId", column = "transaction_info.fund_id"),
-            @Result(property = "transactionInfo.categoryId", column = "transaction_info.category_id"),
-            @Result(property = "transactionInfo.subcategoryId", column = "transaction_info.subcategory_id"),
-            @Result(property = "transactionInfo.ledgerId", column = "transaction_info.ledger_id"),
-            @Result(property = "transactionInfo.happenAt", column = "transaction_info.happen_at"),
-            @Result(property = "updateBy", column = "update_info.update_by"),
-            @Result(property = "updateInfo.updateAt", column = "update_info.update_at"),
-            @Result(property = "updateInfo.delFlag", column = "update_info.del_flag")
+            @Result(property = "transactionInfo.id", column = "transaction_id"),
+            @Result(property = "transactionInfo.money", column = "money"),
+            @Result(property = "transactionInfo.typeId", column = "type_id"),
+            @Result(property = "transactionInfo.relevantEntity", column = "relevant_entity"),
+            @Result(property = "transactionInfo.comment", column = "comment"),
+            @Result(property = "transactionInfo.fundId", column = "fund_id"),
+            @Result(property = "transactionInfo.categoryId", column = "category_id"),
+            @Result(property = "transactionInfo.subcategoryId", column = "subcategory_id"),
+            @Result(property = "transactionInfo.ledgerId", column = "ledger_id"),
+            @Result(property = "transactionInfo.happenAt", column = "happen_at"),
+            @Result(property = "updateBy", column = "update_by"),
+            @Result(property = "updateInfo.updateAt", column = "update_at"),
+            @Result(property = "updateInfo.delFlag", column = "del_flag")
     })
     @SelectProvider(type = TransactionSqlProvider.class, method = "buildSqlForUserGetTransactionByTransactionId")
     TransactionModel getTransactionByRowKeyAndTableName(@Param("tableName") String tableName, @Param("regionId") Integer regionId, @Param("ledgerId") Long ledgerId, @Param("userId") Long userId, @Param("reverseTransactionId") Long reverseTransactionId, @Param("selectedFieldsName") List<String> selectedFieldsName);

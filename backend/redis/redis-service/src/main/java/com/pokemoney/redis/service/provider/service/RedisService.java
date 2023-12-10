@@ -6,11 +6,12 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.rpc.RpcException;
 import org.apache.dubbo.rpc.StatusRpcException;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * This class is the service of operating on Redis.
@@ -22,15 +23,15 @@ public class RedisService {
     /**
      * Object redis template.
      */
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final StringRedisTemplate stringRedisTemplate;
 
     /**
      * Constructor of RedisService.
      *
-     * @param redisTemplate Hash redis template.
+     * @param stringRedisTemplate Hash redis template.
      */
-    public RedisService(RedisTemplate<String, Object> redisTemplate) {
-        this.redisTemplate = redisTemplate;
+    public RedisService(StringRedisTemplate stringRedisTemplate) {
+        this.stringRedisTemplate = stringRedisTemplate;
     }
 
     /**
@@ -41,7 +42,7 @@ public class RedisService {
     public void del(RedisDelRequestDto redisDelRequestDto) {
         String key = redisDelRequestDto.getPrefix() + redisDelRequestDto.getKey();
         try {
-            redisTemplate.delete(key);
+            stringRedisTemplate.delete(key);
         } catch (Exception e) {
             log.error("Redis delete error.", e);
             throw new RpcException(RpcException.BIZ_EXCEPTION, "Redis delete error.");
@@ -57,14 +58,14 @@ public class RedisService {
         String key = redisKeyValueDto.getPrefix() + redisKeyValueDto.getKey();
         if (!redisKeyValueDto.hasTimeout()) {
             try {
-                redisTemplate.opsForValue().set(key, redisKeyValueDto.getValue());
+                stringRedisTemplate.opsForValue().set(key, redisKeyValueDto.getValue());
             } catch (Exception e) {
                 log.error("Redis set error.", e);
                 throw new RpcException(RpcException.BIZ_EXCEPTION, "Redis set error.");
             }
             return;
         }
-        redisTemplate.opsForValue().set(key, redisKeyValueDto.getValue(), redisKeyValueDto.getTimeout(), java.util.concurrent.TimeUnit.SECONDS);
+        stringRedisTemplate.opsForValue().set(key, redisKeyValueDto.getValue(), redisKeyValueDto.getTimeout(), java.util.concurrent.TimeUnit.SECONDS);
     }
 
     /**
@@ -75,17 +76,17 @@ public class RedisService {
      */
     public RedisKeyValueDto getByDto(RedisKeyValueGetRequestDto redisKeyValueGetRequestDto){
         String key = redisKeyValueGetRequestDto.getPrefix() + redisKeyValueGetRequestDto.getKey();
-        Object value = redisTemplate.opsForValue().get(key);
+        String value = stringRedisTemplate.opsForValue().get(key);
         if (value == null) {
             throw new StatusRpcException(RedisRpcException.KEY_NOT_FOUND);
         }
-        Long returnTimeout = redisTemplate.getExpire(key);
+        Long returnTimeout = stringRedisTemplate.getExpire(key);
         if (returnTimeout == null) {
             returnTimeout = -2L;
         }
         return RedisKeyValueDto.newBuilder()
                 .setKey(redisKeyValueGetRequestDto.getKey())
-                .setValue((String) value)
+                .setValue(value)
                 .setTimeout(returnTimeout)
                 .setPrefix(redisKeyValueGetRequestDto.getPrefix())
                 .build();
@@ -100,14 +101,14 @@ public class RedisService {
         String key = redisHashKeyValueDto.getPrefix() + redisHashKeyValueDto.getKey();
         if (! redisHashKeyValueDto.hasTimeout()) {
             try {
-                redisTemplate.opsForHash().putAll(key, redisHashKeyValueDto.getValueMap());
+                stringRedisTemplate.opsForHash().putAll(key, redisHashKeyValueDto.getValueMap());
             } catch (Exception e) {
                 log.error("Redis set hash map error.", e);
                 throw new RpcException(RpcException.BIZ_EXCEPTION, "Redis set hash map error.");
             }
             return;
         }
-        redisTemplate.opsForHash().putAll(key, redisHashKeyValueDto.getValueMap());
+        stringRedisTemplate.opsForHash().putAll(key, redisHashKeyValueDto.getValueMap());
     }
 
     /**
@@ -119,12 +120,13 @@ public class RedisService {
     public RedisHashKeyValueDto hGetByDto(RedisHashKeyValueGetRequestDto redisHashKeyValueGetRequestDto) {
         String key = redisHashKeyValueGetRequestDto.getPrefix() + redisHashKeyValueGetRequestDto.getKey();
 
-        Map<Object, Object> value = redisTemplate.opsForHash().entries(key);
-        Map<String, String> valueMap = new HashMap<>();
-        for (Map.Entry<Object, Object> entry : value.entrySet()) {
-            valueMap.put((String) entry.getKey(), (String) entry.getValue());
-        }
-        Long remainTime = redisTemplate.getExpire(key);
+        Map<Object, Object> rawMap = stringRedisTemplate.opsForHash().entries(key);
+        Map<String, String> valueMap = rawMap.entrySet().stream()
+                .collect(Collectors.toMap(
+                        e -> (String) e.getKey(),
+                        e -> (String) e.getValue()
+                ));
+        Long remainTime = stringRedisTemplate.getExpire(key);
         if (remainTime == null) {
             remainTime = -2L;
         }

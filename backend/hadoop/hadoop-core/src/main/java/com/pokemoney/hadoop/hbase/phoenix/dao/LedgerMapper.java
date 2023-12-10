@@ -30,13 +30,13 @@ public interface LedgerMapper {
             @Result(property = "regionId", column = "region_id"),
             @Result(property = "userId", column = "user_id"),
             @Result(property = "ledgerId", column = "ledger_id"),
-            @Result(property = "ledgerInfo.name", column = "ledger_info.name"),
-            @Result(property = "ledgerInfo.budget", column = "ledger_info.budget"),
-            @Result(property = "ledgerInfo.owner", column = "ledger_info.owner"),
-            @Result(property = "ledgerInfo.editors", column = "ledger_info.editors", jdbcType = JdbcType.ARRAY, typeHandler = LongListToArrayTypeHandler.class),
-            @Result(property = "ledgerInfo.createTime", column = "ledger_info.create_time"),
-            @Result(property = "updateInfo.updateAt", column = "update_info.update_at"),
-            @Result(property = "updateInfo.delFlag", column = "update_info.del_flag")
+            @Result(property = "ledgerInfo.name", column = "name"),
+            @Result(property = "ledgerInfo.budget", column = "budget"),
+            @Result(property = "ledgerInfo.owner", column = "owner"),
+            @Result(property = "ledgerInfo.editors", column = "editors", jdbcType = JdbcType.ARRAY, typeHandler = LongListToArrayTypeHandler.class),
+            @Result(property = "ledgerInfo.createTime", column = "create_time"),
+            @Result(property = "updateInfo.updateAt", column = "update_at"),
+            @Result(property = "updateInfo.delFlag", column = "del_flag")
     })
     @SelectProvider(type = LedgerSqlProvider.class, method = "buildSqlGetLedgerByRowKey")
     LedgerModel getLedgerByRowKey(@Param("regionId") Integer regionId, @Param("userId") Long userId, @Param("ledgerId") Long ledgerId, @Param("selectedFieldsName") List<String> selectedFieldsName);

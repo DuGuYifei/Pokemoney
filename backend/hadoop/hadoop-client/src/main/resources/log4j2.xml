@@ -71,7 +71,7 @@
             <appender-ref ref="infoFileAppender"/>
         </logger>
         <!-- root -->
-        <Root level="info">
+        <Root level="debug">
             <AppenderRef ref="consoleAppender" />
             <AppenderRef ref="infoFileAppender" level="info"/>
             <AppenderRef ref="errorJsonAppender" level="error"/>

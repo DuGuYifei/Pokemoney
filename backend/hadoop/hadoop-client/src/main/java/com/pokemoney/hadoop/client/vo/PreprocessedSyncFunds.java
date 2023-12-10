@@ -8,7 +8,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Preprocessed sync funds.
@@ -35,16 +37,15 @@ public class PreprocessedSyncFunds {
     /**
      * Update fund operation dto list.
      */
-    private List<OperationDto> updateFundOperationDtoList = new ArrayList<>();
-    /**
-     * Insert fund operation dto list.
-     */
-    private List<OperationDto> insertFundOperationDtoList = new ArrayList<>();
+    private List<OperationDto> fundOperationDtoList = new ArrayList<>();
     /**
      * No permission update fund input dto list.
      */
     private List<SyncFundInputDto> noPermissionUpdateFundInputDtoList = new ArrayList<>();
-
+    /**
+     * Map of new fund id and new snowflake id.
+     */
+    private Map<Long, Long> newFundIdAndSnowflakeIdMap = new HashMap<>();
     /**
      * Constructor
      *

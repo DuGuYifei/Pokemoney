@@ -8,16 +8,16 @@ type User {
 }
 
 type FundInfo {
-    fundIds: [ID]!
-    delFundIds: [ID]!
+    funds: [ID]!
+    delFunds: [ID]!
 }
 
 type LedgerInfo {
-    ledgerIds: [ID]!
-    delLedgerIds: [ID]!
+    ledgers: [ID]!
+    delLedgers: [ID]!
 }
 
 type AppInfo {
     categories: [Category]!
-    subCategories: [Subcategory]!
+    subcategories: [Subcategory]!
 }

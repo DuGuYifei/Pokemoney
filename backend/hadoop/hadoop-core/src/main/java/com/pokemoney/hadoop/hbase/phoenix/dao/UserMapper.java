@@ -8,6 +8,7 @@ import com.pokemoney.hadoop.hbase.phoenix.model.UserModel;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * DAO for User in Phoenix.
@@ -25,16 +26,16 @@ public interface UserMapper {
     @Results(id = "userResultMap", value = {
             @Result(property = "regionId", column = "region_id"),
             @Result(property = "userId", column = "user_id"),
-            @Result(property = "userInfo.name", column = "user_info.name"),
-            @Result(property = "userInfo.email", column = "user_info.email"),
-            @Result(property = "userInfo.updateUserInfoAt", column = "user_info.update_at"),
-            @Result(property = "fundInfo.funds", column = "fund_info.funds", typeHandler = StringListToArrayTypeHandler.class),
-            @Result(property = "fundInfo.delFunds", column = "fund_info.del_funds", typeHandler = StringListToArrayTypeHandler.class),
-            @Result(property = "ledgerInfo.ledgers", column = "ledger_info.ledgers", typeHandler = StringListToArrayTypeHandler.class),
-            @Result(property = "ledgerInfo.delLedgers", column = "ledger_info.del_ledgers", typeHandler = StringListToArrayTypeHandler.class),
-            @Result(property = "appInfo.jsonCategories", column = "app_info.categories"),
-            @Result(property = "appInfo.jsonSubcategories", column = "app_info.subcategories"),
-            @Result(property = "notifications.notificationsJson", column = "notifications.new_notify"),
+            @Result(property = "userInfo.name", column = "name"),
+            @Result(property = "userInfo.email", column = "email"),
+            @Result(property = "userInfo.updateUserInfoAt", column = "update_at"),
+            @Result(property = "fundInfo.funds", column = "funds", typeHandler = StringListToArrayTypeHandler.class),
+            @Result(property = "fundInfo.delFunds", column = "del_funds", typeHandler = StringListToArrayTypeHandler.class),
+            @Result(property = "ledgerInfo.ledgers", column = "ledgers", typeHandler = StringListToArrayTypeHandler.class),
+            @Result(property = "ledgerInfo.delLedgers", column = "del_ledgers", typeHandler = StringListToArrayTypeHandler.class),
+            @Result(property = "appInfo.jsonCategories", column = "categories"),
+            @Result(property = "appInfo.jsonSubcategories", column = "subcategories"),
+            @Result(property = "notifications.notificationsJson", column = "new_notify"),
     })
     @SelectProvider(type = UserSqlProvider.class, method = "buildSqlGetUserByRowKey")
     UserModel getUserByUserId(@Param("regionId") Integer regionId, @Param("userId") Long userId, @Param("selectedFieldsName") List<String> selectedFieldsName);

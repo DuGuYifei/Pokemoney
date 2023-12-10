@@ -1,5 +1,6 @@
 package com.pokemoney.hadoop.client.vo;
 
+import com.pokemoney.hadoop.hbase.dto.operation.OperationDto;
 import com.pokemoney.hadoop.hbase.dto.sync.SyncTransactionInputDto;
 import com.pokemoney.hadoop.hbase.dto.transaction.TransactionDto;
 import com.pokemoney.hadoop.hbase.phoenix.model.FundModel;

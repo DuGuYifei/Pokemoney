@@ -24,7 +24,7 @@ public class RedisConfiguration {
         redisTemplate.setConnectionFactory(connectionFactory);
 
         redisTemplate.setKeySerializer(RedisSerializer.string());
-        redisTemplate.setValueSerializer(RedisSerializer.json());
+        redisTemplate.setValueSerializer(RedisSerializer.string());
 
         return redisTemplate;
     }

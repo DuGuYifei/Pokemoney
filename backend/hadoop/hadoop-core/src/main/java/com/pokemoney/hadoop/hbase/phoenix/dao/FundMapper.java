@@ -29,13 +29,13 @@ public interface FundMapper {
             @Result(property = "regionId", column = "region_id"),
             @Result(property = "userId", column = "user_id"),
             @Result(property = "fundId", column = "fund_id"),
-            @Result(property = "fundInfo.name", column = "fund_info.name"),
-            @Result(property = "fundInfo.balance", column = "fund_info.balance"),
-            @Result(property = "fundInfo.owner", column = "fund_info.owner"),
-            @Result(property = "fundInfo.editors", column = "fund_info.editors", jdbcType = JdbcType.ARRAY, typeHandler = LongListToArrayTypeHandler.class),
-            @Result(property = "fundInfo.createAt", column = "fund_info.create_at"),
-            @Result(property = "updateInfo.updateAt", column = "update_info.update_at"),
-            @Result(property = "updateInfo.delFlag", column = "update_info.del_flag")
+            @Result(property = "fundInfo.name", column = "name"),
+            @Result(property = "fundInfo.balance", column = "balance"),
+            @Result(property = "fundInfo.editors", column = "editors", jdbcType = JdbcType.ARRAY, typeHandler = LongListToArrayTypeHandler.class),
+            @Result(property = "fundInfo.owner", column = "owner"),
+            @Result(property = "fundInfo.createAt", column = "create_at"),
+            @Result(property = "updateInfo.updateAt", column = "update_at"),
+            @Result(property = "updateInfo.delFlag", column = "del_flag")
     })
     @SelectProvider(type = FundSqlProvider.class, method = "buildSqlGetFundByRowKey")
     FundModel getFundByRowKey(@Param("regionId") Integer regionId, @Param("userId") Long userId, @Param("fundId") Long fundId, @Param("selectedFieldsName") List<String> selectedFieldsName);

@@ -39,11 +39,7 @@ public class PreprocessedSyncTransactions {
     /**
      * Update transaction operation dto list.
      */
-    private List<OperationDto> updateTransactionOperationDtoList = new ArrayList<>();
-    /**
-     * Insert transaction operation dto list.
-     */
-    private List<OperationDto> insertTransactionOperationDtoList = new ArrayList<>();
+    private List<OperationDto> transactionOperationDtoList = new ArrayList<>();
     /**
      * No permission update transaction input dto list.
      */

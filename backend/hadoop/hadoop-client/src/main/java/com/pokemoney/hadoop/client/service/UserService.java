@@ -19,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+
 /**
  * User table service
  */
@@ -54,7 +56,17 @@ public class UserService {
      */
     public UserModel getUserByUserId(Long userId) {
         Integer regionId = RowKeyUtils.getRegionId(userId);
-        return userMapper.getUserByUserId(regionId, userId, null);
+        UserModel userModel = userMapper.getUserByUserId(regionId, userId, null);
+        if (userModel.getFundInfo() == null) {
+            userModel.setFundInfo(new UserModel.FundInfoModel(new ArrayList<>(), new ArrayList<>()));
+        }
+        if (userModel.getLedgerInfo() == null) {
+            userModel.setLedgerInfo(new UserModel.LedgerInfoModel(new ArrayList<>(), new ArrayList<>()));
+        }
+        if (userModel.getNotifications() == null) {
+            userModel.setNotifications(new UserModel.NotificationModel());
+        }
+        return userModel;
     }
 
     /**

@@ -69,7 +69,12 @@ public class LongListToArrayTypeHandler extends BaseTypeHandler<List<Long>> {
         if (sqlArray == null) {
             return null;
         }
-        Long[] longArray = (Long[]) sqlArray.getArray();
-        return new ArrayList<>(Arrays.asList(longArray));
+        long[] longArray = (long[]) sqlArray.getArray();
+//        return new ArrayList<>(Arrays.asList(longArray));
+        List<Long> longList = new ArrayList<>();
+        for (long l : longArray) {
+            longList.add(l);
+        }
+        return longList;
     }
 }

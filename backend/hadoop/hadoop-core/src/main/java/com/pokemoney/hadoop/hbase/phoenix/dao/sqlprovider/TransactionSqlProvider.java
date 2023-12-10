@@ -20,7 +20,7 @@ public class TransactionSqlProvider {
         List<String> selectedFieldsName = (List<String>) params.get("selectedFieldsName");
         SQL sql = new SQL()
                 .FROM("#{tableName}")
-                .WHERE("(region_id, user_id, ledger_id_rk, transaction_id) = (#{regionId}, #{userId}, #{ledgerId}, #{transactionId}");
+                .WHERE("(region_id, user_id, ledger_id_rk, transaction_id) = (#{regionId}, #{userId}, #{ledgerId}, #{transactionId})");
         if (selectedFieldsName == null || selectedFieldsName.isEmpty()) {
             sql.SELECT("*");
         } else {

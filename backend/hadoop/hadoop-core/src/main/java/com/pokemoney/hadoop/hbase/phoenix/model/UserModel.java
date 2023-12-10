@@ -30,7 +30,7 @@ public class UserModel {
     /**
      * User info.
      */
-    private UserInfo userInfo;
+    private UserInfoModel userInfo;
 
     /**
      * Fund info.
@@ -57,7 +57,9 @@ public class UserModel {
      */
     @Getter
     @Setter
-    public static class UserInfo {
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class UserInfoModel {
         /**
          * User name.
          */
@@ -76,6 +78,8 @@ public class UserModel {
      */
     @Getter
     @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class FundInfoModel {
         /**
          * Fund RowKey.
@@ -91,6 +95,8 @@ public class UserModel {
      */
     @Getter
     @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class LedgerInfoModel {
         /**
          * Ledger book RowKey.
@@ -106,6 +112,8 @@ public class UserModel {
      */
     @Getter
     @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class AppInfoModel {
         /**
          * category map
@@ -132,8 +140,6 @@ public class UserModel {
         public void setJsonCategories(String jsonCategories) {
             this.jsonCategories = jsonCategories;
             List<CategoryDto> categories = JsonUtils.categoryListFromJson(jsonCategories);
-            //TODO: 删除这里和synccontroller里的测试代码
-            System.out.println("\n\n\n\n\n\n测试\n\n\n\n\n\n\n");
             this.categories = categories.stream().collect(Collectors.toMap(CategoryDto::getCategoryId, obj-> obj));
         }
 
@@ -154,6 +160,8 @@ public class UserModel {
      */
     @Getter
     @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class NotificationModel {
         /**
          * Notification json string.

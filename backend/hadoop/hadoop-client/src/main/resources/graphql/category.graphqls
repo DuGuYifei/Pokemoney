@@ -1,7 +1,6 @@
 type Category {
     categoryId: ID!
     categoryName: String!
-    delFlag: Int!
 }
 
 type Subcategory {

@@ -110,7 +110,7 @@ public class PermissionService {
         }
 
         // if the service bit is not set to 1, throw exception.
-        if ((servicePermission.and(BigInteger.ONE.shiftLeft(serviceBit))).equals(BigInteger.ZERO)) {
+        if ((servicePermission.and(BigInteger.ONE.shiftLeft(serviceBit - 1))).equals(BigInteger.ZERO)) {
             throw new GenericForbiddenError("No permission to access this service.");
         }
     }

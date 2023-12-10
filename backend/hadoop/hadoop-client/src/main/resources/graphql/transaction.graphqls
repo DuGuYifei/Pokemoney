@@ -9,6 +9,7 @@ type Transaction {
     subcategoryId: String!
     ledgerId: String!
     happenAt: String!
+    updateBy: ID!
     updateAt: String!
     delFlag: Int!
 }

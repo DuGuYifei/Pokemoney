@@ -128,7 +128,7 @@ public class JwtService {
      */
     public JwtInfo verifyUserJwtByRedis(String token, String userId) throws JwtVerifyException.InvalidUserException, JwtVerifyException.InvalidTokenException {
         try {
-            RedisResponseDto response = redisTriService.hGet(RedisHashKeyValueGetRequestDto.newBuilder().setKey(token).setKey(Constants.REDIS_TOKEN_PREFIX).build());
+            RedisResponseDto response = redisTriService.hGet(RedisHashKeyValueGetRequestDto.newBuilder().setKey(token).setPrefix(Constants.REDIS_TOKEN_PREFIX).build());
             RedisHashKeyValueDto redisHashKeyValueDto = response.getHashData();
             Map<String, String> hashMapInfo = redisHashKeyValueDto.getValueMap();
             JwtInfo jwtRedisInfo = new JwtInfo().fromMap(hashMapInfo);

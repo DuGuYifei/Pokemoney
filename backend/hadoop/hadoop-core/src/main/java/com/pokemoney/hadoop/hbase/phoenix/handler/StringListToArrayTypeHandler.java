@@ -16,7 +16,7 @@ public class StringListToArrayTypeHandler extends BaseTypeHandler<List<String>> 
     public void setNonNullParameter(PreparedStatement ps, int i, List<String> parameter, JdbcType jdbcType) throws SQLException {
         Connection conn = ps.getConnection();
         String[] strArray = parameter.toArray(new String[0]);
-        Array sqlArray = conn.createArrayOf("text", strArray);
+        Array sqlArray = conn.createArrayOf("VARCHAR", strArray);
         ps.setArray(i, sqlArray);
     }
 

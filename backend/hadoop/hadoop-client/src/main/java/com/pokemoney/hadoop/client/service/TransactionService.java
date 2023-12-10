@@ -1,10 +1,10 @@
 package com.pokemoney.hadoop.client.service;
 
-import com.pokemoney.hadoop.client.Constants;
 import com.pokemoney.hadoop.client.exception.GenericGraphQlForbiddenException;
 import com.pokemoney.hadoop.client.kafka.KafkaService;
 import com.pokemoney.hadoop.client.vo.PreprocessedSyncTransactions;
 import com.pokemoney.hadoop.client.vo.ProcessedSyncTransactions;
+import com.pokemoney.hadoop.hbase.Constants;
 import com.pokemoney.hadoop.hbase.dto.filter.TransactionFilter;
 import com.pokemoney.hadoop.hbase.dto.transaction.TransactionDto;
 import com.pokemoney.hadoop.hbase.dto.transaction.UpsertTransactionDto;
@@ -14,6 +14,7 @@ import com.pokemoney.hadoop.hbase.dto.user.UserDto;
 import com.pokemoney.hadoop.hbase.enums.TransactionTypeEnum;
 import com.pokemoney.hadoop.hbase.phoenix.dao.FundMapper;
 import com.pokemoney.hadoop.hbase.phoenix.dao.LedgerMapper;
+import com.pokemoney.hadoop.hbase.phoenix.dao.OperationMapper;
 import com.pokemoney.hadoop.hbase.phoenix.dao.TransactionMapper;
 import com.pokemoney.hadoop.hbase.phoenix.model.*;
 import com.pokemoney.hadoop.hbase.utils.RowKeyUtils;
@@ -57,6 +58,11 @@ public class TransactionService {
     private final FundMapper fundMapper;
 
     /**
+     * The operation mapper.
+     */
+    private final OperationMapper operationMapper;
+
+    /**
      * The sql session factory.
      */
     private final SqlSessionFactory sqlSessionFactory;
@@ -82,8 +88,9 @@ public class TransactionService {
      * @param dtpSyncExecutor1  the dynamic thread pool executor 1
      * @param leafTriService    leaf api
      * @param kafkaService      kafka service
+     * @param operationMapper   operation mapper
      */
-    public TransactionService(TransactionMapper transactionMapper, LedgerMapper ledgerMapper, FundMapper fundMapper, SqlSessionFactory sqlSessionFactory, ThreadPoolExecutor dtpSyncExecutor1, LeafTriService leafTriService, KafkaService kafkaService) {
+    public TransactionService(TransactionMapper transactionMapper, LedgerMapper ledgerMapper, FundMapper fundMapper, SqlSessionFactory sqlSessionFactory, ThreadPoolExecutor dtpSyncExecutor1, LeafTriService leafTriService, KafkaService kafkaService, OperationMapper operationMapper) {
         this.transactionMapper = transactionMapper;
         this.ledgerMapper = ledgerMapper;
         this.fundMapper = fundMapper;
@@ -91,6 +98,7 @@ public class TransactionService {
         this.dtpSyncExecutor1 = dtpSyncExecutor1;
         this.leafTriService = leafTriService;
         this.kafkaService = kafkaService;
+        this.operationMapper = operationMapper;
     }
 
     /**
@@ -102,13 +110,12 @@ public class TransactionService {
      * @param userDto user dto {@link UserDto}
      * @return the preprocessed sync transactions {@link PreprocessedSyncTransactions}
      */
-    public PreprocessedSyncTransactions preprocessSyncTransaction(long syncOperationId, List<SyncTransactionInputDto> syncTransactionInputDtoList, LinkedList<OperationModel> operationModelTargetTransactionList, UserDto userDto) {
+    public PreprocessedSyncTransactions preprocessSyncTransaction(long syncOperationId, List<SyncTransactionInputDto> syncTransactionInputDtoList, LinkedList<OperationModel> operationModelTargetTransactionList, UserDto userDto, Map<Long, Long> newFundIdToSnowflakeIdMap, Map<Long, Long> newLedgerIdToSnowflakeIdMap) {
         PreprocessedSyncTransactions preprocessedSyncTransactions = new PreprocessedSyncTransactions(syncOperationId);
         List<UpsertTransactionDto> updateTransactionDtoList = preprocessedSyncTransactions.getUpdateTransactionDtoList();
         List<UpsertTransactionDto> insertTransactionDtoList = preprocessedSyncTransactions.getInsertTransactionDtoList();
         List<TransactionDto> returnTransactionDtoList = preprocessedSyncTransactions.getReturnTransactionDtoList();
-        List<OperationDto> updateTransactionOperationDtoList = preprocessedSyncTransactions.getUpdateTransactionOperationDtoList();
-        List<OperationDto> insertTransactionOperationDtoList = preprocessedSyncTransactions.getInsertTransactionOperationDtoList();
+        List<OperationDto> transactionOperationDtoList = preprocessedSyncTransactions.getTransactionOperationDtoList();
         List<SyncTransactionInputDto> noPermissionUpdateTransactionInputDtoList = preprocessedSyncTransactions.getNoPermissionUpdateTransactionInputDtoList();
         Long operationId = preprocessedSyncTransactions.getCurOperationId();
         Map<Long, LedgerModel> ledgerIdToModelMap = preprocessedSyncTransactions.getLedgerIdToModelMap();
@@ -120,14 +127,25 @@ public class TransactionService {
             boolean isExist = false;
             Long fundIdOfSyncTransaction = syncTransactionInputDto.getFundId();
             int fundInListIndex = fundIds.indexOf(fundIdOfSyncTransaction);
-            if (fundInListIndex == -1) {
-                noPermissionUpdateTransactionInputDtoList.add(syncTransactionInputDto);
-                continue;
+            if (fundIdOfSyncTransaction > Constants.MIN_SNOWFLAKE_ID) {
+                if (fundInListIndex == -1) {
+                    noPermissionUpdateTransactionInputDtoList.add(syncTransactionInputDto);
+                    continue;
+                }
+            } else {
+                Long tempFundId = newFundIdToSnowflakeIdMap.get(fundIdOfSyncTransaction);
+                fundInListIndex = fundIds.indexOf(tempFundId);
             }
-            int ledgerInListIndex = ledgerIds.indexOf(syncTransactionInputDto.getLedgerId());
-            if (ledgerInListIndex == -1) {
-                noPermissionUpdateTransactionInputDtoList.add(syncTransactionInputDto);
-                continue;
+            Long ledgerIdOfSyncTransaction = syncTransactionInputDto.getLedgerId();
+            int ledgerInListIndex = ledgerIds.indexOf(ledgerIdOfSyncTransaction);
+            if (ledgerIdOfSyncTransaction > Constants.MIN_SNOWFLAKE_ID) {
+                if (ledgerInListIndex == -1) {
+                    noPermissionUpdateTransactionInputDtoList.add(syncTransactionInputDto);
+                    continue;
+                }
+            } else {
+                Long tempLedgerId = newLedgerIdToSnowflakeIdMap.get(ledgerIdOfSyncTransaction);
+                ledgerInListIndex = ledgerIds.indexOf(tempLedgerId);
             }
             FundModel fundModel = fundIdToModelMap.get(fundIdOfSyncTransaction);
             if (fundModel == null) {
@@ -161,13 +179,18 @@ public class TransactionService {
                         preprocessSyncUpsertSituation(updateTransactionDtoList, syncTransactionInputDto, tableName, ownerId, userId, transactionId, transactionRegionId);
                         // insert operation to user who write the transaction
                         operationId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(com.pokemoney.hadoop.hbase.Constants.LEAF_HBASE_OPERATION).build()).getId());
-                        updateTransactionOperationDtoList.add(new OperationDto(
+                        transactionOperationDtoList.add(new OperationDto(
                                 userRegionId,
                                 userId,
                                 Long.MAX_VALUE - operationId,
                                 operationId,
                                 tableName,
-                                RowKeyUtils.getTransactionRowKey(transactionRegionId.toString(), userId.toString(), ledgerIds.toString(), ((Long)(Long.MAX_VALUE - transactionId)).toString()),
+                                RowKeyUtils.getTransactionRowKey(
+                                        transactionRegionId.toString(),
+                                        userId.toString(),
+                                        syncTransactionInputDto.getLedgerId().toString(),
+                                        ((Long)(Long.MAX_VALUE - transactionId)).toString()
+                                ),
                                 syncTransactionInputDto.getUpdateAt()
                         ));
                     }
@@ -181,14 +204,23 @@ public class TransactionService {
                 if (transactionId < com.pokemoney.hadoop.hbase.Constants.MIN_SNOWFLAKE_ID) {
                     transactionId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(com.pokemoney.hadoop.hbase.Constants.LEAF_HBASE_TRANSACTION).build()).getId());
                     String tableName = TransactionUtils.GetTableNameFromSnowflakeId(transactionId);
+                    Long tempLedgerId = newLedgerIdToSnowflakeIdMap.get(syncTransactionInputDto.getLedgerId());
+                    if (tempLedgerId != null) {
+                        syncTransactionInputDto.setLedgerId(tempLedgerId);
+                    }
                     preprocessSyncUpsertSituation(insertTransactionDtoList, syncTransactionInputDto, tableName, ownerId, userId, transactionId, transactionRegionId);
-                    insertTransactionOperationDtoList.add(new OperationDto(
+                    transactionOperationDtoList.add(new OperationDto(
                             userRegionId,
                             userId,
                             Long.MAX_VALUE - operationId,
                             operationId,
                             tableName,
-                            RowKeyUtils.getTransactionRowKey(transactionRegionId.toString(), userId.toString(), ledgerIds.toString(), ((Long)(Long.MAX_VALUE - transactionId)).toString()),
+                            RowKeyUtils.getTransactionRowKey(
+                                    transactionRegionId.toString(),
+                                    userId.toString(),
+                                    syncTransactionInputDto.getLedgerId().toString(),
+                                    ((Long)(Long.MAX_VALUE - transactionId)).toString()
+                            ),
                             syncTransactionInputDto.getUpdateAt()
                     ));
                     returnTransactionDtoList.add(new TransactionDto(
@@ -209,13 +241,18 @@ public class TransactionService {
                 } else {
                     String tableName = TransactionUtils.GetTableNameFromSnowflakeId(transactionId);
                     preprocessSyncUpsertSituation(updateTransactionDtoList, syncTransactionInputDto, tableName, ownerId, userId, transactionId, transactionRegionId);
-                    updateTransactionOperationDtoList.add(new OperationDto(
+                    transactionOperationDtoList.add(new OperationDto(
                             userRegionId,
                             userId,
                             Long.MAX_VALUE - operationId,
                             operationId,
                             tableName,
-                            RowKeyUtils.getTransactionRowKey(transactionRegionId.toString(), ownerId.toString(), ledgerModel.getLedgerId().toString(), transactionId.toString()),
+                            RowKeyUtils.getTransactionRowKey(
+                                    transactionRegionId.toString(),
+                                    ownerId.toString(),
+                                    ledgerModel.getLedgerId().toString(),
+                                    transactionId.toString()
+                            ),
                             syncTransactionInputDto.getUpdateAt()
                     ));
                 }
@@ -266,10 +303,11 @@ public class TransactionService {
      * @return the processed sync transactions {@link ProcessedSyncTransactions}
      * @throws SQLException sql exception
      */
-    public ProcessedSyncTransactions syncTransaction (PreprocessedSyncTransactions preprocessedSyncTransactions, LinkedList<OperationModel> operationModelTargetTransactionList, UserDto userDto) throws SQLException {
+    public ProcessedSyncTransactions syncTransaction (PreprocessedSyncTransactions preprocessedSyncTransactions, LinkedList<OperationModel> operationModelTargetTransactionList, UserDto userDto,
+                                                      Map<Long, Long> newFundIdToSnowflakeIdMap) throws SQLException {
         Future<Integer> insertFuture = dtpSyncExecutor1.submit(() -> {
             try {
-                return insertNewTransaction(preprocessedSyncTransactions.getInsertTransactionDtoList(), preprocessedSyncTransactions.getFundIdToModelMap());
+                return insertNewTransaction(preprocessedSyncTransactions.getInsertTransactionDtoList(), preprocessedSyncTransactions.getFundIdToModelMap(), newFundIdToSnowflakeIdMap);
             } catch (SQLException e) {
                 log.error("insertNewTransaction error", e);
                 throw e;
@@ -278,9 +316,15 @@ public class TransactionService {
         Future<List<TransactionDto>> updateFuture = dtpSyncExecutor1.submit(() -> {
             try(SqlSession session = sqlSessionFactory.openSession(false)) {
                 try {
-                    updateTransactionsByRowKey(preprocessedSyncTransactions.getUpdateTransactionDtoList(), preprocessedSyncTransactions.getFundIdToModelMap());
+                    updateTransactionsByRowKey(preprocessedSyncTransactions.getUpdateTransactionDtoList(), preprocessedSyncTransactions.getFundIdToModelMap(), newFundIdToSnowflakeIdMap);
                     session.commit();
-                    Future<List<TransactionDto>> transactionDtoFromUpdateOperationDtoFuture = dtpSyncExecutor1.submit(() -> getTransactionsByUpdateOperationDtoListAndBroadcastToEditors(preprocessedSyncTransactions.getUpdateTransactionOperationDtoList(), preprocessedSyncTransactions.getLedgerIdToModelMap(), preprocessedSyncTransactions.getFundIdToModelMap(), userDto.getUserId()));
+                    try {
+                        insertFuture.get();
+                    } catch (Exception e) {
+                        log.error("insertNewTransaction error", e);
+                        throw new SQLException(e);
+                    }
+                    Future<List<TransactionDto>> transactionDtoFromUpdateOperationDtoFuture = dtpSyncExecutor1.submit(() -> getTransactionsByOperationDtoListAndBroadcastToEditors(preprocessedSyncTransactions.getTransactionOperationDtoList(), preprocessedSyncTransactions.getLedgerIdToModelMap(), preprocessedSyncTransactions.getFundIdToModelMap(), userDto.getUserId()));
                     preprocessedSyncTransactions.getReturnTransactionDtoList().addAll(getTransactionsByOperationModelList(operationModelTargetTransactionList));
                     try {
                         preprocessedSyncTransactions.getReturnTransactionDtoList().addAll(transactionDtoFromUpdateOperationDtoFuture.get());
@@ -297,7 +341,6 @@ public class TransactionService {
             }
         });
         try {
-            insertFuture.get();
             return new ProcessedSyncTransactions(
                     updateFuture.get(),
                     preprocessedSyncTransactions.getNoPermissionUpdateTransactionInputDtoList(),
@@ -333,29 +376,30 @@ public class TransactionService {
     /**
      * Get transactions by update operation list and broadcast to other editors.
      *
-     * @param updateOperationDtoList operation dto list of self
+     * @param transactionOperationDtoList operation dto list of self
      * @param ledgerIdToModelMap ledger id to model map
      * @param fundIdToModelMap fund id to model map
      * @param userId user id
      * @return transaction dto list
      */
-    public List<TransactionDto> getTransactionsByUpdateOperationDtoListAndBroadcastToEditors(List<OperationDto> updateOperationDtoList,
-                                                                                             Map<Long, LedgerModel> ledgerIdToModelMap,
-                                                                                             Map<Long, FundModel> fundIdToModelMap,
-                                                                                             Long userId
+    public List<TransactionDto> getTransactionsByOperationDtoListAndBroadcastToEditors(List<OperationDto> transactionOperationDtoList,
+                                                                                       Map<Long, LedgerModel> ledgerIdToModelMap,
+                                                                                       Map<Long, FundModel> fundIdToModelMap,
+                                                                                       Long userId
     ) throws SQLException {
         try(SqlSession session = sqlSessionFactory.openSession(false)) {
             try {
                 List<TransactionDto> transactionDtoList = new ArrayList<>();
-                for (OperationDto updateOperationDto : updateOperationDtoList) {
+                for (OperationDto updateOperationDto : transactionOperationDtoList) {
                     TransactionDto selectedUpdateTransactionDto = selectTransactionDtoByRowKeyAndTableName(updateOperationDto.getTargetRowKey(), updateOperationDto.getTargetTable());
                     transactionDtoList.add(selectedUpdateTransactionDto);
-                    List<Long> transactionEditorIds = ledgerIdToModelMap.get(selectedUpdateTransactionDto.getLedgerId()).getLedgerInfo().getEditors();
+                    List<Long> ledgerEditorIds = ledgerIdToModelMap.get(selectedUpdateTransactionDto.getLedgerId()).getLedgerInfo().getEditors();
                     List<Long> fundEditorIds = fundIdToModelMap.get(selectedUpdateTransactionDto.getFundId()).getFundInfo().getEditors();
-                    if (transactionEditorIds.size() > 1 || fundEditorIds.size() > 1) {
-                        broadcastOperationToEditors(userId, updateOperationDto, transactionEditorIds);
+                    if (ledgerEditorIds.size() > 1 || fundEditorIds.size() > 1) {
+                        broadcastOperationToEditors(userId, updateOperationDto, ledgerEditorIds);
                         broadcastOperationToEditors(userId, updateOperationDto, fundEditorIds);
                     }
+                    operationMapper.insertOperation(updateOperationDto);
                 }
                 session.commit();
                 return transactionDtoList;
@@ -395,11 +439,18 @@ public class TransactionService {
      * @return the number of rows affected
      * @throws SQLException sql exception
      */
-    public int insertNewTransaction (List<UpsertTransactionDto> insertTransactionDtoList, Map<Long, FundModel> fundIdToModelMap) throws SQLException {
+    public int insertNewTransaction (List<UpsertTransactionDto> insertTransactionDtoList, Map<Long, FundModel> fundIdToModelMap, Map<Long, Long> newFundIdToSnowflakeIdMap) throws SQLException {
         int affectedRows = 0;
         try(SqlSession session = sqlSessionFactory.openSession(false)) {
             try {
                 for (UpsertTransactionDto upsertTransactionDto : insertTransactionDtoList) {
+                    Long fundIdInMap = newFundIdToSnowflakeIdMap.get(upsertTransactionDto.getFundId());
+                    // if new fund, we don't need to calculate balance
+                    if (fundIdInMap != null) {
+                        upsertTransactionDto.setFundId(fundIdInMap);
+                        affectedRows += transactionMapper.insertTransaction(upsertTransactionDto);
+                        continue;
+                    }
                     affectedRows += transactionMapper.insertTransaction(upsertTransactionDto);
                     FundModel fundModel = fundIdToModelMap.get(upsertTransactionDto.getFundId());
                     if (Math.abs(upsertTransactionDto.getMoney()) < 1e-6f) {
@@ -429,7 +480,8 @@ public class TransactionService {
      * @return the number of rows affected
      * @throws SQLException sql exception
      */
-    public int updateTransactionsByRowKey(List<UpsertTransactionDto> updateTransactionDtoList, Map<Long, FundModel> fundIdToModelMap) throws SQLException {
+    public int updateTransactionsByRowKey(List<UpsertTransactionDto> updateTransactionDtoList, Map<Long, FundModel> fundIdToModelMap,
+                                          Map<Long, Long> newFundIdToSnowflakeIdMap) throws SQLException {
         int affectedRows = 0;
         try {
             for (UpsertTransactionDto upsertTransactionDto : updateTransactionDtoList) {
@@ -442,13 +494,18 @@ public class TransactionService {
                             Long.MAX_VALUE - upsertTransactionDto.getTransactionId(),
                             null
                     );
-                    FundModel fundModel = fundIdToModelMap.get(upsertTransactionDto.getFundId());
-                    boolean isOldTransactionPositive = TransactionTypeEnum.isPositive(oldTransactionModel.getTransactionInfo().getTypeId());
-                    boolean isNewTransactionPositive = TransactionTypeEnum.isPositive(upsertTransactionDto.getTypeId());
-                    fundModel.getFundInfo().setBalance(fundModel.getFundInfo().getBalance()
-                            + (isOldTransactionPositive ? -oldTransactionModel.getTransactionInfo().getMoney() : oldTransactionModel.getTransactionInfo().getMoney())
-                            + (isNewTransactionPositive ? upsertTransactionDto.getMoney() : -upsertTransactionDto.getMoney()));
-                    fundModel.getUpdateInfo().setUpdateAt(upsertTransactionDto.getUpdateAt());
+                    Long tempFundId = newFundIdToSnowflakeIdMap.get(upsertTransactionDto.getFundId());
+                    if (tempFundId != null) {
+                        upsertTransactionDto.setFundId(tempFundId);
+                    } else {
+                        FundModel fundModel = fundIdToModelMap.get(upsertTransactionDto.getFundId());
+                        boolean isOldTransactionPositive = TransactionTypeEnum.isPositive(oldTransactionModel.getTransactionInfo().getTypeId());
+                        boolean isNewTransactionPositive = TransactionTypeEnum.isPositive(upsertTransactionDto.getTypeId());
+                        fundModel.getFundInfo().setBalance(fundModel.getFundInfo().getBalance()
+                                + (isOldTransactionPositive ? -oldTransactionModel.getTransactionInfo().getMoney() : oldTransactionModel.getTransactionInfo().getMoney())
+                                + (isNewTransactionPositive ? upsertTransactionDto.getMoney() : -upsertTransactionDto.getMoney()));
+                        fundModel.getUpdateInfo().setUpdateAt(upsertTransactionDto.getUpdateAt());
+                    }
                 }
                 affectedRows += transactionMapper.updateTransaction(upsertTransactionDto);
             }

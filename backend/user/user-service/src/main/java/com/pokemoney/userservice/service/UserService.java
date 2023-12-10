@@ -249,7 +249,9 @@ public class UserService {
                 }
             }
             throw new RuntimeException("Failed to get verification code from redis.", e);
-        } catch (Exception e) {
+        } catch (GenericForbiddenError e) {
+            throw e;
+        }catch (Exception e) {
             throw new RuntimeException("Failed to get verification code from redis.", e);
         }
     }

@@ -20,16 +20,36 @@ public class FundSqlProvider {
      */
     public String buildSqlGetFundByRowKey(Map<String, Object> params) {
         List<String> selectedFieldsName = (List<String>) params.get("selectedFieldsName");
-        SQL sql = new SQL()
-                .FROM(Constants.FUND_TABLE)
-                .WHERE("(region_id, user_id, fund_id) = (#{regionId}, #{userId}, #{fundId}");
+        Integer regionId = (Integer) params.get("regionId");
+        Long userId = (Long) params.get("userId");
+        Long fundId = (Long) params.get("fundId");
+        System.out.println(regionId);
+        System.out.println(userId);
+        System.out.println(fundId);
+//        SQL sql = new SQL()
+//                .FROM(Constants.FUND_TABLE)
+//                .WHERE("(region_id, user_id, fund_id) = (#{regionId}, #{userId}, #{fundId})");
+//        if (selectedFieldsName == null || selectedFieldsName.isEmpty()) {
+//            sql.SELECT("*");
+//        } else {
+//            for (String selectedFieldName : selectedFieldsName) {
+//                sql.SELECT(selectedFieldName);
+//            }
+//        }
+//        System.out.println(sql.toString());
+//        return sql.toString();
+        StringBuilder sql = new StringBuilder("SELECT ");
         if (selectedFieldsName == null || selectedFieldsName.isEmpty()) {
-            sql.SELECT("*");
+            sql.append("region_id, user_id, fund_id, fund_info.name, fund_info.balance, fund_info.owner, fund_info.editors, fund_info.create_at, update_info.update_at, update_info.del_flag");
         } else {
-            for (String selectedFieldName : selectedFieldsName) {
-                sql.SELECT(selectedFieldName);
+            for (int i = 0; i < selectedFieldsName.size(); i++) {
+                sql.append(selectedFieldsName.get(i));
+                if (i != selectedFieldsName.size() - 1) {
+                    sql.append(", ");
+                }
             }
         }
+        sql.append(" FROM " + Constants.FUND_TABLE + " WHERE (region_id,user_id,fund_id) = (#{regionId},#{userId},#{fundId})");
         return sql.toString();
     }
 
@@ -105,7 +125,7 @@ public class FundSqlProvider {
         if (upsertFundDto.getOwner() != null) {
             sql.append(", fund_info.owner");
         }
-        if (upsertFundDto.getEditors() != null) {
+        if (upsertFundDto.getEditors() != null && !upsertFundDto.getEditors().isEmpty()) {
             sql.append(", fund_info.editors");
         }
         if (upsertFundDto.getCreateAt() != null) {
@@ -127,7 +147,7 @@ public class FundSqlProvider {
         if (upsertFundDto.getOwner() != null) {
             sql.append(", #{owner}");
         }
-        if (upsertFundDto.getEditors() != null) {
+        if (upsertFundDto.getEditors() != null && !upsertFundDto.getEditors().isEmpty()) {
             sql.append(", #{editors, jdbcType=ARRAY,typeHandler=com.pokemoney.hadoop.hbase.phoenix.handler.LongListToArrayTypeHandler}");
         }
         if (upsertFundDto.getCreateAt() != null) {

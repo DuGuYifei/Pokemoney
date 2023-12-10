@@ -3,6 +3,9 @@ package com.pokemoney.hadoop.hbase.dto.user;
 import com.pokemoney.hadoop.hbase.phoenix.model.UserModel;
 import lombok.*;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * user DTO
  */
@@ -71,5 +74,45 @@ public class UserDto {
                 .appInfo(UserAppInfoDto.fromAppModel(userModel.getAppInfo()))
                 .notification(NotificationDto.getNotificationsFromNotificationModel(userModel.getNotifications()))
                 .build();
+    }
+
+    public UserDto checkNullList() {
+        if (this.fundInfo == null) {
+            this.fundInfo = UserFundInfoDto.builder().build();
+        }
+        if (this.fundInfo.getFunds() == null) {
+            this.fundInfo.setFunds(List.of());
+        }
+        if (this.fundInfo.getDelFunds() == null) {
+            this.fundInfo.setDelFunds(List.of());
+        }
+        if (this.ledgerInfo == null) {
+            this.ledgerInfo = UserLedgerBookInfoDto.builder().build();
+        }
+        if (this.ledgerInfo.getLedgers() == null) {
+            this.ledgerInfo.setLedgers(List.of());
+        }
+        if (this.ledgerInfo.getDelLedgers() == null) {
+            this.ledgerInfo.setDelLedgers(List.of());
+        }
+        if (this.appInfo == null) {
+            this.appInfo = UserAppInfoDto.builder().build();
+        }
+        if (this.appInfo.getCategories() == null) {
+            this.appInfo.setCategories(List.of());
+        }
+        if (this.appInfo.getSubcategories() == null) {
+            this.appInfo.setSubcategories(List.of());
+        }
+        if (this.notification == null) {
+            this.notification = NotificationDto.builder().build();
+        }
+        if (this.notification.getFundInvitation() == null) {
+            this.notification.setFundInvitation(List.of());
+        }
+        if (this.notification.getLedgerInvitation() == null) {
+            this.notification.setLedgerInvitation(List.of());
+        }
+        return this;
     }
 }

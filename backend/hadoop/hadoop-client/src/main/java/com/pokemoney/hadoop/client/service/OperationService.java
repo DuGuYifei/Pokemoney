@@ -62,8 +62,19 @@ public class OperationService {
      * @return affected rows
      * @throws SQLException sql exception
      */
-    public int insertOperations(List<OperationDto>[] operationsListArray) throws SQLException {
+    public Integer insertOperations(List<List<OperationDto>> operationsListArray) throws SQLException {
         int affectedRows = 0;
+        // 如果每个元素都是空的，那么就不需要插入了
+        boolean allEmpty = true;
+        for (List<OperationDto> operationsList : operationsListArray) {
+            if (operationsList != null && !operationsList.isEmpty()) {
+                allEmpty = false;
+                break;
+            }
+        }
+        if (allEmpty) {
+            return affectedRows;
+        }
         try(SqlSession sqlSession = sqlSessionFactory.openSession(false)) {
             try {
                 for (List<OperationDto> operationsList : operationsListArray) {
@@ -90,10 +101,13 @@ public class OperationService {
     public List<OperationModel> getOperationsByOperationId(long userId, long operationId) {
         int regionId = RowKeyUtils.getRegionId(userId);
         long reverseOperationId = Long.MAX_VALUE - operationId;
+        List<OperationModel> result;
         if (operationId == 0) {
-            return operationMapper.getOperationsLowerReverseIdDistinctTargetRowKeyWithLimit(regionId, userId, reverseOperationId, Constants.TransactionLazyTransferNum);
+            result = operationMapper.getOperationsLowerReverseIdDistinctTargetRowKeyWithLimit(regionId, userId, reverseOperationId, Constants.TransactionLazyTransferNum);
+        } else {
+            result = operationMapper.getOperationsLowerReverseIdDistinctTargetRowKey(regionId, userId, reverseOperationId);
         }
-        return operationMapper.getOperationsLowerReverseIdDistinctTargetRowKey(regionId, userId, reverseOperationId);
+        return result;
     }
 
     /**

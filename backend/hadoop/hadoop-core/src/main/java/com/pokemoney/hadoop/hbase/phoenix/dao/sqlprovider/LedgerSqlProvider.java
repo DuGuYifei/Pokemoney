@@ -22,7 +22,7 @@ public class LedgerSqlProvider {
         List<String> selectedFieldsName = (List<String>) params.get("selectedFieldsName");
         SQL sql = new SQL()
                 .FROM(Constants.LEDGER_BOOK_TABLE)
-                .WHERE("(region_id, user_id, ledger_id) = (#{regionId}, #{userId}, #{ledgerId}");
+                .WHERE("(region_id, user_id, ledger_id) = (#{regionId}, #{userId}, #{ledgerId})");
         if (selectedFieldsName == null || selectedFieldsName.isEmpty()) {
             sql.SELECT("*");
         } else {
@@ -105,7 +105,7 @@ public class LedgerSqlProvider {
         if (upsertLedgerDto.getOwner() != null) {
             sql.append(", ledger_info.owner");
         }
-        if (upsertLedgerDto.getEditors() != null) {
+        if (upsertLedgerDto.getEditors() != null && !upsertLedgerDto.getEditors().isEmpty()) {
             sql.append(", ledger_info.editors");
         }
         if (upsertLedgerDto.getCreateAt() != null) {
@@ -127,7 +127,7 @@ public class LedgerSqlProvider {
         if (upsertLedgerDto.getOwner() != null) {
             sql.append(", #{owner}");
         }
-        if (upsertLedgerDto.getEditors() != null) {
+        if (upsertLedgerDto.getEditors() != null && !upsertLedgerDto.getEditors().isEmpty()) {
             sql.append(", #{editors, jdbcType=ARRAY, typeHandler=com.pokemoney.hadoop.hbase.phoenix.handler.LongListToArrayTypeHandler}");
         }
         if (upsertLedgerDto.getCreateAt() != null) {

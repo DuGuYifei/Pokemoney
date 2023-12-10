@@ -8,8 +8,10 @@ import com.pokemoney.hadoop.hbase.dto.category.CategoryDto;
 import com.pokemoney.hadoop.hbase.dto.category.SubcategoryDto;
 import com.pokemoney.hadoop.hbase.dto.fund.FundDto;
 import com.pokemoney.hadoop.hbase.dto.ledger.LedgerDto;
+import com.pokemoney.hadoop.hbase.dto.operation.OperationDto;
 import com.pokemoney.hadoop.hbase.dto.sync.*;
 import com.pokemoney.hadoop.hbase.dto.transaction.TransactionDto;
+import com.pokemoney.hadoop.hbase.dto.user.NotificationDto;
 import com.pokemoney.hadoop.hbase.dto.user.UpsertUserAppInfoDto;
 import com.pokemoney.hadoop.hbase.dto.user.UpsertUserDto;
 import com.pokemoney.hadoop.hbase.dto.user.UserDto;
@@ -20,6 +22,7 @@ import com.pokemoney.hadoop.hbase.phoenix.model.UserModel;
 import com.pokemoney.hadoop.hbase.utils.JsonUtils;
 import com.pokemoney.hadoop.hbase.utils.RowKeyUtils;
 import com.pokemoney.user.service.api.VerifyUserJwtWithServiceNameResponseDto;
+import jdk.dynalink.Operation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.phoenix.shaded.org.apache.curator.framework.CuratorFramework;
 import org.apache.phoenix.shaded.org.apache.curator.framework.recipes.locks.InterProcessMutex;
@@ -129,140 +132,196 @@ public class SyncController {
         long userId = user.getUserId();
         // verify auth
         VerifyUserJwtWithServiceNameResponseDto verifiedUserInfo = authService.verifyUser(userId, auth);
-        System.out.println("verifiedUserInfo: " + verifiedUserInfo);
         String lockPath = com.pokemoney.hadoop.zookeeper.Constants.ExclusiveOperationMutexPathPrefix + "/" + userId;
         InterProcessMutex lock = new InterProcessMutex(curatorFramework, lockPath);
         try {
             if (lock.acquire(6, TimeUnit.SECONDS)) {
+                // get user model from db
+                Future<UserModel> userModelFuture = dtpSyncExecutor1.submit(() -> userService.getUserByUserId(userId));
+                // get all operations which operationId > maxOperationId
+                Future<List<OperationModel>> operationModelListFuture = dtpSyncExecutor1.submit(() -> operationService.getOperationsByOperationId(userId, maxOperationId));
+                UserModel userModel;
+                List<OperationModel> operationModelList;
+                Long returnMaxOperationId = maxOperationId;
                 try {
-                    // get user model from db
-                    Future<UserModel> userModelFuture = dtpSyncExecutor1.submit(() -> userService.getUserByUserId(userId));
-                    System.out.println("userModelFuture: " + userModelFuture);
-                    // get all operations which operationId > maxOperationId
-                    Future<List<OperationModel>> operationModelLinkedListFuture = dtpSyncExecutor1.submit(() -> operationService.getOperationsByOperationId(userId, maxOperationId));
-                    System.out.println("operationModelLinkedListFuture: " + operationModelLinkedListFuture);
-                    UserModel userModel;
-                    List<OperationModel> operationModelLinkedList;
-                    Long returnMaxOperationId = maxOperationId;
-                    try {
-                        userModel = userModelFuture.get();
-                        operationModelLinkedList = operationModelLinkedListFuture.get();
-                        System.out.println("userModel: " + userModel);
-                    } catch (Exception e) {
-                        log.error("syncAll error when get user model and opt model list. ", e);
-                        throw new GenericGraphQlForbiddenException("server is busy, please try later~~");
-                    }
-                    if (userModel == null) {
-                        log.error("syncAll error when get user. User not exists. userId: {}", userId);
-                        throw new GenericGraphQlForbiddenException("User not exists");
-                    }
-                    if (operationModelLinkedList == null) {
-                        log.error("syncAll error when get operations. Operation is empty. userId: {}", userId);
-                        throw new GenericGraphQlForbiddenException("Something went wrong, please try later~~");
-                    }
-                    // sync subcategory
-                    Future<List<SubcategoryDto>> subcategoryFuture = dtpSyncExecutor1.submit(() -> subcategoryService.syncSubcategory(subcategory, userModel));
-                    System.out.println("subcategoryFuture: " + subcategoryFuture);
-                    DividedOperationLists dividedOperationLists = operationService.divideOperationList(operationModelLinkedList);
-                    UserDto userDto = UserDto.fromUserModel(userModel);
-                    userDto.setEmail(verifiedUserInfo.getEmail());
-                    userDto.setName(userModel.getUserInfo().getName());
-                    Long userInfoUpdateAt = userModel.getUserInfo().getUpdateUserInfoAt();
-                    if (!userDto.getName().equals(user.getName())) {
-                        if (user.getUpdateAt() > userInfoUpdateAt) {
-                            userDto.setName(user.getName());
-                            userInfoUpdateAt = user.getUpdateAt();
-                        }
-                    }
-                    // sync Fund
-                    Future<ProcessedSyncFunds> fundFuture = dtpSyncExecutor1.submit(() -> fundService.syncFund(fundService.preprocessSyncFund(maxOperationId, fund, dividedOperationLists.getFundOperationList(), userDto), dividedOperationLists.getFundOperationList()));
-                    // sync Ledger
-                    Future<ProcessedSyncLedgers> ledgerFuture = dtpSyncExecutor1.submit(() -> ledgerService.syncLedger(ledgerService.preprocessSyncLedger(maxOperationId, ledger, dividedOperationLists.getLedgerOperationList(), userDto), dividedOperationLists.getLedgerOperationList()));
-                    // update user dto
-                    List<SubcategoryDto> subcategoryDtoList;
-                    List<FundDto> returnSyncFunds;
-                    List<LedgerDto> returnSyncLedgers;
-                    try {
-                        subcategoryDtoList = subcategoryFuture.get();
-                    } catch (Exception e) {
-                        log.error("syncAll error when get subcategory from future. userId: {}", userId, e);
-                        throw new GenericGraphQlForbiddenException("Something went wrong. You can try again and it will be faster this time!");
-                    }
-                    userDto.getAppInfo().setSubcategories(subcategoryDtoList);
-                    try {
-                        ProcessedSyncFunds processedSyncFunds = fundFuture.get();
-                        returnSyncFunds = processedSyncFunds.getProcessedSyncFunds();
-                        returnMaxOperationId = Long.max(processedSyncFunds.getMaxOperationId(), returnMaxOperationId);
-                    } catch (Exception e) {
-                        log.error("syncAll error when get fund from future. userId: {}", userId, e);
-                        throw new GenericGraphQlForbiddenException("Something went wrong. You can try again and it will be faster this time!");
-                    }
-                    try {
-                        ProcessedSyncLedgers processedSyncLedgers = ledgerFuture.get();
-                        returnSyncLedgers = processedSyncLedgers.getProcessedSyncLedgers();
-                        returnMaxOperationId = Long.max(processedSyncLedgers.getMaxOperationId(), returnMaxOperationId);
-                    } catch (Exception e) {
-                        log.error("syncAll error when get ledger from future. userId: {}", userId, e);
-                        throw new GenericGraphQlForbiddenException("Something went wrong. You can try again and it will be faster this time!");
-                    }
-                    // sync transaction
-                    Future<ProcessedSyncTransactions> transactionFuture = dtpSyncExecutor1.submit(() -> transactionService.syncTransaction(transactionService.preprocessSyncTransaction(maxOperationId, transaction, dividedOperationLists.getTransactionOperationList(), userDto), dividedOperationLists.getTransactionOperationList(), userDto));
-                    List<TransactionDto> returnSyncTransactions;
-                    try {
-                        ProcessedSyncTransactions processedSyncTransactions = transactionFuture.get();
-                        returnSyncTransactions = processedSyncTransactions.getProcessedSyncTransactions();
-                        returnMaxOperationId = Long.max(processedSyncTransactions.getMaxOperationId(), returnMaxOperationId);
-                        Map<Long, FundModel> fundModelWithNewBalanceMap = processedSyncTransactions.getFundModels();
-                        // go through fundModelWithNewBalanceMap, if returnSyncFunds contains fundModelWithNewBalanceMap's fundId, update returnSyncFunds's balance, else add fundModelWithNewBalanceMap to returnSyncFunds
-                        List<FundModel> returnSyncFundModels = new ArrayList<>();
-                        for (Map.Entry<Long, FundModel> entry : fundModelWithNewBalanceMap.entrySet()) {
-                            Long fundId = entry.getKey();
-                            FundModel fundModel = entry.getValue();
-                            boolean isFound = false;
-                            for (FundDto fundDto : returnSyncFunds) {
-                                if (fundDto.getFundId().equals(fundId)) {
-                                    fundDto.setBalance(fundModel.getFundInfo().getBalance());
-                                    isFound = true;
-                                    break;
-                                }
-                            }
-                            if (!isFound) {
-                                returnSyncFundModels.add(fundModel);
-                            }
-                        }
-                        returnSyncFunds = fundService.addFundModelListToFundDtoListDoUpdateAndBroadcast(returnSyncFundModels, returnSyncFunds);
-                    } catch (Exception e) {
-                        log.error("syncAll error when get transaction from future. userId: {}", userId, e);
-                        throw new GenericGraphQlForbiddenException("Something went wrong. You can try again and it will be faster this time!");
-                    }
-                    List<CategoryDto> categoryDtoList = CategoryEnum.getInitCategoryDtoList();
-                    UpsertUserDto upsertUserDto = new UpsertUserDto(
-                            RowKeyUtils.getRegionId(userId),
-                            userDto.getUserId(),
-                            userDto.getEmail(),
-                            userDto.getName(),
-                            userInfoUpdateAt,
-                            userDto.getFundInfo(),
-                            userDto.getLedgerInfo(),
-                            // app info
-                            UpsertUserAppInfoDto.builder().jsonCategories(null).jsonSubcategories(JsonUtils.GSON.toJson(subcategoryDtoList)).build(),
-                            userDto.getNotification().generateJsonString()
-                    );
-                    userService.updateUser(upsertUserDto);
-
-                    return new SyncResponseDto(
-                            userDto,
-                            returnSyncFunds,
-                            returnSyncLedgers,
-                            returnSyncTransactions,
-                            categoryDtoList,
-                            subcategoryDtoList,
-                            userDto.getNotification(),
-                            returnMaxOperationId
-                    );
-                } catch (GenericGraphQlForbiddenException e) {
-                    throw e;
+                    userModel = userModelFuture.get();
+                    operationModelList = operationModelListFuture.get();
+                } catch (Exception e) {
+                    log.error("syncAll error when get user model and opt model list. ", e);
+                    throw new GenericGraphQlForbiddenException("server is busy, please try later~~");
                 }
+                if (userModel == null) {
+                    log.error("syncAll error when get user. User not exists. userId: {}", userId);
+                    throw new GenericGraphQlForbiddenException("User not exists");
+                }
+                if (operationModelList == null) {
+                    log.error("syncAll error when get operations. Operation is empty. userId: {}", userId);
+                    throw new GenericGraphQlForbiddenException("Something went wrong, please try later~~");
+                }
+                // sync subcategory
+                Future<List<SubcategoryDto>> subcategoryFuture = dtpSyncExecutor1.submit(() -> subcategoryService.syncSubcategory(subcategory, userModel));
+                System.out.println("subcategoryFuture: " + subcategoryFuture);
+                DividedOperationLists dividedOperationLists = operationService.divideOperationList(operationModelList);
+                if (dividedOperationLists == null) {
+                    log.error("syncAll error when divide operation list. userId: {}", userId);
+                    throw new GenericGraphQlForbiddenException("Something went wrong, please try later~~");
+                }
+                if (dividedOperationLists.getFundOperationList().isEmpty()) {
+                    System.out.println("fundOperationList is empty");
+                } else {
+                    System.out.println("fundOperationList is not empty");
+                }
+                System.out.println("dividedOperationLists: " + dividedOperationLists);
+                UserDto userDto = UserDto.fromUserModel(userModel);
+                System.out.println("userDto: " + userDto);
+                userDto.setEmail(verifiedUserInfo.getEmail());
+                System.out.println("userDto email: " + userDto.getEmail());
+                userDto.setName(userModel.getUserInfo().getName());
+                System.out.println("userDto name: " + userDto.getName());
+                Long userInfoUpdateAt = userModel.getUserInfo().getUpdateUserInfoAt();
+                if (!userDto.getName().equals(user.getName())) {
+                    if (user.getUpdateAt() > userInfoUpdateAt) {
+                        userDto.setName(user.getName());
+                        userInfoUpdateAt = user.getUpdateAt();
+                    }
+                }
+                System.out.println("userDto name: " + userDto.getName());
+                // sync Fund
+                Future<ProcessedSyncFunds> fundFuture = dtpSyncExecutor1.submit(() -> fundService.syncFund(fundService.preprocessSyncFund(maxOperationId, fund, dividedOperationLists.getFundOperationList(), userDto), dividedOperationLists.getFundOperationList()));
+                // sync Ledger
+                Future<ProcessedSyncLedgers> ledgerFuture = dtpSyncExecutor1.submit(() -> ledgerService.syncLedger(ledgerService.preprocessSyncLedger(maxOperationId, ledger, dividedOperationLists.getLedgerOperationList(), userDto), dividedOperationLists.getLedgerOperationList()));
+                // update user dto
+                System.out.println("wait 2 futures");
+                List<SubcategoryDto> subcategoryDtoList;
+                List<FundDto> returnSyncFunds;
+                List<LedgerDto> returnSyncLedgers;
+                try {
+                    System.out.println("get subcategoryDtoList futures");
+                    subcategoryDtoList = subcategoryFuture.get();
+                    System.out.println("get subcategoryDtoList futures done");
+                } catch (Exception e) {
+                    log.error("syncAll error when get subcategory from future. userId: {}", userId, e);
+                    throw new GenericGraphQlInternalException("Something went wrong. You can try again and it will be faster this time!");
+                }
+                userDto.getAppInfo().setSubcategories(subcategoryDtoList);
+                System.out.println("userDto getAppInfo: " + userDto.getAppInfo());
+                ProcessedSyncFunds processedSyncFunds;
+                try {
+                    processedSyncFunds = fundFuture.get();
+                    System.out.println("get processedSyncFunds futures");
+                    returnSyncFunds = processedSyncFunds.getProcessedSyncFunds();
+                    System.out.println("get processedSyncFunds futures done");
+                    returnMaxOperationId = Long.max(processedSyncFunds.getMaxOperationId(), returnMaxOperationId);
+                    System.out.println("returnMaxOperationId: " + returnMaxOperationId);
+                } catch (Exception e) {
+                    log.error("syncAll error when get fund from future. userId: {}", userId, e);
+                    throw new GenericGraphQlInternalException("Something went wrong. You can try again and it will be faster this time!");
+                }
+                ProcessedSyncLedgers processedSyncLedgers;
+                try {
+                    processedSyncLedgers = ledgerFuture.get();
+                    System.out.println("get processedSyncLedgers futures");
+                    returnSyncLedgers = processedSyncLedgers.getProcessedSyncLedgers();
+                    System.out.println("get processedSyncLedgers futures done");
+                    returnMaxOperationId = Long.max(processedSyncLedgers.getMaxOperationId(), returnMaxOperationId);
+                    System.out.println("returnMaxOperationId: " + returnMaxOperationId);
+                    // insert ledger operations
+                } catch (Exception e) {
+                    log.error("syncAll error when get ledger from future. userId: {}", userId, e);
+                    throw new GenericGraphQlInternalException("Something went wrong. You can try again and it will be faster this time!");
+                }
+                // sync transaction
+                Future<ProcessedSyncTransactions> transactionFuture = dtpSyncExecutor1.submit(() -> transactionService.syncTransaction(
+                        transactionService.preprocessSyncTransaction(
+                                maxOperationId,
+                                transaction,
+                                dividedOperationLists.getTransactionOperationList(),
+                                userDto,
+                                processedSyncFunds.getNewFundIdAndSnowflakeIdMap(),
+                                processedSyncLedgers.getNewLedgerIdAndSnowflakeIdMap()
+                        ),
+                        dividedOperationLists.getTransactionOperationList(),
+                        userDto,
+                        processedSyncFunds.getNewFundIdAndSnowflakeIdMap()
+                ));
+                System.out.println("wait transactionFuture");
+                List<TransactionDto> returnSyncTransactions;
+                ProcessedSyncTransactions processedSyncTransactions;
+
+                try {
+                    processedSyncTransactions = transactionFuture.get();
+                } catch (Exception e) {
+                    log.error("syncAll error when get transaction from future. userId: {}", userId, e);
+                    throw new GenericGraphQlInternalException("Something went wrong. You can try again and it will be faster this time!");
+                }
+
+                System.out.println("get processedSyncTransactions futures");
+                returnSyncTransactions = processedSyncTransactions.getProcessedSyncTransactions();
+                System.out.println("get processedSyncTransactions futures done");
+                returnMaxOperationId = Long.max(processedSyncTransactions.getMaxOperationId(), returnMaxOperationId);
+                System.out.println("returnMaxOperationId: " + returnMaxOperationId);
+                Map<Long, FundModel> fundModelWithNewBalanceMap = processedSyncTransactions.getFundModels();
+                Future<Integer> broadcastFundOperationFuture = dtpSyncExecutor1.submit(() -> fundService.broadcastFundByFundModels(fundModelWithNewBalanceMap.values().stream().toList(), userId));
+                System.out.println("fundModelWithNewBalanceMap: " + fundModelWithNewBalanceMap);
+                // go through fundModelWithNewBalanceMap, if returnSyncFunds contains fundModelWithNewBalanceMap's fundId, update returnSyncFunds's balance, else add fundModelWithNewBalanceMap to returnSyncFunds
+                List<FundModel> returnSyncFundModels = new ArrayList<>();
+                System.out.println("returnSyncFunds: " + returnSyncFunds);
+                for (Map.Entry<Long, FundModel> entry : fundModelWithNewBalanceMap.entrySet()) {
+                    Long fundId = entry.getKey();
+                    FundModel fundModel = entry.getValue();
+                    boolean isFound = false;
+                    for (FundDto fundDto : returnSyncFunds) {
+                        if (fundDto.getFundId().equals(fundId)) {
+                            fundDto.setBalance(fundModel.getFundInfo().getBalance());
+                            isFound = true;
+                            break;
+                        }
+                    }
+                    if (!isFound) {
+                        returnSyncFundModels.add(fundModel);
+                    }
+                }
+
+                System.out.println("returnSyncFundModels: " + returnSyncFundModels);
+                returnSyncFunds = fundService.addFundModelListToFundDtoListDoUpdateAndBroadcast(returnSyncFundModels, returnSyncFunds);
+                System.out.println("returnSyncFunds: " + returnSyncFunds);
+
+                List<CategoryDto> categoryDtoList = CategoryEnum.getInitCategoryDtoList();
+                System.out.println("categoryDtoList: " + categoryDtoList);
+                UpsertUserDto upsertUserDto = new UpsertUserDto(
+                        RowKeyUtils.getRegionId(userId),
+                        userDto.getUserId(),
+                        userDto.getEmail(),
+                        userDto.getName(),
+                        userInfoUpdateAt,
+                        userDto.getFundInfo(),
+                        userDto.getLedgerInfo(),
+                        // app info
+                        UpsertUserAppInfoDto.builder().jsonCategories(null).jsonSubcategories(JsonUtils.GSON.toJson(subcategoryDtoList)).build(),
+                        userDto.getNotification() == null? null : userDto.getNotification().generateJsonString()
+                );
+                System.out.println("upsertUserDto: " + upsertUserDto);
+                userService.updateUser(upsertUserDto);
+                System.out.println("updateUser done");
+
+                try {
+                    broadcastFundOperationFuture.get();
+                } catch (Exception e) {
+                    log.error("syncAll error when broadcast fund operation. userId: {}", userId, e);
+                    throw new GenericGraphQlInternalException("Something went wrong. You can try again and it will be faster this time!");
+                }
+                System.out.println("subcategories: " + userDto.getAppInfo().getSubcategories());
+                // check null to a list
+                return new SyncResponseDto(
+                        userDto.checkNullList(),
+                        returnSyncFunds != null? returnSyncFunds : List.of(),
+                        returnSyncLedgers != null? returnSyncLedgers : new ArrayList<>(),
+                        returnSyncTransactions != null? returnSyncTransactions : new ArrayList<>(),
+                        categoryDtoList != null? categoryDtoList : new ArrayList<>(),
+                        subcategoryDtoList != null? subcategoryDtoList : new ArrayList<>(),
+                        userDto.getNotification(),
+                        returnMaxOperationId
+                );
             }
         } catch (GenericGraphQlForbiddenException e) {
             throw e;

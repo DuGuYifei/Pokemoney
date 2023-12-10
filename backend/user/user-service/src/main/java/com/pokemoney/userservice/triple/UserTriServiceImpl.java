@@ -2,6 +2,7 @@ package com.pokemoney.userservice.triple;
 
 import com.pokemoney.commons.http.errors.GenericForbiddenError;
 import com.pokemoney.commons.http.errors.GenericNotFoundError;
+import com.pokemoney.commons.proto.ResponseCommonPart;
 import com.pokemoney.user.service.api.*;
 import com.pokemoney.user.service.api.exceptions.UserTriRpcException;
 import com.pokemoney.userservice.Exceptions.JwtVerifyException;
@@ -11,9 +12,11 @@ import com.pokemoney.userservice.service.PermissionService;
 import com.pokemoney.userservice.service.RoleService;
 import com.pokemoney.userservice.service.UserService;
 import com.pokemoney.userservice.vo.JwtInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.apache.dubbo.rpc.StatusRpcException;
 
+@Slf4j
 @DubboService(version = "1.0.0", protocol = "tri", group = "user", timeout = 10000)
 public class UserTriServiceImpl implements UserTriService {
     /**
@@ -67,6 +70,7 @@ public class UserTriServiceImpl implements UserTriService {
         try {
             jwtInfo = jwtService.verifyUserJwt(jwt, Long.toString(userId));
         } catch (JwtVerifyException.InvalidTokenException e) {
+            log.error("Invalid token: {}", jwt);
             throw new StatusRpcException(UserTriRpcException.INVALID_TOKEN);
         } catch (JwtVerifyException.InvalidUserException e) {
             throw new StatusRpcException(UserTriRpcException.INVALID_USER);
@@ -76,6 +80,7 @@ public class UserTriServiceImpl implements UserTriService {
                 roleService.verifyRoleByJwtInfo(jwtInfo, needRole);
             }
         } catch (GenericForbiddenError e) {
+            log.error("User {} has no enough role to access this service", userId);
             throw new StatusRpcException(UserTriRpcException.WRONG_ROLE);
         }
         try {
@@ -83,9 +88,11 @@ public class UserTriServiceImpl implements UserTriService {
                 permissionService.verifyPermissionByJwtInfo(jwtInfo, serviceName);
             }
         } catch (GenericForbiddenError | GenericNotFoundError e) {
+            log.error("User {} has no enough permission to access this service", userId);
             throw new StatusRpcException(UserTriRpcException.LOW_PERMISSION);
         }
         return VerifyUserJwtWithServiceNameResponseDto.newBuilder()
+                .setResponseCommonPart(ResponseCommonPart.newBuilder().setStatus(1).setMessage("Success").build())
                 .setUserId(userId)
                 .setEmail(jwtInfo.getEmail())
                 .setUsername(jwtInfo.getUsername())

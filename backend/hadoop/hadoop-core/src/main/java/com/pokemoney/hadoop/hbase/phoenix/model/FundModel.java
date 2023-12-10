@@ -9,8 +9,8 @@ import java.util.List;
  */
 @Data
 @Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class FundModel {
     /**
      * region id of Row key.
@@ -42,8 +42,8 @@ public class FundModel {
      */
     @Data
     @Builder
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @AllArgsConstructor(access = AccessLevel.PUBLIC)
+    @NoArgsConstructor(access = AccessLevel.PUBLIC)
     public static class FundInfo {
         /**
          * Fund name.
@@ -54,13 +54,13 @@ public class FundModel {
          */
         private Float balance;
         /**
-         * Fund editors.
-         */
-        private List<Long> editors;
-        /**
          * Fund owner.
          */
         private Long owner;
+        /**
+         * Fund editors.
+         */
+        private List<Long> editors;
         /**
          * Fund create at. Milliseconds since epoch 1970-01-01 00:00:00 UTC.
          */

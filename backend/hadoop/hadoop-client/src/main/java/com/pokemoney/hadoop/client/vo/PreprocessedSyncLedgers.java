@@ -8,7 +8,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * It is used to store the preprocessed sync ledgers.
@@ -35,16 +37,15 @@ public class PreprocessedSyncLedgers {
     /**
      * Update ledger operation dto list.
      */
-    private List<OperationDto> updateLedgerOperationDtoList = new ArrayList<>();
-    /**
-     * Insert ledger operation dto list.
-     */
-    private List<OperationDto> insertLedgerOperationDtoList = new ArrayList<>();
+    private List<OperationDto> ledgerOperationDtoList = new ArrayList<>();
     /**
      * No permission update ledger input dto list.
      */
     private List<SyncLedgerInputDto> noPermissionUpdateLedgerInputDtoList = new ArrayList<>();
-
+    /**
+     * Map of new ledger id and new snowflake id.
+     */
+    private Map<Long, Long> newLedgerIdAndSnowflakeIdMap = new HashMap<>();
     /**
      * Constructor
      *

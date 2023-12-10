@@ -18,6 +18,9 @@ public class TransactionUtils {
     public static String GetTableNameFromTimestamp(Long millis) {
         Date date = new Date(millis);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy_MM");
+        if (date.getTime() < Constants.TW_EPOCH) {
+            return Constants.TRANSACTION_TABLE_PREFIX + "bf202312";
+        }
         return Constants.TRANSACTION_TABLE_PREFIX + simpleDateFormat.format(date);
     }
 
