@@ -1,0 +1,92 @@
+server:
+  port: 8084
+
+dubbo:
+  registry:
+    address: nacos://localhost:8848
+    group: dubbo-java-basic
+    parameters:
+      register-consumer-url: true
+    subscribe: true
+  protocol:
+    name: tri
+    port: 20940
+  application:
+    name: hadoop-client
+    qos-port: 22224
+  config-center:
+    address: nacos://localhost:8848
+    group: dubbo-java-hadoop-client
+  metadata-report:
+    address: nacos://localhost:8848
+    group: dubbo-java-hadoop-client
+  provider:
+    load-balance: p2c
+  consumer:
+    check: false
+
+nacos:
+  config:
+    server-addr: localhost:8848
+    type: yaml
+    data-ids: hadoop-client-dev.yaml,hadoop-client-dtp.yaml
+    auto-refresh: true
+    group: dubbo-java-hadoop-client
+    bootstrap:
+      enable: true
+      log-enable: true
+
+
+graphql:
+  altair:
+    enabled: true
+    mapping: /api/v1/hadoop/client/altair
+    subscriptions:
+      timeout: 30
+      reconnect: false
+    static:
+      base-path: /
+    page-title: Altair
+    cdn:
+      enabled: false
+      version: 4.0.2
+    options:
+      endpoint-url: /api/v1/hadoop/client/graphql
+      subscriptions-endpoint: /subscriptions
+      initial-settings:
+        theme: dracula
+
+
+spring:
+  datasource:
+    url: jdbc:phoenix:43.131.33.18:2181
+    driver-class-name: org.apache.phoenix.jdbc.PhoenixDriver
+  kafka:
+    producer:
+      bootstrap-servers: 43.131.33.18:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+  mail:
+    title: ThreadPool Notify
+    host: smtp.gmail.com
+    port: 587
+    username: chnduguyifei
+    password: annysvynnlqnatrf
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          starttls:
+            enable: true
+            required: true
+
+
+zookeeper:
+  connect-string: 43.131.33.18:2181
+  retry:
+    count: 3
+    time: 1000
+  session:
+    timeout: 60000
+  connection:
+    timeout: 15000

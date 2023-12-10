@@ -44,10 +44,16 @@ message RedisDelRequestDto {
   optional string prefix = 2 [(buf.validate.field).string.max_len = 64];
 }
 
+message RedisResponseDto {
+  ResponseCommonPart responseCommonPart = 1;
+  optional RedisKeyValueDto data = 2;
+  optional RedisHashKeyValueDto hashData = 3;
+}
+
 service RedisTriService {
-  rpc Del(RedisDelRequestDto) returns (Response) {}
-  rpc Set(RedisKeyValueDto) returns (Response) {}
-  rpc Get(RedisKeyValueGetRequestDto) returns (Response) {}
-  rpc HSet(RedisHashKeyValueDto) returns (Response) {}
-  rpc HGet(RedisHashKeyValueGetRequestDto) returns (Response) {}
+  rpc Del(RedisDelRequestDto) returns (RedisResponseDto) {}
+  rpc Set(RedisKeyValueDto) returns (RedisResponseDto) {}
+  rpc Get(RedisKeyValueGetRequestDto) returns (RedisResponseDto) {}
+  rpc HSet(RedisHashKeyValueDto) returns (RedisResponseDto) {}
+  rpc HGet(RedisHashKeyValueGetRequestDto) returns (RedisResponseDto) {}
 }

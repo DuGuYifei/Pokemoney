@@ -1,0 +1,36 @@
+type Transaction {
+    transactionId: ID!
+    money: Float!
+    typeId: Int!
+    relevantEntity: String!
+    comment: String
+    fundId: String!
+    categoryId: Int!
+    subcategoryId: String!
+    ledgerId: String!
+    happenAt: String!
+    updateBy: ID!
+    updateAt: String!
+    delFlag: Int!
+}
+
+input TransactionFilter {
+    minMoney: Float
+    maxMoney: Float
+    typeIds: [Int]
+    relevantEntities: [String]
+    fundIds: [String]
+    categoryIds: [Int]
+    subcategoryIds: [String]
+    ledgerIds: [String]
+    minHappenAt: String
+    maxHappenAt: String
+    minUpdateAt: String
+    maxUpdateAt: String
+    delFlag: Int
+}
+
+extend type Query {
+    getTransaction(transactionId: ID!, userId: ID!, ledgerId: ID!): Transaction!
+    getTransactions(filter: TransactionFilter!, userId: ID!, ledgerId: ID!): [Transaction]!
+}

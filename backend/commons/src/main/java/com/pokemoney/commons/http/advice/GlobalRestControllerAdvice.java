@@ -18,7 +18,7 @@ import java.util.Set;
 
 
 /**
- * The global rest controller advice.
+ * The global restful controller advice.
  */
 @RestControllerAdvice
 @Slf4j

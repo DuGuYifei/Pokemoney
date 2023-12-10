@@ -1,0 +1,13 @@
+type Editor {
+    userId: ID!
+    email: String!
+    name: String!
+}
+
+input AddEditorInput {
+    email: String!
+}
+
+input RemoveEditorInput {
+    userId: ID!
+}

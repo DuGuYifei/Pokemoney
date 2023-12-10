@@ -1,13 +1,10 @@
 syntax = 'proto3';
 
-import "google/protobuf/any.proto";
-
 option java_multiple_files = true;
 option java_package = "com.pokemoney.commons.proto";
 option java_outer_classname = "CommonsProto";
 
-message Response {
+message ResponseCommonPart {
   int32 status = 1;
   string message = 2;
-  optional google.protobuf.Any data = 3;
 }
