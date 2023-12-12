@@ -136,17 +136,26 @@ class _TransactionsPageState extends State<TransactionsPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                DropdownButton(
-                  value: _selectedSubCategory,
-                  items: _subCategories.map((String subCategory) {
-                    return DropdownMenuItem(value: subCategory, child: Text(subCategory));
-                  }).toList(),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      _selectedSubCategory = newValue!;
-                      _applyFilterAndSort();
-                    });
-                  },
+                // The trail of the filter button with subcategories
+                // DropdownButton(
+                //   value: _selectedSubCategory,
+                //   items: _subCategories.map((String subCategory) {
+                //     return DropdownMenuItem(value: subCategory, child: Text(subCategory));
+                //   }).toList(),
+                //   onChanged: (String? newValue) {
+                //     setState(() {
+                //       _selectedSubCategory = newValue!;
+                //       _applyFilterAndSort();
+                //     });
+                //   },
+                // ),
+                Spacer(),
+                const Text(
+                  "Sort by date:",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 IconButton(
                   icon: Icon(_sortAscending ? Icons.arrow_upward : Icons.arrow_downward),
@@ -157,6 +166,7 @@ class _TransactionsPageState extends State<TransactionsPage> {
                     });
                   },
                 ),
+                Spacer(),
               ],
             ),
             Padding(

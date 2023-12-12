@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 class HistoryTransactionsAll extends StatelessWidget {
   final List<Transaction> transactions;
-  final int limit; // New parameter to control the number of transactions shown
+  final int limit; // Parameter to control the number of transactions shown
 
   const HistoryTransactionsAll({
     super.key,
@@ -16,11 +16,11 @@ class HistoryTransactionsAll extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-// Sort the transactions by billingDate
+    // Sort the transactions by billingDate
     List<Transaction> sortedTransactions = List.from(transactions)
       ..sort((a, b) => b.billingDate.compareTo(a.billingDate)); // Descending order
 
-    // If there are more transactions than the limit, only take up to the limit
+    // Determine visible transactions based on the limit
     final visibleTransactions =
         sortedTransactions.length > limit ? sortedTransactions.sublist(0, limit) : sortedTransactions;
 
@@ -52,61 +52,56 @@ class HistoryTransactionsAll extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16.0),
-          DataTable(
-            columnSpacing: 10,
-            columns: const [
-              DataColumn(label: Text('BOOK')),
-              DataColumn(label: Text('CATEGORY')),
-              DataColumn(label: Text('DATE')),
-              DataColumn(label: Text('AMOUNT')),
-            ],
-            rows: visibleTransactions.map((transaction) {
-              final formattedDate = DateFormat('yyyy-MM-dd').format(transaction.billingDate);
-              final category = transactionProvider.getCategoryForTransaction(transaction);
-              final ledgerBook = transactionProvider.getLedgerBookForTransaction(transaction);
-
-              return DataRow(cells: [
-                DataCell(Text(ledgerBook?.title ?? 'Unknown')),
-                DataCell(Text(category?.name.toUpperCase() ?? 'Unknown')),
-                DataCell(Text(formattedDate)),
-                DataCell(
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
-                    decoration: BoxDecoration(
-                      color: transaction.type == 'Income' ? Colors.green[100] : Colors.red[100],
-                      borderRadius: BorderRadius.circular(4.0),
-                      border: Border.all(
-                        color: transaction.type == 'Income' ? Colors.green : Colors.red,
-                        width: 1.0,
-                      ),
-                    ),
-                    child: Text(
-                      '\$${transaction.amount.toStringAsFixed(2)}',
-                      style: TextStyle(
-                        color: transaction.type == 'Income' ? Colors.green : Colors.red,
-                        fontWeight: FontWeight.bold,
-                      ),
+          transactions.isEmpty
+              ? const Center(
+                  child: Text(
+                    "No transactions recorded yet",
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      color: Colors.grey,
                     ),
                   ),
+                )
+              : DataTable(
+                  columnSpacing: 10,
+                  columns: const [
+                    DataColumn(label: Text('BOOK')),
+                    DataColumn(label: Text('CATEGORY')),
+                    DataColumn(label: Text('DATE')),
+                    DataColumn(label: Text('AMOUNT')),
+                  ],
+                  rows: visibleTransactions.map((transaction) {
+                    final formattedDate = DateFormat('yyyy-MM-dd').format(transaction.billingDate);
+                    final category = transactionProvider.getCategoryForTransaction(transaction);
+                    final ledgerBook = transactionProvider.getLedgerBookForTransaction(transaction);
+
+                    return DataRow(cells: [
+                      DataCell(Text(ledgerBook?.title ?? 'Unknown')),
+                      DataCell(Text(category?.name.toUpperCase() ?? 'Unknown')),
+                      DataCell(Text(formattedDate)),
+                      DataCell(
+                        Container(
+                          padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
+                          decoration: BoxDecoration(
+                            color: transaction.type == 'Income' ? Colors.green[100] : Colors.red[100],
+                            borderRadius: BorderRadius.circular(4.0),
+                            border: Border.all(
+                              color: transaction.type == 'Income' ? Colors.green : Colors.red,
+                              width: 1.0,
+                            ),
+                          ),
+                          child: Text(
+                            '\$${transaction.amount.toStringAsFixed(2)}',
+                            style: TextStyle(
+                              color: transaction.type == 'Income' ? Colors.green : Colors.red,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ]);
+                  }).toList(),
                 ),
-              ]);
-            }).toList(),
-          ),
-          // TextButton(
-          //   onPressed: () {
-          //     Navigator.of(context).push(
-          //       MaterialPageRoute(
-          //         builder: (context) => TransactionsPage(
-          //           ledgerBook: ledgerBook,
-          //         ),
-          //       ),
-          //     );
-          //   },
-          //   child: const Text(
-          //     'See all transactions',
-          //     style: TextStyle(color: AppColors.textClickable, fontSize: 16.0, fontWeight: FontWeight.bold),
-          //   ),
-          // )
         ],
       ),
     );

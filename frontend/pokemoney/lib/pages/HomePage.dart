@@ -177,21 +177,31 @@ class _HomePageState extends State<HomePage> {
         const SizedBox(height: 16.0),
         SizedBox(
           height: 230.0,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: ledgerBooks.length,
-            itemBuilder: (context, index) {
-              final ledgerBook = ledgerBooks[index];
-              return Padding(
-                padding: const EdgeInsets.only(left: 5.0),
-                child: LedgerBookCard(
-                  ledgerBook,
-                  'assets/backgorund_credit/small_background_creditcard.png',
-                  true,
+          child: ledgerBooks.isEmpty
+              ? const Center(
+                  child: Text(
+                    "No Ledger book found",
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      color: Colors.grey,
+                    ),
+                  ),
+                )
+              : ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: ledgerBooks.length,
+                  itemBuilder: (context, index) {
+                    final ledgerBook = ledgerBooks[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(left: 5.0),
+                      child: LedgerBookCard(
+                        ledgerBook,
+                        'assets/backgorund_credit/small_background_creditcard.png',
+                        true,
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
         ),
       ],
     );

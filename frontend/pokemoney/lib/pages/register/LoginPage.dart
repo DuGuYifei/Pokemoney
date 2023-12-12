@@ -27,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     // checking the password or email not empty
-    if (username.isEmpty || password.isEmpty) {
+    if (username.isEmpty || password.isEmpty ) {
       _showDialog('Please fill in all fields');
       return;
     }

@@ -13,7 +13,7 @@ import 'package:provider/provider.dart';
 
 void main() {
   runApp(const MyApp());
-} 
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -42,17 +42,19 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<SubCategoryProvider>(
           create: (_) => SubCategoryProvider(),
+          //lazy: flase,
         ),
-        Provider<DatabaseService>(
-          create: (_) => DatabaseService(),
-        ),
+        // Provider<DatabaseService>(
+        //   create: (_) => DatabaseService(),
+        // ),
+    
       ],
       child: MaterialApp(
         theme: ThemeData(
           useMaterial3: true,
         ),
         debugShowCheckedModeBanner: false,
-        initialRoute: RouteGenerator.welcomePage,
+        initialRoute: RouteGenerator.welcomeScreens,
         onGenerateRoute: RouteGenerator.generateRoute,
       ),
     );

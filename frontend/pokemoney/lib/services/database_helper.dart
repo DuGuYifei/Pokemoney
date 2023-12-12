@@ -183,6 +183,7 @@ class DBHelper {
   // Similarly, create methods to update other synced tables...
   // updateSyncedLedgerBooks(), updateSyncedCategories(), etc.
 
+// TODO: make the databse to be craete to a folder path that has the username on it
   initDb() async {
     String path = join(await getDatabasesPath(), 'pokemoney.db');
     var theDb = await openDatabase(

@@ -2,16 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:pokemoney/app.dart';
 import 'package:pokemoney/pages/barrel.dart';
 import 'package:pokemoney/pages/other/WelcomePage.dart';
+import 'package:pokemoney/pages/other/WelcomeScreen.dart';
+import 'package:pokemoney/pages/register/VerificationPage.dart';
 
 class RouteGenerator {
   static const String app = '/';
   static const String welcomePage = '/welcome';
+  static const String welcomeScreens = '/welcomeScreens';
   static const String homePage = '/home';
   static const String fundsPage = '/funds';
   static const String ledgerBooksPage = '/ledgerBooks';
   static const String accountPage = '/account';
   static const String loginPage = '/login';
   static const String signUpPage = '/signUp';
+  static const String varificationPage = '/varification';
   static const String forgotPasswordPage = '/forgotPassword';
   static const String settingsPage = '/settings';
   static const String statsPage = '/stats';
@@ -31,6 +35,10 @@ class RouteGenerator {
       case welcomePage:
         return MaterialPageRoute(
           builder: (_) => WelcomePage(),
+        );
+      case welcomeScreens:
+        return MaterialPageRoute(
+          builder: (_) => WelcomeScreen(),
         );
       case homePage:
         return MaterialPageRoute(
@@ -56,6 +64,7 @@ class RouteGenerator {
         return MaterialPageRoute(
           builder: (_) => const SignUpPage(),
         );
+
       case forgotPasswordPage:
         return MaterialPageRoute(
           builder: (_) => ForgotPasswordPage(),

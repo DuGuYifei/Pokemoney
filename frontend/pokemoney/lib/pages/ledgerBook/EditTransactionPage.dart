@@ -7,6 +7,7 @@ import 'package:pokemoney/model/barrel.dart' as pokemoney; // Make sure to impor
 import 'package:pokemoney/providers/CategoryProvider.dart';
 import 'package:pokemoney/providers/FundProvider.dart';
 
+// TODO: to change the dropdown menu to show subcategories
 class EditTransactionPage extends StatefulWidget {
   final pokemoney.Transaction transaction;
 
