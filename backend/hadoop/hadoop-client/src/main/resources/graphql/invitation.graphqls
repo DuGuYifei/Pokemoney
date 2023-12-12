@@ -1,0 +1,11 @@
+type LedgerInvitation {
+    id: ID!
+    invitedBy: Editor!
+    ledgerId: ID!
+}
+
+type FundInvitation {
+    id: ID!
+    invitedBy: Editor!
+    fundId: ID!
+}

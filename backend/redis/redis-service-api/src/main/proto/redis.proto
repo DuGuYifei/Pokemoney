@@ -1,0 +1,59 @@
+syntax = 'proto3';
+
+import "proto/commons.proto";
+import "buf/validate/validate.proto";
+
+option java_multiple_files = true;
+option java_package = "com.pokemoney.redis.service.api";
+option java_outer_classname = "RedisServiceProto";
+
+message RedisKeyValueGetRequestDto {
+  string key = 1 [(buf.validate.field).string.min_len = 1];
+  optional string prefix = 3 [(buf.validate.field).string.max_len = 64];
+}
+
+message RedisKeyValueDto {
+  string key = 1 [(buf.validate.field).string.min_len = 1];
+  string value = 2 [(buf.validate.field).string.min_len = 1];
+  optional int64 timeout = 3 [(buf.validate.field).cel = {
+    id: "redis.timeout",
+    message: "Value timeout must be between 1 and 2592000 seconds (30 days).",
+    expression: "this >= 1 && this <= 2592000"
+  }];
+  optional string prefix = 4 [(buf.validate.field).string.max_len = 64];
+}
+
+message RedisHashKeyValueGetRequestDto {
+  string key = 1 [(buf.validate.field).string.min_len = 1];
+  optional string prefix = 3 [(buf.validate.field).string.max_len = 64];
+}
+
+message RedisHashKeyValueDto {
+  string key = 1 [(buf.validate.field).string.min_len = 1];
+  map <string, string> value = 2 [(buf.validate.field).map.min_pairs = 1];
+  optional int64 timeout = 3 [(buf.validate.field).cel = {
+    id: "redis.timeout",
+    message: "Value timeout must be between 1 and 2592000 seconds (30 days).",
+    expression: "this >= 1 && this <= 2592000"
+  }];
+  optional string prefix = 4 [(buf.validate.field).string.max_len = 64];
+}
+
+message RedisDelRequestDto {
+  string key = 1 [(buf.validate.field).string.min_len = 1];
+  optional string prefix = 2 [(buf.validate.field).string.max_len = 64];
+}
+
+message RedisResponseDto {
+  ResponseCommonPart responseCommonPart = 1;
+  optional RedisKeyValueDto data = 2;
+  optional RedisHashKeyValueDto hashData = 3;
+}
+
+service RedisTriService {
+  rpc Del(RedisDelRequestDto) returns (RedisResponseDto) {}
+  rpc Set(RedisKeyValueDto) returns (RedisResponseDto) {}
+  rpc Get(RedisKeyValueGetRequestDto) returns (RedisResponseDto) {}
+  rpc HSet(RedisHashKeyValueDto) returns (RedisResponseDto) {}
+  rpc HGet(RedisHashKeyValueGetRequestDto) returns (RedisResponseDto) {}
+}

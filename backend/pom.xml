@@ -15,17 +15,24 @@
 	<name>backend of pokemoney</name>
 	<description>backend of pokemoney which supply cloud service</description>
 	<modules>
-		<module>user-service</module>
-		<module>hadoop-service</module>
+		<module>user</module>
+		<module>hadoop</module>
+		<module>leaf</module>
+        <module>commons</module>
+        <module>redis</module>
 	</modules>
 	<properties>
 		<java.version>17</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<dubbo.version>3.2.9</dubbo.version>
+		<spring-boot.version>3.1.2</spring-boot.version>
+		<pgv.version>0.1.7</pgv.version>
+		<protobuf.version>3.24.4</protobuf.version>
+		<grpc.version>1.59.0</grpc.version>
+		<nacos.version>2.2.4</nacos.version>
 	</properties>
 	<dependencies>
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.cloud</groupId>-->
-<!--			<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>-->
-<!--		</dependency>-->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -35,22 +42,20 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>Hoxton.SR8</version>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-dependencies</artifactId>
+				<version>${spring-boot.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.dubbo</groupId>
+				<artifactId>dubbo-bom</artifactId>
+				<version>${dubbo.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
 
 </project>

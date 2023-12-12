@@ -1,0 +1,22 @@
+syntax = 'proto3';
+
+import "proto/commons.proto";
+import "buf/validate/validate.proto";
+
+option java_multiple_files = true;
+option java_package = "com.pokemoney.hadoop.service.api";
+option java_outer_classname = "HadoopServiceProto";
+
+message InsertUserRequestDto {
+  int64 userId = 1;
+  string username = 2;
+  string email = 3;
+}
+
+message InsertUserResponseDto {
+  ResponseCommonPart responseCommonPart = 1;
+}
+
+service HadoopTriService {
+  rpc InsertUser(InsertUserRequestDto) returns (InsertUserResponseDto) {}
+}

@@ -1,0 +1,18 @@
+syntax = 'proto3';
+
+option java_multiple_files = true;
+option java_package = "com.pokemoney.leaf.service.api";
+option java_outer_classname = "LeafServiceProto";
+
+message LeafGetRequestDto {
+  string key = 1;
+}
+
+message LeafResponseDto {
+  string id = 2;
+}
+
+service LeafTriService {
+  rpc getSegmentId(LeafGetRequestDto) returns (LeafResponseDto) {}
+  rpc getSnowflakeId(LeafGetRequestDto) returns (LeafResponseDto) {}
+}

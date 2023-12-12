@@ -1,0 +1,21 @@
+server:
+  port: 8082
+
+dubbo:
+  registry:
+    address: nacos://localhost:8848
+    group: dubbo-java-basic
+  protocol:
+    name: tri
+    port: 20920
+  application:
+    name: leaf-service
+    qos-port: 22222
+  config-center:
+    address: nacos://localhost:8848
+    group: dubbo-java-leaf-service
+  metadata-report:
+    address: nacos://localhost:8848
+    group: dubbo-java-leaf-service
+  provider:
+    load-balance: p2c

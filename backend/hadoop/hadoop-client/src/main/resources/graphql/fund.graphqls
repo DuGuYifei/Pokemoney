@@ -1,0 +1,27 @@
+type Fund {
+    fundId: ID!
+    name: String!
+    balance: Float!
+    owner: ID!
+    editors: [Editor]!
+    createAt: String!
+    updateAt: String!
+    delFlag: Int!
+}
+
+input FundFilter {
+    minBalance: Float
+    maxBalance: Float
+    owner: String
+    editors: [ID]
+    minCreateAt: String
+    maxCreateAt: String
+    minUpdateAt: String
+    maxUpdateAt: String
+    delFlag: Int
+}
+
+type Query {
+    getFund(fundId: ID!, userId: ID!): Fund!
+    getFunds(filter: FundFilter, userId: ID!): [Fund]!
+}

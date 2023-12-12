@@ -1,0 +1,23 @@
+type User {
+    userId: ID!
+    email: String!
+    name: String!
+    fundInfo: FundInfo!
+    ledgerInfo: LedgerInfo!
+    appInfo: AppInfo!
+}
+
+type FundInfo {
+    funds: [ID]!
+    delFunds: [ID]!
+}
+
+type LedgerInfo {
+    ledgers: [ID]!
+    delLedgers: [ID]!
+}
+
+type AppInfo {
+    categories: [Category]!
+    subcategories: [Subcategory]!
+}

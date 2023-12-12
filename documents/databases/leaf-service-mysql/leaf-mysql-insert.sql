@@ -1,0 +1,2 @@
+-- INSERT INTO leaf_alloc (biz_tag, max_id, step, descrp, update_time) 
+-- VALUES ('leaf-segment-test', 1, 2000, 'This is an example leaf service', NOW());

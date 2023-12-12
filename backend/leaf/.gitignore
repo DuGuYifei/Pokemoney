@@ -1,0 +1,16 @@
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.versionsBackup
+
+
+*.iml
+.idea/
+target/
+logs/
+log/
+
+leaf-dev.properties

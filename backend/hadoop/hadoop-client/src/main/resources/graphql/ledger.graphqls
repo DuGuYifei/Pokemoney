@@ -1,0 +1,27 @@
+type Ledger {
+    ledgerId: ID!
+    name: String!
+    budget: Float
+    owner: ID!
+    editors: [Editor]!
+    createAt: String!
+    updateAt: String!
+    delFlag: Int!
+}
+
+input LedgerFilter {
+    minBudget: Float
+    maxBudget: Float
+    owner: ID
+    editors: [ID]
+    minCreateAt: String
+    maxCreateAt: String
+    minUpdateAt: String
+    maxUpdateAt: String
+    delFlag: Int
+}
+
+extend type Query {
+    getLedger(ledgerId: ID!, userId: ID!): Ledger!
+    getLedgers(filter: LedgerFilter, userId: ID!): [Ledger]!
+}
