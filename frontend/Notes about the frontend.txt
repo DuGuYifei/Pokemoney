@@ -1,2 +1,22 @@
 - There is a bug that checkbox and the text are speart so for that we need to fix it as it is not customzeble right now - class CustomCheckBox.dart
 - Still need to checkout the routing in the app.dart, the routing to the other pages. And see how to make it name routing.
+- the drawer is not working on the name routing, I need to check that out, for now it only works on the basic Navigator page
+- I can add the google animation to the bottom navigation bar
+
+Functionalties to handle in front-end:
+- logout icon (popup menu) AccountPage, AccountCard
+- the edit icon in the AccountDetailsPage, HeaderAccountCard
+- The View all buttom in the AccountDetailsPage, LederOwnedCard
+- clicking on the ListTile that will direct you to the ledger book that is pointing to in the AccountDetailsPage, LederOwnedCard
+- clicking on the ListTile that will direct you to the alert that is pointing to in the AccountDetailsPage, AlertCard
+
+
+URGENT
+# Create database (each table create two and add one column deletFlage) DONE
+# Adding fund CURD > a transaction choose from a fund; DONE
+# Loging and regest comunication with backend
+# Sync
+
+LATER
+# Viuslation
+# Send request to scan bill

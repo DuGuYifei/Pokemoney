@@ -3,10 +3,14 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:pokemoney/constants/AppColors.dart';
-
+import 'package:pokemoney/services/sync/SyncManager.dart';
 import 'package:pokemoney/pages/barrel.dart';
+import 'package:pokemoney/services/sync/GraphQLClientService.dart';
+import 'package:pokemoney/services/DatabaseService.dart';
+
 class App extends StatefulWidget {
-  const App({super.key});
+  final int initialIndex;
+  const App({Key? key, this.initialIndex = 0}) : super(key: key);
 
   @override
   State<App> createState() => _AppState();
@@ -14,12 +18,30 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   int _currentIndex = 0;
+  final DatabaseService databaseProvider = DatabaseService();
+  final GraphQLClientService graphqlClientService = GraphQLClientService();
+  late final SyncManager syncManager;
 
-final List<String> _titles = [
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+    syncManager = SyncManager(databaseProvider, graphqlClientService);
+  }
+
+  final List<Widget> _routers = [
+    /// List of tab page widgets
+    HomePage(),
+    FundsPage(),
+    LedgerBooksPage(),
+    AccountPage(),
+  ];
+
+  final List<String> _titles = [
     'Home',
-    'Accounts',
-    'Ledger Books',
     'Funds',
+    'Ledger Books',
+    'Accounts',
   ];
 
   void _onItemTapped(int index) {
@@ -29,6 +51,23 @@ final List<String> _titles = [
     });
   }
 
+  void _onDrawerItemTapped(int index) {
+    Navigator.of(context).pop(); // Close the drawer
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
+  void _onSyncButtonPressed() async {
+    try {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Syncing...')));
+      await syncManager.syncData(context); // Call syncData from SyncManager
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Sync Complete')));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Sync Failed: $e')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,28 +75,27 @@ final List<String> _titles = [
       appBar: AppBar(
           iconTheme: IconThemeData(color: AppColors.textPrimary),
           backgroundColor: AppColors.surfaceContainer,
-          title: Text(_titles[_currentIndex]),
+          centerTitle: true,
+          title: Text(
+            _titles[_currentIndex],
+            style: TextStyle(
+              fontWeight: FontWeight.bold, // Apply bold style here
+            ),
+          ),
           actions: [
-            IconButton(
-              icon: const Icon(
-                FontAwesomeIcons.bell,
-                color: AppColors.textPrimary,
+            Padding(
+              padding: const EdgeInsets.only(right: 10.0),
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: AppColors.whiteBackgorund, backgroundColor: AppColors.primaryColor,
+                ),
+                onPressed: _onSyncButtonPressed,
+                child: Text('Sync'),
               ),
-              tooltip: 'Show Snackbar',
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('This is a notifications')));
-              },
             ),
           ]),
-      drawer: CustomNavBar(),
-      body: [
-        /// List of tab page widgets
-        HomePage(),
-        const AccountsPage(),
-        const LedgerBooksPage(),
-        const FundsPage(),
-      ][_currentIndex],
+      drawer: CustomNavBar(onItemTapped: _onDrawerItemTapped),
+      body: _routers[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         backgroundColor: AppColors.surfaceContainer,
