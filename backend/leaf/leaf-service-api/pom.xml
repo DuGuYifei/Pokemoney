@@ -19,11 +19,11 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>com.pokemoney.commons</groupId>
-            <artifactId>commons</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.pokemoney.commons</groupId>-->
+<!--            <artifactId>commons</artifactId>-->
+<!--            <version>0.0.1-SNAPSHOT</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.apache.dubbo</groupId>
             <artifactId>dubbo</artifactId>
@@ -41,27 +41,27 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>com.pokemoney.commons</groupId>
-                                    <artifactId>commons</artifactId>
-                                    <version>0.0.1-SNAPSHOT</version>
-                                    <type>jar</type>
-                                    <includes>**/*.proto</includes>
-                                    <outputDirectory>${project.build.directory}/protoc-dependencies/commons
-                                    </outputDirectory>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <phase>generate-sources</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>unpack</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <artifactItems>-->
+<!--                                <artifactItem>-->
+<!--                                    <groupId>com.pokemoney.commons</groupId>-->
+<!--                                    <artifactId>commons</artifactId>-->
+<!--                                    <version>0.0.1-SNAPSHOT</version>-->
+<!--                                    <type>jar</type>-->
+<!--                                    <includes>**/*.proto</includes>-->
+<!--                                    <outputDirectory>${project.build.directory}/protoc-dependencies/commons-->
+<!--                                    </outputDirectory>-->
+<!--                                </artifactItem>-->
+<!--                            </artifactItems>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
