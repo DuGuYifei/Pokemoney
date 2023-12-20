@@ -130,6 +130,10 @@ public class SyncController {
             @ContextValue("auth") String auth
     ) throws GenericGraphQlForbiddenException, GenericGraphQlInternalException {
         long userId = user.getUserId();
+        System.out.println("fund: " + fund);
+        System.out.println("ledger: " + ledger);
+        System.out.println("transaction: " + transaction);
+        System.out.println("subcategory: " + subcategory);
         // verify auth
         VerifyUserJwtWithServiceNameResponseDto verifiedUserInfo = authService.verifyUser(userId, auth);
         String lockPath = com.pokemoney.hadoop.zookeeper.Constants.ExclusiveOperationMutexPathPrefix + "/" + userId;
@@ -211,6 +215,7 @@ public class SyncController {
                     System.out.println("get processedSyncFunds futures");
                     returnSyncFunds = processedSyncFunds.getProcessedSyncFunds();
                     System.out.println("get processedSyncFunds futures done");
+                    System.out.println("returnSyncFunds: " + returnSyncFunds);
                     returnMaxOperationId = Long.max(processedSyncFunds.getMaxOperationId(), returnMaxOperationId);
                     System.out.println("returnMaxOperationId: " + returnMaxOperationId);
                 } catch (Exception e) {
@@ -230,6 +235,7 @@ public class SyncController {
                     log.error("syncAll error when get ledger from future. userId: {}", userId, e);
                     throw new GenericGraphQlInternalException("Something went wrong. You can try again and it will be faster this time!");
                 }
+                System.out.println("new userDto: " + userDto);
                 // sync transaction
                 Future<ProcessedSyncTransactions> transactionFuture = dtpSyncExecutor1.submit(() -> transactionService.syncTransaction(
                         transactionService.preprocessSyncTransaction(

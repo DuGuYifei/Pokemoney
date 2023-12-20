@@ -107,12 +107,12 @@ public class FundService {
         PreprocessedSyncFunds preprocessedSyncFunds = new PreprocessedSyncFunds(syncOperationId);
         List<UpsertFundDto> updateFundDtoList = preprocessedSyncFunds.getUpdateFundDtoList();
         List<UpsertFundDto> insertFundDtoList = preprocessedSyncFunds.getInsertFundDtoList();
-        List<FundDto> returnFundDtoList = preprocessedSyncFunds.getReturnFundDtoList();
         List<OperationDto> fundOperationDtoList = preprocessedSyncFunds.getFundOperationDtoList();
         List<SyncFundInputDto> noPermissionUpdateFundInputDtoList = preprocessedSyncFunds.getNoPermissionUpdateFundInputDtoList();
         Long operationId = preprocessedSyncFunds.getCurOperationId();
         Map<Long, Long> newFundIdAndSnowflakeIdMap = preprocessedSyncFunds.getNewFundIdAndSnowflakeIdMap();
         // if fund in the sync already exist in un-sync option, and update date is bigger than the un-sync one, then use new one
+        System.out.println("syncFundInputDtoList: " + syncFundInputDtoList);
         for (SyncFundInputDto syncFundInputDto : syncFundInputDtoList) {
             boolean isExist = false;
             Long ownerId = syncFundInputDto.getOwner();
@@ -121,7 +121,9 @@ public class FundService {
                 continue;
             }
             Iterator<OperationModel> operationModelIterator = operationModelTargetFundList.iterator();
+            System.out.println("operationModelTargetFundList: " + operationModelTargetFundList);
             while (operationModelIterator.hasNext()) {
+                System.out.println("进入model循环");
                 OperationModel operationModel = operationModelIterator.next();
                 if (operationModel.getOperationInfo().getId().equals(syncFundInputDto.getFundId())) {
                     isExist = true;
@@ -145,11 +147,13 @@ public class FundService {
                     break;
                 }
             }
+            System.out.println("isExist: " + isExist);
             if (!isExist) {
                 Long fundId = syncFundInputDto.getFundId();
                 operationId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(com.pokemoney.hadoop.hbase.Constants.LEAF_HBASE_OPERATION).build()).getId());
                 Integer regionId = RowKeyUtils.getRegionId(ownerId);
                 if (fundId < com.pokemoney.hadoop.hbase.Constants.MIN_SNOWFLAKE_ID) {
+                    System.out.println("fundId: " + fundId);
                     Long oldFundId = fundId;
                     fundId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(com.pokemoney.hadoop.hbase.Constants.LEAF_HBASE_FUND).build()).getId());
                     newFundIdAndSnowflakeIdMap.put(oldFundId, fundId);
@@ -169,6 +173,7 @@ public class FundService {
                             syncFundInputDto.getUpdateAt(),
                             syncFundInputDto.getDelFlag()
                     ));
+                    System.out.println("insertFundDtoList: " + insertFundDtoList);
                     fundOperationDtoList.add(new OperationDto(
                             regionId,
                             ownerId,
@@ -177,22 +182,6 @@ public class FundService {
                             com.pokemoney.hadoop.hbase.Constants.FUND_TABLE,
                             fundRowKey,
                             syncFundInputDto.getUpdateAt()
-                    ));
-                    returnFundDtoList.add(new FundDto(
-                            fundId,
-                            syncFundInputDto.getName(),
-                            syncFundInputDto.getBalance(),
-                            ownerId,
-                            new ArrayList<>() {{
-                                add(new EditorDto(
-                                        userDto.getUserId(),
-                                        userDto.getEmail(),
-                                        userDto.getName()
-                                ));
-                            }},
-                            syncFundInputDto.getCreateAt(),
-                            syncFundInputDto.getUpdateAt(),
-                            syncFundInputDto.getDelFlag()
                     ));
                 } else {
                     String fundRowKey = RowKeyUtils.getFundRowKey(regionId.toString(), ownerId.toString(), fundId.toString());
@@ -260,6 +249,7 @@ public class FundService {
     public ProcessedSyncFunds syncFund (PreprocessedSyncFunds preprocessedSyncFunds, LinkedList<OperationModel> operationModelTargetFundList) throws SQLException {
         Future<Integer> insertFuture = dtpSyncExecutor1.submit(() -> {
             try {
+                System.out.println("insertNewFund: " + preprocessedSyncFunds.getInsertFundDtoList());
                 return insertNewFund(preprocessedSyncFunds.getInsertFundDtoList());
             } catch (SQLException e) {
                 log.error("insertNewFund error", e);
@@ -277,10 +267,10 @@ public class FundService {
                         log.error("insertNewFund error", e);
                         throw new SQLException(e);
                     }
-                    Future<List<FundDto>> fundDtoFromUpdateOperationDtoFuture = dtpSyncExecutor1.submit(() -> getFundsByFundOperationDtoListAndBroadcastToEditors(preprocessedSyncFunds.getFundOperationDtoList()));
+                    Future<List<FundDto>> fundDtoFromOperationDtoFuture = dtpSyncExecutor1.submit(() -> getFundsByFundOperationDtoListAndBroadcastToEditors(preprocessedSyncFunds.getFundOperationDtoList()));
                     preprocessedSyncFunds.getReturnFundDtoList().addAll(getFundsByOperationModelList(operationModelTargetFundList));
                     try {
-                        preprocessedSyncFunds.getReturnFundDtoList().addAll(fundDtoFromUpdateOperationDtoFuture.get());
+                        preprocessedSyncFunds.getReturnFundDtoList().addAll(fundDtoFromOperationDtoFuture.get());
                     } catch (Exception e) {
                         log.error("extract from getFundsByUpdateOperationDtoListAndBroadcastToEditors error", e);
                         throw new SQLException(e);
@@ -364,16 +354,19 @@ public class FundService {
         }
     }
 
-    public Integer broadcastFundByFundModels(List<FundModel> fundModels, Long userId) throws SQLException {
+    public Integer broadcastFundByFundModels(List<FundModel> fundModels, Long userId){
         int affectedRows = 0;
+        Long operationId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(com.pokemoney.hadoop.hbase.Constants.LEAF_HBASE_OPERATION).build()).getId());
         for (FundModel fundModel : fundModels) {
-            OperationDto operationDto = OperationDto.builder()
-                    .regionId(RowKeyUtils.getRegionId(userId))
-                    .userId(userId)
-                    .targetTable(com.pokemoney.hadoop.hbase.Constants.FUND_TABLE)
-                    .targetRowKey(RowKeyUtils.getFundRowKey(fundModel.getRegionId().toString(), fundModel.getFundInfo().getOwner().toString(), fundModel.getFundId().toString()))
-                    .updateAt(fundModel.getUpdateInfo().getUpdateAt())
-                    .build();
+            OperationDto operationDto = new OperationDto(
+                    fundModel.getRegionId(),
+                    userId,
+                    Long.MAX_VALUE - operationId,
+                    operationId,
+                    com.pokemoney.hadoop.hbase.Constants.FUND_TABLE,
+                    RowKeyUtils.getFundRowKey(fundModel.getRegionId().toString(), fundModel.getFundInfo().getOwner().toString(), fundModel.getFundId().toString()),
+                    fundModel.getUpdateInfo().getUpdateAt()
+            );
             affectedRows += operationMapper.insertOperation(operationDto);
             for (Long editorId : fundModel.getFundInfo().getEditors()) {
                 if (editorId.equals(userId)) {

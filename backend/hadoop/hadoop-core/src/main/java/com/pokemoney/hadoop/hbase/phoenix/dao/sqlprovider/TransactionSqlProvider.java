@@ -18,9 +18,10 @@ public class TransactionSqlProvider {
      */
     public String buildSqlForUserGetTransactionByTransactionId(Map<String, Object> params) {
         List<String> selectedFieldsName = (List<String>) params.get("selectedFieldsName");
+        String tableName = (String) params.get("tableName");
         SQL sql = new SQL()
-                .FROM("#{tableName}")
-                .WHERE("(region_id, user_id, ledger_id_rk, transaction_id) = (#{regionId}, #{userId}, #{ledgerId}, #{transactionId})");
+                .FROM(tableName)
+                .WHERE("(region_id, user_id, ledger_id_rk, reverse_transaction_id) = (#{regionId}, #{userId}, #{ledgerId}, #{reverseTransactionId})");
         if (selectedFieldsName == null || selectedFieldsName.isEmpty()) {
             sql.SELECT("*");
         } else {
@@ -38,7 +39,8 @@ public class TransactionSqlProvider {
      * @return the string of sql
      */
     public String buildSqlUpdateTransaction(UpsertTransactionDto upsertTransactionDto) {
-        StringBuilder sql = new StringBuilder("UPSERT INTO #{tableName} (region_id, user_id, ledger_id_rk, reverse_transaction_id");
+        String tableName = upsertTransactionDto.getTableName();
+        StringBuilder sql = new StringBuilder("UPSERT INTO " + tableName + " (region_id, user_id, ledger_id_rk, reverse_transaction_id");
         if (upsertTransactionDto.getMoney() != null) {
             sql.append(", transaction_info.money");
         }
@@ -114,5 +116,15 @@ public class TransactionSqlProvider {
         }
         sql.append(")");
         return sql.toString();
+    }
+
+    /**
+     * Build sql for user insert transaction.
+     *
+     * @param upsertTransactionDto insert transaction dto {@link UpsertTransactionDto}
+     * @return the string of sql
+     */
+    public String buildSqlInsertTransaction(UpsertTransactionDto upsertTransactionDto) {
+        return "UPSERT INTO " + upsertTransactionDto.getTableName() + " (region_id, user_id, ledger_id_rk, reverse_transaction_id, transaction_info.transaction_id, transaction_info.money, transaction_info.type_id, transaction_info.relevant_entity, transaction_info.comment, transaction_info.fund_id, transaction_info.category_id, transaction_info.subcategory_id, transaction_info.ledger_id, transaction_info.happen_at, update_info.update_by, update_info.update_at, update_info.del_flag) VALUES (#{regionId}, #{userId}, #{ledgerId}, #{reverseTransactionId}, #{transactionId}, #{money}, #{typeId}, #{relevantEntity}, #{comment}, #{fundId}, #{categoryId}, #{subcategoryId}, #{ledgerId}, #{happenAt}, #{updateBy}, #{updateAt}, #{delFlag})";
     }
 }

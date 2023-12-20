@@ -114,7 +114,6 @@ public class TransactionService {
         PreprocessedSyncTransactions preprocessedSyncTransactions = new PreprocessedSyncTransactions(syncOperationId);
         List<UpsertTransactionDto> updateTransactionDtoList = preprocessedSyncTransactions.getUpdateTransactionDtoList();
         List<UpsertTransactionDto> insertTransactionDtoList = preprocessedSyncTransactions.getInsertTransactionDtoList();
-        List<TransactionDto> returnTransactionDtoList = preprocessedSyncTransactions.getReturnTransactionDtoList();
         List<OperationDto> transactionOperationDtoList = preprocessedSyncTransactions.getTransactionOperationDtoList();
         List<SyncTransactionInputDto> noPermissionUpdateTransactionInputDtoList = preprocessedSyncTransactions.getNoPermissionUpdateTransactionInputDtoList();
         Long operationId = preprocessedSyncTransactions.getCurOperationId();
@@ -133,8 +132,10 @@ public class TransactionService {
                     continue;
                 }
             } else {
-                Long tempFundId = newFundIdToSnowflakeIdMap.get(fundIdOfSyncTransaction);
-                fundInListIndex = fundIds.indexOf(tempFundId);
+                System.out.println("newFundIdToSnowflakeIdMap: " + newFundIdToSnowflakeIdMap);
+                System.out.println("fundIdOfSyncTransaction: " + fundIdOfSyncTransaction);
+                fundIdOfSyncTransaction = newFundIdToSnowflakeIdMap.get(fundIdOfSyncTransaction);
+                fundInListIndex = fundIds.indexOf(fundIdOfSyncTransaction);
             }
             Long ledgerIdOfSyncTransaction = syncTransactionInputDto.getLedgerId();
             int ledgerInListIndex = ledgerIds.indexOf(ledgerIdOfSyncTransaction);
@@ -144,8 +145,8 @@ public class TransactionService {
                     continue;
                 }
             } else {
-                Long tempLedgerId = newLedgerIdToSnowflakeIdMap.get(ledgerIdOfSyncTransaction);
-                ledgerInListIndex = ledgerIds.indexOf(tempLedgerId);
+                ledgerIdOfSyncTransaction = newLedgerIdToSnowflakeIdMap.get(ledgerIdOfSyncTransaction);
+                ledgerInListIndex = ledgerIds.indexOf(ledgerIdOfSyncTransaction);
             }
             FundModel fundModel = fundIdToModelMap.get(fundIdOfSyncTransaction);
             if (fundModel == null) {
@@ -155,13 +156,13 @@ public class TransactionService {
                 fundModel = fundMapper.getFundByRowKey(fundRegionId, fundOwnerId, fundIdOfSyncTransaction, null);
                 fundIdToModelMap.put(fundIdOfSyncTransaction, fundModel);
             }
-            LedgerModel ledgerModel = ledgerIdToModelMap.get(syncTransactionInputDto.getLedgerId());
+            LedgerModel ledgerModel = ledgerIdToModelMap.get(ledgerIdOfSyncTransaction);
             if (ledgerModel == null) {
                 String[] ledgerRowKeySplit = userDto.getLedgerInfo().getLedgers().get(ledgerInListIndex).split(com.pokemoney.hadoop.hbase.Constants.ROW_KEY_DELIMITER);
                 Integer ledgerRegionId = Integer.parseInt(ledgerRowKeySplit[0]);
                 Long ledgerOwnerId = Long.parseLong(ledgerRowKeySplit[1]);
-                ledgerModel = ledgerMapper.getLedgerByRowKey(ledgerRegionId, ledgerOwnerId, syncTransactionInputDto.getLedgerId(), null);
-                ledgerIdToModelMap.put(syncTransactionInputDto.getLedgerId(), ledgerModel);
+                ledgerModel = ledgerMapper.getLedgerByRowKey(ledgerRegionId, ledgerOwnerId, ledgerIdOfSyncTransaction, null);
+                ledgerIdToModelMap.put(ledgerIdOfSyncTransaction, ledgerModel);
             }
             Iterator<OperationModel> operationModelIterator = operationModelTargetTransactionList.iterator();
             Long ownerId = ledgerModel.getLedgerInfo().getOwner();
@@ -188,7 +189,7 @@ public class TransactionService {
                                 RowKeyUtils.getTransactionRowKey(
                                         transactionRegionId.toString(),
                                         userId.toString(),
-                                        syncTransactionInputDto.getLedgerId().toString(),
+                                        ledgerIdOfSyncTransaction.toString(),
                                         ((Long)(Long.MAX_VALUE - transactionId)).toString()
                                 ),
                                 syncTransactionInputDto.getUpdateAt()
@@ -218,25 +219,10 @@ public class TransactionService {
                             RowKeyUtils.getTransactionRowKey(
                                     transactionRegionId.toString(),
                                     userId.toString(),
-                                    syncTransactionInputDto.getLedgerId().toString(),
+                                    ledgerIdOfSyncTransaction.toString(),
                                     ((Long)(Long.MAX_VALUE - transactionId)).toString()
                             ),
                             syncTransactionInputDto.getUpdateAt()
-                    ));
-                    returnTransactionDtoList.add(new TransactionDto(
-                            transactionId,
-                            syncTransactionInputDto.getMoney(),
-                            syncTransactionInputDto.getTypeId(),
-                            syncTransactionInputDto.getRelevantEntity(),
-                            syncTransactionInputDto.getComment(),
-                            syncTransactionInputDto.getFundId(),
-                            syncTransactionInputDto.getCategoryId(),
-                            syncTransactionInputDto.getSubcategoryId(),
-                            syncTransactionInputDto.getLedgerId(),
-                            syncTransactionInputDto.getHappenAt(),
-                            userId,
-                            syncTransactionInputDto.getUpdateAt(),
-                            syncTransactionInputDto.getDelFlag()
                     ));
                 } else {
                     String tableName = TransactionUtils.GetTableNameFromSnowflakeId(transactionId);
@@ -250,8 +236,8 @@ public class TransactionService {
                             RowKeyUtils.getTransactionRowKey(
                                     transactionRegionId.toString(),
                                     ownerId.toString(),
-                                    ledgerModel.getLedgerId().toString(),
-                                    transactionId.toString()
+                                    ledgerIdOfSyncTransaction.toString(),
+                                    ((Long)(Long.MAX_VALUE - transactionId)).toString()
                             ),
                             syncTransactionInputDto.getUpdateAt()
                     ));
@@ -274,24 +260,27 @@ public class TransactionService {
      * @param transactionRegionId               region id
      */
     private void preprocessSyncUpsertSituation(List<UpsertTransactionDto> updateOrInsertTransactionDtoList, SyncTransactionInputDto syncTransactionInputDto, String tableName, Long ownerId, Long userId, Long transactionId, Integer transactionRegionId) {
-        updateOrInsertTransactionDtoList.add(UpsertTransactionDto.builder()
-                .tableName(tableName)
-                .regionId(transactionRegionId)
-                .userId(ownerId)
-                .transactionId(transactionId)
-                .money(syncTransactionInputDto.getMoney())
-                .typeId(syncTransactionInputDto.getTypeId())
-                .relevantEntity(syncTransactionInputDto.getRelevantEntity())
-                .comment(syncTransactionInputDto.getComment())
-                .fundId(syncTransactionInputDto.getFundId())
-                .categoryId(syncTransactionInputDto.getCategoryId())
-                .subcategoryId(syncTransactionInputDto.getSubcategoryId())
-                .ledgerId(syncTransactionInputDto.getLedgerId())
-                .happenAt(syncTransactionInputDto.getHappenAt())
-                .updateBy(userId)
-                .updateAt(syncTransactionInputDto.getUpdateAt())
-                .delFlag(syncTransactionInputDto.getDelFlag())
-                .build());
+        updateOrInsertTransactionDtoList.add(
+                new UpsertTransactionDto(
+                        tableName,
+                        transactionRegionId,
+                        userId,
+                        Long.MAX_VALUE - transactionId,
+                        transactionId,
+                        syncTransactionInputDto.getMoney(),
+                        syncTransactionInputDto.getTypeId(),
+                        syncTransactionInputDto.getRelevantEntity(),
+                        syncTransactionInputDto.getComment(),
+                        syncTransactionInputDto.getFundId(),
+                        syncTransactionInputDto.getCategoryId(),
+                        syncTransactionInputDto.getSubcategoryId(),
+                        syncTransactionInputDto.getLedgerId(),
+                        syncTransactionInputDto.getHappenAt(),
+                        userId,
+                        syncTransactionInputDto.getUpdateAt(),
+                        syncTransactionInputDto.getDelFlag()
+                )
+        );
     }
 
     /**
@@ -521,12 +510,11 @@ public class TransactionService {
      *
      * @param rowKey row key
      * @return transaction dto
-     * @throws SQLException sql exception
      */
-    public TransactionDto selectTransactionDtoByRowKeyAndTableName(String rowKey, String tableName) throws SQLException {
+    public TransactionDto selectTransactionDtoByRowKeyAndTableName(String rowKey, String tableName){
         String[] rowKeyParams = rowKey.split(com.pokemoney.hadoop.hbase.Constants.ROW_KEY_DELIMITER);
         Long reverseTransactionId = Long.parseLong(rowKeyParams[3]);
-        TransactionModel transactionModel = transactionMapper.getTransactionByRowKeyAndTableName(tableName, Integer.parseInt(rowKeyParams[0]), Long.parseLong(rowKeyParams[1]), Long.parseLong(rowKeyParams[2]), reverseTransactionId, null);
+        TransactionModel transactionModel = transactionMapper.getTransactionByRowKeyAndTableName(tableName, Integer.parseInt(rowKeyParams[0]), Long.parseLong(rowKeyParams[2]), Long.parseLong(rowKeyParams[1]), reverseTransactionId, null);
         return getTransactionDtoFromTransactionModel(transactionModel);
     }
 
@@ -576,9 +564,8 @@ public class TransactionService {
      *
      * @param transactionModel transaction model
      * @return transaction dto
-     * @throws SQLException sql exception
      */
-    private TransactionDto getTransactionDtoFromTransactionModel(TransactionModel transactionModel) throws SQLException {
+    private TransactionDto getTransactionDtoFromTransactionModel(TransactionModel transactionModel) {
         return new TransactionDto(
                 transactionModel.getTransactionInfo().getId(),
                 transactionModel.getTransactionInfo().getMoney(),
