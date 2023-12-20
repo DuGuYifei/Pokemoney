@@ -107,7 +107,6 @@ public class LedgerService {
         PreprocessedSyncLedgers preprocessedSyncLedgers = new PreprocessedSyncLedgers(syncOperationId);
         List<UpsertLedgerDto> updateLedgerDtoList = preprocessedSyncLedgers.getUpdateLedgerDtoList();
         List<UpsertLedgerDto> insertLedgerDtoList = preprocessedSyncLedgers.getInsertLedgerDtoList();
-        List<LedgerDto> returnLedgerDtoList = preprocessedSyncLedgers.getReturnLedgerDtoList();
         List<OperationDto> ledgerOperationDtoList = preprocessedSyncLedgers.getLedgerOperationDtoList();
         List<SyncLedgerInputDto> noPermissionUpdateLedgerInputDtoList = preprocessedSyncLedgers.getNoPermissionUpdateLedgerInputDtoList();
         Map<Long, Long> newLedgerIdAndSnowflakeIdMap = preprocessedSyncLedgers.getNewLedgerIdAndSnowflakeIdMap();
@@ -175,22 +174,6 @@ public class LedgerService {
                             com.pokemoney.hadoop.hbase.Constants.LEDGER_BOOK_TABLE,
                             RowKeyUtils.getLedgerRowKey(regionId.toString(), ownerId.toString(), ledgerId.toString()),
                             syncLedgerInputDto.getUpdateAt()
-                    ));
-                    returnLedgerDtoList.add(new LedgerDto(
-                            ledgerId,
-                            syncLedgerInputDto.getName(),
-                            syncLedgerInputDto.getBudget(),
-                            ownerId,
-                            new ArrayList<>() {{
-                                add(new EditorDto(
-                                        userDto.getUserId(),
-                                        userDto.getEmail(),
-                                        userDto.getName()
-                                ));
-                            }},
-                            syncLedgerInputDto.getCreateAt(),
-                            syncLedgerInputDto.getUpdateAt(),
-                            syncLedgerInputDto.getDelFlag()
                     ));
                 } else {
                     String ledgerRowKey = RowKeyUtils.getLedgerRowKey(regionId.toString(), ownerId.toString(), ledgerId.toString());
@@ -275,10 +258,10 @@ public class LedgerService {
                         log.error("insertNewLedger error", e);
                         throw new SQLException(e);
                     }
-                    Future<List<LedgerDto>> ledgerDtoFromUpdateOperationDtoFuture = dtpSyncExecutor1.submit(() -> getLedgersByOperationDtoListAndBroadcastToEditors(preprocessedSyncLedgers.getLedgerOperationDtoList()));
+                    Future<List<LedgerDto>> ledgerDtoFromOperationDtoFuture = dtpSyncExecutor1.submit(() -> getLedgersByOperationDtoListAndBroadcastToEditors(preprocessedSyncLedgers.getLedgerOperationDtoList()));
                     preprocessedSyncLedgers.getReturnLedgerDtoList().addAll(getLedgersByOperationModelList(operationModelTargetLedgerList));
                     try {
-                        preprocessedSyncLedgers.setReturnLedgerDtoList(ledgerDtoFromUpdateOperationDtoFuture.get());
+                        preprocessedSyncLedgers.setReturnLedgerDtoList(ledgerDtoFromOperationDtoFuture.get());
                     } catch (Exception e) {
                         log.error("extract from getLedgersByUpdateOperationDtoListAndBroadcastToEditors error", e);
                         throw new SQLException(e);

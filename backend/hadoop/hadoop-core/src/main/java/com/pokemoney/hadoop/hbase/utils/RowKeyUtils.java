@@ -47,10 +47,10 @@ public class RowKeyUtils {
      * @param regionId Region id.
      * @param userId Snowflake id.
      * @param ledgerId Ledger id.
-     * @param transactionId Transaction id.
+     * @param reverseTransactionId Transaction id.
      * @return Row key.
      */
-    public static String getTransactionRowKey(String regionId, String userId, String ledgerId, String transactionId) {
-        return regionId + Constants.ROW_KEY_DELIMITER + userId + Constants.ROW_KEY_DELIMITER + ledgerId + Constants.ROW_KEY_DELIMITER + transactionId;
+    public static String getTransactionRowKey(String regionId, String userId, String ledgerId, String reverseTransactionId) {
+        return regionId + Constants.ROW_KEY_DELIMITER + userId + Constants.ROW_KEY_DELIMITER + ledgerId + Constants.ROW_KEY_DELIMITER + reverseTransactionId;
     }
 }
