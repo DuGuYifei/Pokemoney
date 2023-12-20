@@ -30,7 +30,7 @@ class AuthService {
         var responseData = json.decode(response.body);
         print("reposne date:$responseData");
 
-        User user = User.fromJson(responseData['data']);
+        User user = User.fromJsonSign(responseData['data']);
         return user;
         // String token = responseData['token'];
         // await secureStorage.saveToken(token);
@@ -50,62 +50,62 @@ class AuthService {
     //final url = Uri.parse('$baseUrl/signup'); // Use your actual sign-up endpoint
     final url = Uri.parse('$baseUrl$_registerTry'); // Use your actual sign-up endpoint
 
-    try{
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({'username': username, 'email': email, 'password': password}),
-    );
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'username': username, 'email': email, 'password': password}),
+      );
 
-    if (response.statusCode == 200) {
-      // Assuming the server returns a token upon successful registration
-      var responseData = json.decode(response.body);
-      if (responseData['status'] > 0) {
-        // if everything is ok
-        // Registration try successful, handle as needed
-      } else {
-        return Future.error(responseData['message']);
+      if (response.statusCode == 200) {
+        // Assuming the server returns a token upon successful registration
+        var responseData = json.decode(response.body);
+        if (responseData['status'] > 0) {
+          // if everything is ok
+          // Registration try successful, handle as needed
+        } else {
+          return Future.error(responseData['message']);
+        }
       }
-    }
-    }catch(e){
+    } catch (e) {
       return Future.error('Failed to Register: ${e.toString()}');
     }
   }
 
   Future<User> registerVerify(String username, String email, String password, String verificationCode) async {
     final url = Uri.parse('$baseUrl$_registerVerify');
-    try{
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'username': username,
-        'email': email,
-        'password': password,
-        'verificationCode': verificationCode,
-      }),
-    );
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'username': username,
+          'email': email,
+          'password': password,
+          'verificationCode': verificationCode,
+        }),
+      );
 
-    if (response.statusCode == 200) {
-      final responseData = json.decode(response.body);
+      if (response.statusCode == 200) {
+        final responseData = json.decode(response.body);
 
-      if (responseData['status'] > 0) {
-        String? token = response.headers['authorization'];
-        if (token != null) {
-          await secureStorage.saveToken(token);
+        if (responseData['status'] > 0) {
+          String? token = response.headers['authorization'];
+          if (token != null) {
+            await secureStorage.saveToken(token);
 
-          User user = User.fromJson(responseData['data']);
-          return user;
+            User user = User.fromJsonSign(responseData['data']);
+            return user;
+          } else {
+            return Future.error('Token not found in response');
+          }
         } else {
-          return Future.error('Token not found in response');
+          return Future.error('Failed to verify: ${responseData['message']}');
         }
       } else {
-        return Future.error('Failed to verify: ${responseData['message']}');
+        return Future.error('Failed to sign up: ${response.reasonPhrase}');
       }
-    } else {
-      return Future.error('Failed to sign up: ${response.reasonPhrase}');
-    }
-    }catch(e){
+    } catch (e) {
       return Future.error('Failed to sign up: ${e.toString()}');
     }
   }

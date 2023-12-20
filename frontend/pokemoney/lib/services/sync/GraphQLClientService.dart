@@ -1,66 +1,69 @@
 import 'package:graphql_flutter/graphql_flutter.dart';
+import 'package:pokemoney/services/SecureStorage.dart';
 
 class GraphQLClientService {
   late GraphQLClient _client;
 
-  GraphQLClientService() {
-    // Initialize the GraphQL client
-    _client = _initClient();
-  }
+ GraphQLClientService._(this._client); // Private constructor
 
-  GraphQLClient _initClient() {
-    // Configuration for the GraphQL client
-    // Replace with your GraphQL endpoint and any necessary headers
+  static Future<GraphQLClientService> initialize() async {
+    final storage = SecureStorage();
+    String? token = await storage.getToken();
+
     final HttpLink httpLink = HttpLink('http://43.131.33.18/api/v1/hadoop/client/graphql');
 
-    // If you need to add headers for authentication, you can use Link
-    // from 'package:graphql_flutter/graphql_flutter.dart'
-    // final Link link = httpLink; // Add any necessary middleware
-
-    return GraphQLClient(
-      cache: GraphQLCache(store: InMemoryStore()),
-      link: httpLink, // Use the link with headers if necessary
+    // Add the authentication token to the headers
+    final AuthLink authLink = AuthLink(
+      getToken: () => token ?? '',
     );
+
+    final Link link = authLink.concat(httpLink);
+
+    GraphQLClient client = GraphQLClient(
+      cache: GraphQLCache(store: InMemoryStore()),
+      link: link,
+    );
+
+    return GraphQLClientService._(client);
   }
 
   Future<Map<String, dynamic>> syncAll(Map<String, dynamic> unsyncedData) async {
     // Define the mutation string with variable definitions
     const String syncAllMutation = '''
-    mutation SyncAllData(
-      \$maxOperationId: ID!,
-      \$userData: SyncUserInput!,
-      \$fundData: [SyncFundInput]!,
-      \$ledgerData: [SyncLedgerInput]!,
-      \$transactionData: [SyncTransactionInput]!,
-      \$subcategoryData: [SyncSubcategoryInput]!
-    ) {
-      syncAll(
-        maxOperationId: \$maxOperationId,
-        user: \$userData,
-        fund: \$fundData,
-        ledger: \$ledgerData,
-        transaction: \$transactionData,
-        subcategory: \$subcategoryData
-      ) {
+mutation SyncAllData(
+  \$maxOperationId: ID!,
+  \$userData: SyncUserInput!,
+  \$fundData: [SyncFundInput]!,
+  \$ledgerData: [SyncLedgerInput]!,
+  \$transactionData: [SyncTransactionInput]!,
+  \$subcategoryData: [SyncSubcategoryInput]!
+) {
+  syncAll(
+    maxOperationId: \$maxOperationId,
+    user: \$userData,
+    fund: \$fundData,
+    ledger: \$ledgerData,
+    transaction: \$transactionData,
+    subcategory: \$subcategoryData
+  ) {
     user {
       userId
       email
       name
       fundInfo {
-        fundIds
-        delFundIds
+        funds
+        delFunds
       }
       ledgerInfo {
-        ledgerIds
-        delLedgerIds
+        ledgers
+        delLedgers
       }
       appInfo {
         categories {
           categoryId
           categoryName
-          delFlag
         }
-        subCategories {
+        subcategories {
           subcategoryId
           categoryId
           subcategoryName
@@ -108,13 +111,13 @@ class GraphQLClientService {
       subcategoryId
       ledgerId
       happenAt
+      updateBy
       updateAt
       delFlag
     }
     categories {
       categoryId
       categoryName
-      delFlag
     }
     subcategories {
       subcategoryId
@@ -125,7 +128,7 @@ class GraphQLClientService {
     }
     notifications {
       ledgerInvitation {
-      	id
+        id
         invitedBy {
           userId
           email
@@ -145,11 +148,11 @@ class GraphQLClientService {
     }
     operationId
   }
-      }
-    ''';
+}
+''';
 
 // Ensure you extract 'maxOperationId' from unsyncedData or define it beforehand
-    var maxOperationId = unsyncedData['maxOperationId'];
+    var maxOperationId = unsyncedData['maxOperationId'].toString();
 
     // Extracting individual data categories from unsyncedData
     var userData = unsyncedData['users'];
@@ -163,11 +166,11 @@ class GraphQLClientService {
       document: gql(syncAllMutation),
       variables: {
         'maxOperationId': maxOperationId,
-        'user': userData,
-        'fund': fundData,
-        'ledger': ledgerData,
-        'transaction': transactionData,
-        'subcategory': subcategoryData,
+        'userData': userData,
+        'fundData': fundData,
+        'ledgerData': ledgerData,
+        'transactionData': transactionData,
+        'subcategoryData': subcategoryData,
       },
     );
 

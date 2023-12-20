@@ -19,13 +19,18 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   int _currentIndex = 0;
   final DatabaseService databaseProvider = DatabaseService();
-  final GraphQLClientService graphqlClientService = GraphQLClientService();
-  late final SyncManager syncManager;
+  late final GraphQLClientService graphqlClientService;
+  SyncManager? syncManager;
 
   @override
   void initState() {
     super.initState();
     _currentIndex = widget.initialIndex;
+    _initializeSyncManager();
+  }
+
+  Future<void> _initializeSyncManager() async {
+    graphqlClientService = await GraphQLClientService.initialize();
     syncManager = SyncManager(databaseProvider, graphqlClientService);
   }
 
@@ -59,9 +64,15 @@ class _AppState extends State<App> {
   }
 
   void _onSyncButtonPressed() async {
+    if (syncManager == null) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Sync Manager not initialized')));
+      return;
+    }
+
     try {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Syncing...')));
-      await syncManager.syncData(context); // Call syncData from SyncManager
+      await syncManager!.syncData(context); // Call syncData from SyncManager
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Sync Complete')));
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Sync Failed: $e')));
@@ -87,7 +98,8 @@ class _AppState extends State<App> {
               padding: const EdgeInsets.only(right: 10.0),
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: AppColors.whiteBackgorund, backgroundColor: AppColors.primaryColor,
+                  foregroundColor: AppColors.whiteBackgorund,
+                  backgroundColor: AppColors.primaryColor,
                 ),
                 onPressed: _onSyncButtonPressed,
                 child: Text('Sync'),

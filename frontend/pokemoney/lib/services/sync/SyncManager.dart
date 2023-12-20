@@ -41,22 +41,186 @@ class SyncManager {
     final db = dbService;
 
     // Fetch data from each unsynced table
-    List<Map<String, dynamic>> unsyncedUsers = await dbService.getUnsyncedUsers();
+    Map<String, dynamic> unsyncedUsers = await dbService.getUserInfo();
     List<Map<String, dynamic>> unsyncedFunds = await dbService.getUnsyncedFunds();
     List<Map<String, dynamic>> unsyncedLedgerBooks = await dbService.getUnsyncedLedgerBooks();
     List<Map<String, dynamic>> unsyncedTransactions = await dbService.getUnsyncedTransactions();
     List<Map<String, dynamic>> unsyncedCategories = await dbService.getUnsyncedCategories();
     List<Map<String, dynamic>> unsyncedSubCategories = await dbService.getUnsyncedSubCategories();
 
+// Create a new list to hold modified maps
+    List<Map<String, dynamic>> modifiedUnsyncedFunds = [];
+    List<Map<String, dynamic>> modifiedUnsyncedLedgerBooks = [];
+    List<Map<String, dynamic>> modifiedUnsyncedTransactions = [];
+    List<Map<String, dynamic>> modifiedUnsyncedSubcategories = [];
+
+    // Iterate over unsyncedUsers and create a modified copy of each map
+    // for (var map in unsyncedUsers) {
+    //   Map<String, dynamic> modifiedMap = Map.from(map);
+
+    //   // Rename 'id' to 'userId' and 'userName' to 'name'
+    //   modifiedMap['userId'] = modifiedMap.remove('id')?.toString();
+    //   modifiedMap['name'] = modifiedMap.remove('userName');
+
+    //   // Ensure updateAt is set to a non-null value
+    //   modifiedMap['updateAt'] = '0';
+
+    //   // Add the modified map to the new list
+    //   modifiedUnsyncedUsers.add(modifiedMap);
+    // }
+
+    // Iterate over unsyncedFunds and create a modified copy of each map
+    for (var map in unsyncedFunds) {
+      Map<String, dynamic> modifiedMap = Map.from(map);
+
+      // Rename 'id' to 'userId' and 'userName' to 'name'
+      modifiedMap['fundId'] = modifiedMap.remove('id')?.toString();
+      modifiedMap['createAt'] = modifiedMap.remove('creationDate');
+      modifiedMap['owner'] = modifiedMap.remove('owner')?.toString();
+      modifiedMap.remove('editors');
+
+      if (modifiedMap.containsKey('createAt') && modifiedMap['createAt'] is String) {
+        // Parse the ISO 8601 string to DateTime
+        DateTime createAt = DateTime.parse(modifiedMap['createAt']);
+        DateTime updateAt = DateTime.parse(modifiedMap['updateAt']);
+
+        int timestampCreateAt = createAt.millisecondsSinceEpoch;
+        int timestampUpdateAt = updateAt.millisecondsSinceEpoch;
+
+        // Convert DateTime to Unix timestamp (in seconds)
+        modifiedMap['createAt'] = timestampCreateAt.toString();
+        modifiedMap['updateAt'] = timestampUpdateAt.toString();
+      } else {
+        // Handle the case where billingDate is missing or not a string
+        modifiedMap['createAt'] = "0"; // or some default value
+        modifiedMap['updateAt'] = "0"; // or some default value
+      }
+
+      // Add the modified map to the new list
+      modifiedUnsyncedFunds.add(modifiedMap);
+    }
+
+    // Iterate over unsyncedLedgerBooks and create a modified copy of each map
+    for (var map in unsyncedLedgerBooks) {
+      Map<String, dynamic> modifiedMap = Map.from(map);
+
+      // Rename 'id' to 'ledgerId'
+      modifiedMap['ledgerId'] = modifiedMap.remove('id')?.toString();
+      modifiedMap['owner'] = modifiedMap.remove('owner')?.toString();
+      modifiedMap['name'] = modifiedMap.remove('title');
+      modifiedMap.remove('editors');
+
+      if (modifiedMap.containsKey('createAt') && modifiedMap['createAt'] is String) {
+        // Parse the ISO 8601 string to DateTime
+        DateTime createAt = DateTime.parse(modifiedMap['createAt']);
+        DateTime updateAt = DateTime.parse(modifiedMap['updateAt']);
+
+        int timestampCreateAt = createAt.millisecondsSinceEpoch;
+        int timestampUpdateAt = updateAt.millisecondsSinceEpoch;
+
+        // Convert DateTime to Unix timestamp (in seconds)
+        modifiedMap['createAt'] = timestampCreateAt.toString();
+        modifiedMap['updateAt'] = timestampUpdateAt.toString();
+      } else {
+        // Handle the case where billingDate is missing or not a string
+        modifiedMap['createAt'] = "0"; // or some default value
+        modifiedMap['updateAt'] = "0"; // or some default value
+      }
+      // Add the modified map to the new list
+      modifiedUnsyncedLedgerBooks.add(modifiedMap);
+    }
+
+    // Iterate over unsyncedTransactions and create a modified copy of each map
+    for (var map in unsyncedTransactions) {
+      Map<String, dynamic> modifiedMap = Map.from(map);
+
+      // Rename 'id' to 'ledgerId'
+      modifiedMap['transactionId'] = modifiedMap.remove('id')?.toString();
+      modifiedMap['ledgerId'] = modifiedMap.remove('ledgerBookId')?.toString();
+      modifiedMap['money'] = modifiedMap.remove('amount');
+      modifiedMap['subcategoryId'] = modifiedMap.remove('subCategoryId')?.toString();
+      modifiedMap['fundId'] = modifiedMap.remove('fundId')?.toString();
+      // modifiedMap['happenAt'] =
+      //     DateTime.parse(modifiedMap.remove("billDate")).millisecondsSinceEpoch.toString();
+      modifiedMap['updateAt'] = modifiedMap
+          .remove('updatedBy')
+          .toString(); // TODO: to change the updateBy to a date in the model and the application and the database
+
+      modifiedMap.remove(
+          'relevantEntity'); // TODO: user need to add the description of any releted entity, this will come from the transaction form
+
+      // Check the value of 'type' and convert it to an integer for 'typeId'
+      switch (modifiedMap['type']) {
+        case 'expense':
+          modifiedMap['typeId'] = 2;
+          modifiedMap['relevantEntity'] = "expense";
+          break;
+        case 'income':
+          modifiedMap['typeId'] = 1;
+          modifiedMap['relevantEntity'] = "income";
+          break;
+        default:
+          modifiedMap['typeId'] = 4;
+          modifiedMap['relevantEntity'] = "other";
+      }
+
+      if (modifiedMap.containsKey('billingDate') && modifiedMap['billingDate'] is String) {
+        // Parse the ISO 8601 string to DateTime
+        DateTime billingDate = DateTime.parse(modifiedMap['billingDate']);
+        int timestamp = billingDate.millisecondsSinceEpoch;
+
+        // Convert DateTime to Unix timestamp (in seconds)
+        modifiedMap['happenAt'] = timestamp.toString();
+      } else {
+        // Handle the case where billingDate is missing or not a string
+        modifiedMap['happenAt'] = "0"; // or some default value
+      }
+
+      modifiedMap.remove('billingDate');
+      // Remove the original 'type' key
+      modifiedMap.remove('type');
+      modifiedMap.remove('invoiceNumber');
+
+      // Add the modified map to the new list
+      modifiedUnsyncedTransactions.add(modifiedMap);
+    }
+
+    // Iterate over unsyncedCategories and create a modified copy of each map
+    for (var map in unsyncedSubCategories) {
+      Map<String, dynamic> modifiedMap = Map.from(map);
+
+      // Rename 'id' to 'categoryId'
+      modifiedMap['subcategoryId'] = modifiedMap.remove('id')?.toString();
+      modifiedMap['categoryId'] = modifiedMap.remove('categoryId')?.toString();
+      modifiedMap['subcategoryName'] = modifiedMap.remove('name');
+
+      if (modifiedMap.containsKey('updateAt') && modifiedMap['updateAt'] is String) {
+        // Parse the ISO 8601 string to DateTime
+        DateTime updateAt = DateTime.parse(modifiedMap['updateAt']);
+
+        int timestamp = updateAt.millisecondsSinceEpoch;
+
+        // Convert DateTime to Unix timestamp (in seconds)
+        modifiedMap['updateAt'] = timestamp.toString();
+      } else {
+        // Handle the case where billingDate is missing or not a string
+        modifiedMap['updateAt'] = "0"; // or some default value
+      }
+
+      modifiedMap.remove('iconPath');
+      // Add the modified map to the new list
+      modifiedUnsyncedSubcategories.add(modifiedMap);
+    }
+
     // Prepare the data in the structure expected by your GraphQL backend
     Map<String, dynamic> unsyncedData = {
       'maxOperationId': 1,
       'users': unsyncedUsers,
-      'funds': unsyncedFunds,
-      'ledgerBooks': unsyncedLedgerBooks,
-      'transactions': unsyncedTransactions,
+      'funds': modifiedUnsyncedFunds,
+      'ledgerBooks': modifiedUnsyncedLedgerBooks,
+      'transactions': modifiedUnsyncedTransactions,
       'categories': unsyncedCategories,
-      'subcategories': unsyncedSubCategories,
+      'subcategories': modifiedUnsyncedSubcategories,
     };
 
     return unsyncedData;
@@ -73,9 +237,8 @@ class SyncManager {
     SyncData parsedResponse = SyncResponseParser.parseSyncResponse(syncResponseData);
 
     // Update users
-    for (var user in parsedResponse.users) {
-      await dbService.updateSyncUsers(user.toMap());
-    }
+
+    await dbService.updateSyncUsers(parsedResponse.user.toMap());
 
     // Update ledger books
     for (var ledgerBook in parsedResponse.ledgerBooks) {
@@ -93,15 +256,14 @@ class SyncManager {
     }
 
     // Update categories
-    for (var category in parsedResponse.categories) {
-      await dbService.updateSyncCategories(category.toMap());
-    }
+    // for (var category in parsedResponse.categories) {
+    //   await dbService.updateSyncCategories(category.toMap());
+    // }
 
     // Update subcategories
     for (var subcategory in parsedResponse.subcategories) {
       await dbService.updateSyncSubCategories(subcategory.toMap());
     }
-
   }
 
   void _showLoadingIndicator(BuildContext context) {

@@ -50,13 +50,13 @@ class LedgerBook {
   //create for me a fromJson method
   static LedgerBook fromJson(Map<String, dynamic> json) {
     return LedgerBook(
-      id: json['id'],
-      title: json['title'],
+      id: int.parse(json['ledgerId']),
+      title: json['name'],
       budget: json['budget'],
-      owner: json['owner'],
-      editors: json['editors'],
-      creationDate: DateTime.parse(json['createAt']),
-      updateAt: json['updateAt'] != null ? DateTime.parse(json['updateAt']) : null,
+      owner: int .parse(json['owner']),
+      editors: json['editors'].toString(),
+      creationDate: DateTime.fromMicrosecondsSinceEpoch(int.parse(json['createAt'])),
+      updateAt: json['updateAt'] != null ? DateTime.fromMicrosecondsSinceEpoch(int.parse(json['updateAt'])) : null,
       delFlag: json['delFlag'],
     );
   }

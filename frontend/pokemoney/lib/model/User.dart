@@ -35,6 +35,14 @@ class User {
   //create for me a fromJson method
   static User fromJson(Map<String, dynamic> json) {
     return User.idAndUsernameAndEmail(
+      id: int.parse(json['userId']),
+      username: json['name'],
+      email: json['email'],
+    );
+  }
+
+  static User fromJsonSign(Map<String, dynamic> json) {
+    return User.idAndUsernameAndEmail(
       id: json['id'],
       username: json['username'],
       email: json['email'],

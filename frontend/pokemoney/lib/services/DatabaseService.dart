@@ -1,5 +1,6 @@
 import 'package:pokemoney/services/database_helper.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DatabaseService {
   final DBHelper _dbHelper = DBHelper();
@@ -7,7 +8,33 @@ class DatabaseService {
   // Methods for interacting with the unsync tables
   Future<List<Map<String, dynamic>>> getUnsyncedUsers() async {
     final dbClient = await _dbHelper.db;
-    return dbClient.query('t_users_unsync');
+    return dbClient.query('t_users_unsync', columns: ['id', 'username', 'email']);
+  }
+
+// Method that will get the information of the user
+  Future<Map<String, dynamic>> getUserInfo() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    //fetch user info from shared preferences
+
+    int? id = prefs.getInt('id');
+    String? username = prefs.getString('username');
+    String? email = prefs.getString('email');
+
+    //create a map to store the user info
+    Map<String, dynamic> userData = {};
+
+    //check if the user info is not null
+    if (username != null && email != null && id != null) {
+      userData = {
+        'userId': id.toString(),
+        'name': username,
+        'email': email,
+        'updateAt': "0" // TODO: Update this value
+      };
+    }
+
+    return userData;
   }
 
 //Methods for interacting with the unsync tables for ledgerbook
@@ -26,9 +53,9 @@ class DatabaseService {
   Future<List<Map<String, dynamic>>> getUnsyncedTransactions() async {
     final dbClient = await _dbHelper.db;
     return dbClient.query('t_transactions_unsync');
-  } 
+  }
 
-//Methods for interacting with the unsync tables for category 
+//Methods for interacting with the unsync tables for category
   Future<List<Map<String, dynamic>>> getUnsyncedCategories() async {
     final dbClient = await _dbHelper.db;
     return dbClient.query('t_categories_unsync');
@@ -80,7 +107,7 @@ class DatabaseService {
     final db = await _dbHelper.db;
     await db.insert('t_categories_sync', category, conflictAlgorithm: ConflictAlgorithm.replace);
   }
-  
+
   // Methods for interacting with the sync tables for subcategory
   Future<void> updateSyncSubCategories(Map<String, dynamic> subcategory) async {
     final db = await _dbHelper.db;

@@ -49,13 +49,13 @@ class Fund {
   //craete for me a fromJson method
   static Fund fromJson(Map<String, dynamic> json) {
     return Fund(
-      id: json['id'],
+      id: int.parse(json['fundId']),
       name: json['name'],
       balance: json['balance'],
-      creationDate: DateTime.parse(json['creationDate']),
-      owner: json['owner'],
-      editors: json['editors'],
-      updateAt: DateTime.parse(json['updateAt']),
+      creationDate: DateTime.fromMicrosecondsSinceEpoch(int.parse(json['createAt'])),
+      owner: int.parse(json['owner']),
+      editors: json['editors'].toString(),
+      updateAt: DateTime.fromMicrosecondsSinceEpoch(int.parse(json['updateAt'])),
       delFlag: json['delFlag'],
     );
   }

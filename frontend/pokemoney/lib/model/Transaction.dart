@@ -4,7 +4,7 @@ class Transaction {
   final int categoryId;
   final int subCategoryId;
   final int fundId;
-  final String invoiceNumber;
+  final String invoiceNumber; // TODO : to remove the invoice number
   final DateTime billingDate;
   final double amount;
   final String type;
@@ -109,16 +109,16 @@ class Transaction {
   //create for me a fromJson method
   static Transaction fromJson(Map<String, dynamic> json) {
     return Transaction(
-      id: json['id'],
-      ledgerBookId: json['ledgerBookId'],
+      id: int.parse(json['transactionId']),
+      ledgerBookId: int.parse(json['ledgerId']),
       categoryId: json['categoryId'],
-      subCategoryId: json['subCategoryId'],
-      fundId: json['fundId'],
-      invoiceNumber: json['invoiceNumber'],
-      billingDate: DateTime.parse(json['billingDate']),
-      amount: json['amount'],
-      type: json['type'],
-      updatedBy: json['updatedBy'],
+      subCategoryId: int.parse(json['subcategoryId']),
+      fundId: int.parse(json['fundId']),
+      invoiceNumber: json['transactionId'],
+      billingDate: DateTime.fromMicrosecondsSinceEpoch(int.parse((json['happenAt']))),
+      amount: json['money'],
+      type: json['typeId'].toString(), // TODO: change the type to typeId
+      updatedBy: int.parse(json['updateBy']),
       relevantEntity: json['relevantEntity'],
       comment: json['comment'],
       delFlag: json['delFlag'],

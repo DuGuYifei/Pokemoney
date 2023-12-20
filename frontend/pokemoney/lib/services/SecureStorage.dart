@@ -15,17 +15,5 @@ class SecureStorage {
     await _storage.delete(key: 'auth_token');
   }
 
-  Future<void> saveUsername(String username) async {
-    await _storage.write(key: 'username', value: username);
-  }
-
-  Future<String?> getUsername() async {
-    return await _storage.read(key: 'auth_token');
-  }
-
-  Future<void> deleteUsername() async {
-    await _storage.delete(key: 'auth_token');
-  }
-
   // Add more methods as needed for different types of data
 }
