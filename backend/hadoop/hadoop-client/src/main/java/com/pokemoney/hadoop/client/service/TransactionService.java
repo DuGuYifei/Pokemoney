@@ -171,7 +171,7 @@ public class TransactionService {
             Integer userRegionId = RowKeyUtils.getRegionId(userId);
             while (operationModelIterator.hasNext()) {
                 OperationModel operationModel = operationModelIterator.next();
-                if (operationModel.getOperationInfo().getId().equals(syncTransactionInputDto.getTransactionId())) {
+                if (operationModel.getOperationInfo().getOperationId().equals(syncTransactionInputDto.getTransactionId())) {
                     isExist = true;
                     if (operationModel.getUpdateAt() < syncTransactionInputDto.getUpdateAt()) {
                         operationModelIterator.remove();
@@ -450,7 +450,7 @@ public class TransactionService {
                     } else {
                         fundModel.getFundInfo().setBalance(fundModel.getFundInfo().getBalance() - upsertTransactionDto.getMoney());
                     }
-                    fundModel.getUpdateInfo().setUpdateAt(upsertTransactionDto.getUpdateAt());
+//                    fundModel.getUpdateInfo().setUpdateAt(upsertTransactionDto.getUpdateAt());
                 }
                 session.commit();
             } catch (Exception e) {
@@ -493,7 +493,7 @@ public class TransactionService {
                         fundModel.getFundInfo().setBalance(fundModel.getFundInfo().getBalance()
                                 + (isOldTransactionPositive ? -oldTransactionModel.getTransactionInfo().getMoney() : oldTransactionModel.getTransactionInfo().getMoney())
                                 + (isNewTransactionPositive ? upsertTransactionDto.getMoney() : -upsertTransactionDto.getMoney()));
-                        fundModel.getUpdateInfo().setUpdateAt(upsertTransactionDto.getUpdateAt());
+//                        fundModel.getUpdateInfo().setUpdateAt(upsertTransactionDto.getUpdateAt());
                     }
                 }
                 affectedRows += transactionMapper.updateTransaction(upsertTransactionDto);

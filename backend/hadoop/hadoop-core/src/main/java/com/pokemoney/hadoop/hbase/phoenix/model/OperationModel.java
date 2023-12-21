@@ -38,7 +38,7 @@ public class OperationModel {
         /**
          * The operation id.
          */
-        private Long id;
+        private Long operationId;
         /**
          * The operation target table name
          */

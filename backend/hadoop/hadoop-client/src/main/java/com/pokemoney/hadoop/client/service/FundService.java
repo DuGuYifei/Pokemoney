@@ -125,7 +125,7 @@ public class FundService {
             while (operationModelIterator.hasNext()) {
                 System.out.println("进入model循环");
                 OperationModel operationModel = operationModelIterator.next();
-                if (operationModel.getOperationInfo().getId().equals(syncFundInputDto.getFundId())) {
+                if (operationModel.getOperationInfo().getOperationId().equals(syncFundInputDto.getFundId())) {
                     isExist = true;
                     if (operationModel.getUpdateAt() < syncFundInputDto.getUpdateAt()) {
                         operationModelIterator.remove();
@@ -365,7 +365,7 @@ public class FundService {
                     operationId,
                     com.pokemoney.hadoop.hbase.Constants.FUND_TABLE,
                     RowKeyUtils.getFundRowKey(fundModel.getRegionId().toString(), fundModel.getFundInfo().getOwner().toString(), fundModel.getFundId().toString()),
-                    fundModel.getUpdateInfo().getUpdateAt()
+                    System.currentTimeMillis()
             );
             affectedRows += operationMapper.insertOperation(operationDto);
             for (Long editorId : fundModel.getFundInfo().getEditors()) {
@@ -376,7 +376,7 @@ public class FundService {
                         editorId,
                         com.pokemoney.hadoop.hbase.Constants.FUND_TABLE,
                         RowKeyUtils.getFundRowKey(fundModel.getRegionId().toString(), fundModel.getFundInfo().getOwner().toString(), fundModel.getFundId().toString()),
-                        fundModel.getUpdateInfo().getUpdateAt()
+                        System.currentTimeMillis()
                 );
             }
         }
@@ -432,9 +432,8 @@ public class FundService {
      *
      * @param rowKey row key
      * @return fund dto
-     * @throws SQLException sql exception
      */
-    public FundDto selectFundDtoByRowKey (String rowKey) throws SQLException {
+    public FundDto selectFundDtoByRowKey (String rowKey){
         System.out.println("rowKey: " + rowKey);
         String[] rowKeyParams = rowKey.split(com.pokemoney.hadoop.hbase.Constants.ROW_KEY_DELIMITER);
         System.out.println("1");

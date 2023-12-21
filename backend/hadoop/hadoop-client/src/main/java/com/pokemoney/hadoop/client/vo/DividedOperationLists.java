@@ -13,6 +13,10 @@ import java.util.LinkedList;
 @Setter
 public class DividedOperationLists {
     /**
+     * Max operation id;
+     */
+    private Long maxOperationId;
+    /**
      * Fund operation list.
      */
     private LinkedList<OperationModel> FundOperationList = new LinkedList<>();
