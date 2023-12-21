@@ -1,0 +1,1 @@
+sudo ./higress/higress/bin/startup.sh
