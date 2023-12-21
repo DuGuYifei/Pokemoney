@@ -112,6 +112,7 @@ public class LedgerService {
         Map<Long, Long> newLedgerIdAndSnowflakeIdMap = preprocessedSyncLedgers.getNewLedgerIdAndSnowflakeIdMap();
         Long operationId = preprocessedSyncLedgers.getCurOperationId();
         // if ledger in the sync already exist in un-sync option, and update date is bigger than the un-sync one, then use new one
+        System.out.println("syncLedgerInputDtoList: " + syncLedgerInputDtoList);
         for (SyncLedgerInputDto syncLedgerInputDto : syncLedgerInputDtoList) {
             boolean isExist = false;
             Long ownerId = syncLedgerInputDto.getOwner();
@@ -122,7 +123,7 @@ public class LedgerService {
             Iterator<OperationModel> operationModelIterator = operationModelTargetLedgerList.iterator();
             while (operationModelIterator.hasNext()) {
                 OperationModel operationModel = operationModelIterator.next();
-                if (operationModel.getOperationInfo().getId().equals(syncLedgerInputDto.getLedgerId())) {
+                if (operationModel.getOperationInfo().getOperationId().equals(syncLedgerInputDto.getLedgerId())) {
                     isExist = true;
                     if (operationModel.getUpdateAt() < syncLedgerInputDto.getUpdateAt()) {
                         operationModelIterator.remove();
@@ -261,7 +262,7 @@ public class LedgerService {
                     Future<List<LedgerDto>> ledgerDtoFromOperationDtoFuture = dtpSyncExecutor1.submit(() -> getLedgersByOperationDtoListAndBroadcastToEditors(preprocessedSyncLedgers.getLedgerOperationDtoList()));
                     preprocessedSyncLedgers.getReturnLedgerDtoList().addAll(getLedgersByOperationModelList(operationModelTargetLedgerList));
                     try {
-                        preprocessedSyncLedgers.setReturnLedgerDtoList(ledgerDtoFromOperationDtoFuture.get());
+                        preprocessedSyncLedgers.getReturnLedgerDtoList().addAll(ledgerDtoFromOperationDtoFuture.get());
                     } catch (Exception e) {
                         log.error("extract from getLedgersByUpdateOperationDtoListAndBroadcastToEditors error", e);
                         throw new SQLException(e);
@@ -311,7 +312,7 @@ public class LedgerService {
      * Get ledgers by update operation list and broadcast to other editors.
      *
      * @param operationDtoList operation model list
-     * @return ledger dto list
+1     * @return ledger dto list
      */
     public List<LedgerDto> getLedgersByOperationDtoListAndBroadcastToEditors(List<OperationDto> operationDtoList) throws SQLException {
         try(SqlSession session = sqlSessionFactory.openSession(false)) {
@@ -454,9 +455,8 @@ public class LedgerService {
      *
      * @param ledgerModel ledger model
      * @return ledger dto
-     * @throws SQLException sql exception
      */
-    private LedgerDto getLedgerDtoFromLedgerModel(LedgerModel ledgerModel) throws SQLException {
+    private LedgerDto getLedgerDtoFromLedgerModel(LedgerModel ledgerModel){
         List<Long> editorIds = ledgerModel.getLedgerInfo().getEditors();
         List<EditorDto> editors = new ArrayList<>();
         for (Long editorId : editorIds) {

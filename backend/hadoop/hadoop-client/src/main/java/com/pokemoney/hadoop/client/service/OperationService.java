@@ -2,14 +2,10 @@ package com.pokemoney.hadoop.client.service;
 
 import com.pokemoney.hadoop.client.Constants;
 import com.pokemoney.hadoop.client.vo.DividedOperationLists;
-import com.pokemoney.hadoop.hbase.dto.editor.EditorDto;
-import com.pokemoney.hadoop.hbase.dto.fund.FundDto;
-import com.pokemoney.hadoop.hbase.dto.ledger.LedgerDto;
 import com.pokemoney.hadoop.hbase.dto.operation.OperationDto;
 import com.pokemoney.hadoop.hbase.phoenix.dao.OperationMapper;
 import com.pokemoney.hadoop.hbase.phoenix.model.OperationModel;
 import com.pokemoney.hadoop.hbase.utils.RowKeyUtils;
-import com.pokemoney.leaf.service.api.LeafGetRequestDto;
 import com.pokemoney.leaf.service.api.LeafTriService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -118,17 +114,21 @@ public class OperationService {
      */
     public DividedOperationLists divideOperationList(List<OperationModel> operationsList) {
         DividedOperationLists dividedOperationLists = new DividedOperationLists();
+        dividedOperationLists.setMaxOperationId(0L);
         for (OperationModel operationModel : operationsList) {
             String tableName = operationModel.getOperationInfo().getTargetTable();
             switch (tableName.charAt(2)) {
                 case 'l':
                     dividedOperationLists.getLedgerOperationList().add(operationModel);
+                    dividedOperationLists.setMaxOperationId(Math.max(dividedOperationLists.getMaxOperationId(), operationModel.getOperationInfo().getOperationId()));
                     break;
                 case 'f':
                     dividedOperationLists.getFundOperationList().add(operationModel);
+                    dividedOperationLists.setMaxOperationId(Math.max(dividedOperationLists.getMaxOperationId(), operationModel.getOperationInfo().getOperationId()));
                     break;
                 case 't':
                     dividedOperationLists.getTransactionOperationList().add(operationModel);
+                    dividedOperationLists.setMaxOperationId(Math.max(dividedOperationLists.getMaxOperationId(), operationModel.getOperationInfo().getOperationId()));
                     break;
                 default:
                     break;

@@ -172,9 +172,8 @@ public class SyncController {
                 }
                 if (dividedOperationLists.getFundOperationList().isEmpty()) {
                     System.out.println("fundOperationList is empty");
-                } else {
-                    System.out.println("fundOperationList is not empty");
                 }
+                returnMaxOperationId = Long.max(maxOperationId, dividedOperationLists.getMaxOperationId());
                 System.out.println("dividedOperationLists: " + dividedOperationLists);
                 UserDto userDto = UserDto.fromUserModel(userModel);
                 System.out.println("userDto: " + userDto);
@@ -228,6 +227,7 @@ public class SyncController {
                     System.out.println("get processedSyncLedgers futures");
                     returnSyncLedgers = processedSyncLedgers.getProcessedSyncLedgers();
                     System.out.println("get processedSyncLedgers futures done");
+                    System.out.println("returnSyncLedgers: " + returnSyncLedgers);
                     returnMaxOperationId = Long.max(processedSyncLedgers.getMaxOperationId(), returnMaxOperationId);
                     System.out.println("returnMaxOperationId: " + returnMaxOperationId);
                     // insert ledger operations

@@ -24,13 +24,13 @@ public interface OperationMapper {
                     @Result(property = "regionId", column = "region_id"),
                     @Result(property = "userId", column = "user_id"),
                     @Result(property = "reverseOperationId", column = "reverse_operation_id"),
-                    @Result(property = "operationInfo.id", column = "operation_id"),
+                    @Result(property = "operationInfo.operationId", column = "operation_id"),
                     @Result(property = "operationInfo.targetTable", column = "target_table"),
                     @Result(property = "operationInfo.targetRowKey", column = "target_row_key"),
                     @Result(property = "updateAt", column = "update_at")
             }
     )
-    @Select("SELECT operation_info.operation_id, operation_info.target_table, operation_info.target_row_key, MAX(update_info.update_at) FROM " + Constants.OPERATION_TABLE + " WHERE region_id = #{regionId} AND user_id = #{userId} AND reverse_operation_id < #{reverseOperationId} LIMIT #{limit} GROUP BY operation_info.operation_id, operation_info.target_table, operation_info.target_row_key")
+    @Select("SELECT operation_id, ta.target_table as target_table, ta.target_row_key as target_row_key, ta.update_at as update_at FROM t_operations as ta INNER JOIN (SELECT target_table, target_row_key, MAX(update_info.update_at) as update_at  FROM " + Constants.OPERATION_TABLE + " GROUP BY operation_info.target_table, operation_info.target_row_key) AS tb ON ta.target_table = tb.target_table AND ta.target_row_key = tb.target_row_key AND ta.update_at = tb.update_at WHERE region_id = #{regionId} AND user_id = #{userId} AND reverse_operation_id < #{reverseOperationId} LIMIT #{limit}")
     List<OperationModel> getOperationsLowerReverseIdDistinctTargetRowKeyWithLimit(@Param("regionId") Integer regionId, @Param("userId") Long userId, @Param("reverseOperationId") Long reverseOperationId, @Param("limit") int limit);
 
     /**
@@ -42,7 +42,7 @@ public interface OperationMapper {
      * @return operation model list
      */
     @ResultMap("operationResultMap")
-    @Select("SELECT operation_info.operation_id, operation_info.target_table, operation_info.target_row_key, MAX(update_info.update_at) FROM " + Constants.OPERATION_TABLE + " WHERE region_id = #{regionId} AND user_id = #{userId} AND reverse_operation_id < #{reverseOperationId} GROUP BY operation_info.operation_id, operation_info.target_table, operation_info.target_row_key")
+    @Select("SELECT operation_id, ta.target_table as target_table, ta.target_row_key as target_row_key, ta.update_at as update_at FROM t_operations as ta INNER JOIN (SELECT target_table, target_row_key, MAX(update_info.update_at) as update_at FROM " + Constants.OPERATION_TABLE + " GROUP BY operation_info.target_table, operation_info.target_row_key) AS tb ON ta.target_table = tb.target_table AND ta.target_row_key = tb.target_row_key AND ta.update_at = tb.update_at WHERE region_id = #{regionId} AND user_id = #{userId} AND reverse_operation_id < #{reverseOperationId}")
     List<OperationModel> getOperationsLowerReverseIdDistinctTargetRowKey(@Param("regionId") Integer regionId, @Param("userId") Long userId, @Param("reverseOperationId") Long reverseOperationId);
 
     /**
