@@ -1,0 +1,1 @@
+sudo ./higress/higress/bin/shutdown.sh
