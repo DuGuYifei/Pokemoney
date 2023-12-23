@@ -6,9 +6,9 @@ import 'package:pokemoney/pages/other/WelcomeScreen.dart';
 import 'package:pokemoney/pages/register/VerificationPage.dart';
 
 class RouteGenerator {
-  static const String app = '/';
-  static const String welcomePage = '/welcome';
-  static const String welcomeScreens = '/welcomeScreens';
+  static const String welcomeScreens = '/';
+  static const String app = '/app';
+  static const String welcomePage = '/welcomePage';
   static const String homePage = '/home';
   static const String fundsPage = '/funds';
   static const String ledgerBooksPage = '/ledgerBooks';
@@ -28,6 +28,10 @@ class RouteGenerator {
 
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case welcomeScreens:
+        return MaterialPageRoute(
+          builder: (_) => WelcomeScreen(),
+        );
       case app:
         return MaterialPageRoute(
           builder: (_) => const App(),
@@ -35,10 +39,6 @@ class RouteGenerator {
       case welcomePage:
         return MaterialPageRoute(
           builder: (_) => WelcomePage(),
-        );
-      case welcomeScreens:
-        return MaterialPageRoute(
-          builder: (_) => WelcomeScreen(),
         );
       case homePage:
         return MaterialPageRoute(

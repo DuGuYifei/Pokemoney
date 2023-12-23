@@ -14,19 +14,21 @@ Functionalties to handle in front-end:
 URGENT
 # Create database (each table create two and add one column deletFlage) DONE
 # Adding fund CURD > a transaction choose from a fund; DONE
-# Loging and regest comunication with backend
-# Sync
+# Loging and regest comunication with backend DONE
+# Sync DONE
 
 LATER
 # Viuslation
 # Send request to scan bill
 
 
-- chaingin the bill to books in the bottom bar
-- deleting the invoicenumebr
-- show the updateby (and change the invoice in teh place of the datatable to the updateby)
-- delete the data from the unsync table
+- changing the bill to books in the bottom bar DONE
+- delete the data from the unsync table - DONE
+- The deletion or the edition of the transactions, and scenario of moving the data from sync to unsync - DONE
+
+- show the updateby (and change the invoice in the place of the data table to the updateby)
 - decode the editors from string of json to map 
-- The database direcotry
-- The deletion or the edition of the transcations, and sinaro of moving the data from sync to unsync
-- Iviataions
+- The database directory
+- invitation
+- deleting the invoice number
+- deal with the duplication of the subcatgories after syncing

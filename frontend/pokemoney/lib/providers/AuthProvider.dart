@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:pokemoney/model/barrel.dart';
 import 'package:pokemoney/services/AuthService.dart';
 import 'package:pokemoney/services/SecureStorage.dart';
+import 'package:pokemoney/services/database_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthProvider with ChangeNotifier {
@@ -54,6 +55,7 @@ class AuthProvider with ChangeNotifier {
       await _checkLoginStatus();
       if (_isLoggedIn) {
         await _saveUserData(_currentUser!);
+        await initializeDatabaseForUser(_currentUser!.id!); // Initialize DB for logged-in user
       }
     } catch (error) {
       // Set the error message here
@@ -84,11 +86,17 @@ class AuthProvider with ChangeNotifier {
       User user = await _authService.registerVerify(username, email, password, verificationCode);
       _isLoggedIn = true;
       await _saveUserData(user);
+      await initializeDatabaseForUser(_currentUser!.id!); // Initialize DB for logged-in user
     } catch (e) {
       _errorMessage = 'Signup completion error: ${e.toString()}';
     } finally {
       _updateLoadingStatus(false);
     }
+  }
+
+  Future<void> initializeDatabaseForUser(int userId) async {
+    DBHelper.setUserId(userId); // Pass the user ID to DBHelper
+    await DBHelper().initDb(); // Initialize the database for this user
   }
 
   Future<void> _saveUserData(User user) async {
@@ -120,6 +128,7 @@ class AuthProvider with ChangeNotifier {
       _currentUser = null;
       await _secureStorage.deleteToken();
       await _clearUserData();
+      DBHelper.resetUserId(); // You'll need to add this method to DBHelper
     } catch (e) {
       _errorMessage = 'Logout error: ${e.toString()}';
     } finally {

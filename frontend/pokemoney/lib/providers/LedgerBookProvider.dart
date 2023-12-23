@@ -44,7 +44,7 @@ class LedgerBookProvider with ChangeNotifier {
     LedgerBook ledgerBook = await _ledgerBookService.getLedgerBookById(ledgerBookId);
 
     // Calculate the current balance
-    double transactionTotal = await _transactionService.getTotalBalanceForLedgerBook(ledgerBookId);
+    double transactionTotal = await _transactionService.getTotalBalanceForLedgerBook(ledgerBook.id!);
     ledgerBook.currentBalance = transactionTotal;
 
     // Find the ledger book in the list and update it

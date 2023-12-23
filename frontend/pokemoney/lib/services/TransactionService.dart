@@ -1,8 +1,10 @@
 import 'package:pokemoney/services/database_helper.dart';
 import 'package:pokemoney/model/barrel.dart' as pokemoney;
+import 'package:sqflite/sqflite.dart';
 
 class TransactionService {
   final DBHelper _dbHelper = DBHelper();
+  static const int idThreshold = 1 << 62; // 2^62
 
   Future<int> addTransaction(pokemoney.Transaction transaction) async {
     var dbClient = await _dbHelper.db;
@@ -51,17 +53,86 @@ class TransactionService {
 
   Future<int> updateTransaction(pokemoney.Transaction transaction) async {
     var dbClient = await _dbHelper.db;
-    return await dbClient.update(
-      "t_transactions_unsync",
-      transaction.toMap(),
+
+    // Check if the transaction exists in the sync table
+    List<Map> foundInSync = await dbClient.query(
+      "t_transactions_sync",
       where: "id = ?",
       whereArgs: [transaction.id],
     );
+
+    if (foundInSync.isNotEmpty) {
+      // If exists in sync, delete from sync table
+      await dbClient.delete(
+        "t_transactions_sync",
+        where: "id = ?",
+        whereArgs: [transaction.id],
+      );
+
+      // Then insert updated transaction into unsync table
+      return await dbClient.insert(
+        "t_transactions_unsync",
+        transaction.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    } else {
+      // If not found in sync table, update directly in unsync table
+      return await dbClient.update(
+        "t_transactions_unsync",
+        transaction.toMap(),
+        where: "id = ?",
+        whereArgs: [transaction.id],
+      );
+    }
   }
 
   Future<int> deleteTransaction(int id) async {
     var dbClient = await _dbHelper.db;
-    return await dbClient.delete("t_transactions_unsync", where: "id = ?", whereArgs: [id]);
+
+    // Check if the transaction exists in the sync table
+    List<Map> foundInSync = await dbClient.query(
+      "t_transactions_sync",
+      where: "id = ?",
+      whereArgs: [id],
+    );
+
+    if (foundInSync.isNotEmpty) {
+      // Delete from sync table
+      await dbClient.delete(
+        "t_transactions_sync",
+        where: "id = ?",
+        whereArgs: [id],
+      );
+
+      // Insert with del_flag = 1 into unsync table
+      // Cast the Map to the correct type
+      Map<String, dynamic> transactionData = Map<String, dynamic>.from(foundInSync.first);
+      transactionData['delFlag'] = 1;
+
+      return await dbClient.insert(
+        "t_transactions_unsync",
+        transactionData,
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    } else {
+      // If not found in sync table, check the id threshold
+      if (id < idThreshold) {
+        // If id is less than the threshold, directly delete it
+        return await dbClient.delete(
+          "t_transactions_unsync",
+          where: "id = ?",
+          whereArgs: [id],
+        );
+      } else {
+        // If id is greater than or equal to the threshold, set del_flag = 1
+        return await dbClient.update(
+          "t_transactions_unsync",
+          {'delFlag': 1},
+          where: "id = ?",
+          whereArgs: [id],
+        );
+      }
+    }
   }
 
   Future<pokemoney.Category> getCategoryById(int categoryId) async {
@@ -81,15 +152,36 @@ class TransactionService {
   }
 
   Future<double> getTotalBalanceForLedgerBook(int ledgerBookId) async {
-    var dbClient = await DBHelper().db;
-    var result = await dbClient.rawQuery('''
-    SELECT SUM(CASE WHEN type='Income' THEN amount ELSE -amount END) as total
-    FROM t_transactions_unsync
-    WHERE ledgerBookId = ?
-  ''', [ledgerBookId]);
+    var dbClient = await _dbHelper.db;
 
-    // Explicitly cast the result to 'num' and then to 'double'
-    num total = result.first['total'] as num? ?? 0.0;
-    return total.toDouble();
+    // Query for unsync table
+    var unsyncResult = await dbClient.rawQuery('''
+      SELECT SUM(
+          CASE 
+              WHEN type IN ('income', 'payable', 'receivable_backs') THEN amount 
+              ELSE -amount 
+          END
+      ) as total
+      FROM t_transactions_unsync
+      WHERE ledgerBookId = ?
+    ''', [ledgerBookId]);
+
+    // Query for sync table
+    var syncResult = await dbClient.rawQuery('''
+      SELECT SUM(
+          CASE 
+              WHEN type IN ('income', 'payable', 'receivable_backs') THEN amount 
+              ELSE -amount 
+          END
+      ) as total
+      FROM t_transactions_sync
+      WHERE ledgerBookId = ?
+    ''', [ledgerBookId]);
+
+    // Sum the results from both tables
+    num totalUnsync = unsyncResult.first['total'] as num? ?? 0.0;
+    num totalSync = syncResult.first['total'] as num? ?? 0.0;
+
+    return (totalUnsync + totalSync).toDouble();
   }
 }

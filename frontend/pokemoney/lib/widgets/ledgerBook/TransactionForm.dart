@@ -7,6 +7,7 @@ import 'package:pokemoney/providers/SubCategoryProvider.dart';
 import 'package:pokemoney/providers/TransactionProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pokemoney/constants/ApiConstants.dart';
 
 class TransactionForm extends StatefulWidget {
   final pokemoney.LedgerBook ledgerBook;
@@ -37,7 +38,7 @@ class _TransactionFormState extends State<TransactionForm> {
   @override
   void initState() {
     super.initState();
-    _selectedType = 'Expense'; // Default transaction type
+    _selectedType = 'expense'; // Default transaction type
     _dateController.text = DateFormat.yMd().format(_selectedDate);
     _selectedFundId = -1; // Initial value indicating fund not yet selected
     _selectedSubCategoryId = -1; // Initial value indicating subcategory not yet selected
@@ -57,7 +58,7 @@ class _TransactionFormState extends State<TransactionForm> {
       }
     });
 
-    fundProvider.fetchAllFunds().then((_) {
+    fundProvider.fetchAllFundsFromSyncAndUnsync().then((_) {
       if (mounted) {
         fetchAndUpdateFunds();
       }
@@ -87,7 +88,7 @@ class _TransactionFormState extends State<TransactionForm> {
   void fetchAndUpdateFunds() {
     final fundProvider = Provider.of<FundProvider>(context, listen: false);
     if (fundProvider.funds.isEmpty) {
-      fundProvider.fetchAllFunds().then((_) {
+      fundProvider.fetchAllFundsFromSyncAndUnsync().then((_) {
         _updateFundItems(fundProvider.funds);
       });
     } else {
@@ -365,15 +366,13 @@ class _TransactionFormState extends State<TransactionForm> {
         _buildDropdownField<String>(
             _selectedType,
             'Type',
-            ['Expense', 'Income', 'Other'].map<DropdownMenuItem<String>>((String value) {
+            listType.map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
                 value: value,
                 child: Text(value),
               );
             }).toList(),
             (value) => setState(() => _selectedType = value!)),
-        if (_selectedType == 'Other')
-          _buildTextField(_customTypeController, 'Custom Type', 'Please enter a type'),
         _buildDropdownField<int>(
           _selectedSubCategoryId,
           'Category',

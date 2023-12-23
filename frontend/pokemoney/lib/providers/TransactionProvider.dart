@@ -54,10 +54,10 @@ class TransactionProvider with ChangeNotifier {
 
   // Fetches transactions for a specific ledger book
   Future<void> fetchTransactionsForLedgerBook(int ledgerBookId) async {
-    _filteredTransactions  = await _transactionService.getTransactionsByLedgerBookId(ledgerBookId);
+    _filteredTransactions = await _transactionService.getTransactionsByLedgerBookId(ledgerBookId);
 
     for (var transaction in _transactions) {
-      await _fetchCategoryAndFund(transaction);
+      await _fetchCategoryAndFund(transaction); 
     }
     notifyListeners();
   }
@@ -128,7 +128,8 @@ class TransactionProvider with ChangeNotifier {
 
     if (!_subCategoryCache.containsKey(transaction.subCategoryId)) {
       try {
-        pokemoney.SubCategory subCategory = await _subCategoryService.getSubCategoryById(transaction.subCategoryId);
+        pokemoney.SubCategory subCategory =
+            await _subCategoryService.getSubCategoryById(transaction.subCategoryId);
         _subCategoryCache[transaction.subCategoryId] = subCategory;
       } catch (e) {
         print('Error fetching category: $e');
@@ -144,10 +145,11 @@ class TransactionProvider with ChangeNotifier {
         print('Error fetching fund: $e');
       }
     }
-    
+
     if (!_ledgerBookCache.containsKey(transaction.ledgerBookId)) {
       try {
-        pokemoney.LedgerBook ledgerBook = await _ledgerBookService.getLedgerBookById(transaction.ledgerBookId);
+        pokemoney.LedgerBook ledgerBook =
+            await _ledgerBookService.getLedgerBookById(transaction.ledgerBookId);
         _ledgerBookCache[transaction.ledgerBookId] = ledgerBook;
       } catch (e) {
         print('Error fetching ledgerbook: $e');
@@ -166,7 +168,7 @@ class TransactionProvider with ChangeNotifier {
   }
 
   //helper method to get a ledgerbook
-  pokemoney.LedgerBook? getLedgerBookForTransaction(pokemoney.Transaction transaction)  {
+  pokemoney.LedgerBook? getLedgerBookForTransaction(pokemoney.Transaction transaction) {
     return _ledgerBookCache[transaction.ledgerBookId];
   }
 

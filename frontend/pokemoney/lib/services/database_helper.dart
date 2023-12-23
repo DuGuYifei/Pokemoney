@@ -1,16 +1,12 @@
+import 'dart:io';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:pokemoney/model/barrel.dart';
 
 class DBHelper {
-  // Flag to determine the type of database to use
-  bool useInMemoryDatabase = false;
-
   static final DBHelper _instance = DBHelper.internal();
-
   factory DBHelper() => _instance;
-
   DBHelper.internal();
 
   static Database? _db;
@@ -18,31 +14,25 @@ class DBHelper {
   Future<Database> get db async {
     if (_db != null) return _db!;
 
-    if (useInMemoryDatabase) {
-      _db = await initInMemoryDb(); // Use in-memory database for testing
-    } else {
-      _db = await initDb(); // Use real database
+    // Ensure user ID is set before initializing the database
+    if (_userId == null) {
+      throw Exception("User ID is not set for database initialization.");
     }
 
+    _db = await initDb();
     return _db!;
   }
 
-  // Method to initialize an in-memory database for testing
-  Future<Database> initInMemoryDb() async {
-    // Initialize sqflite for FFI (use only in tests)
-    sqfliteFfiInit();
-    var databaseFactory = databaseFactoryFfi;
+  static int? _userId;
 
-    String path = inMemoryDatabasePath;
-    var theDb = await databaseFactory.openDatabase(
-      path,
-      options: OpenDatabaseOptions(version: 1, onCreate: _onCreate),
-    );
+  static void setUserId(int userId) {
+    _userId = userId;
+  }
 
-    // Insert initial categories, etc.
-    await insertInitialCategories(theDb);
-
-    return theDb;
+  // Resets the user ID
+  static void resetUserId() {
+    _userId = null;
+    _db = null; // Optionally, you might also want to reset the database instance
   }
 
   Future<void> insertInitialCategories(Database db) async {
@@ -156,43 +146,25 @@ class DBHelper {
     });
   }
 
-// Method to fetch unsynced data for each table
-//TODO: add the rest of the tables
-  Future<List<Map<String, dynamic>>> getUnsyncedUsers() async {
-    final db = await this.db;
-    return db.query('t_users_unsync');
-  }
+  Future<Database> initDb() async {
+    String databaseDirectory = await getDatabasesPath();
 
-  // Similarly, create methods for other unsynced tables...
-  // getUnsyncedLedgerBooks(), getUnsyncedCategories(), etc.
+    // Extract the last four digits of the userId
+    String lastFourDigits = _userId.toString().padLeft(4, '0').substring(_userId.toString().length - 4);
 
-  // Method to clear unsynced tables after successful sync
-  Future<void> clearUnsyncedTable(String tableName) async {
-    final db = await this.db;
-    await db.delete(tableName);
-  }
+    String userDatabasePath = join(databaseDirectory, _userId.toString(), 'pokemoney$lastFourDigits.db');
 
-  // Method to update synced data
-  Future<void> updateSyncedUsers(List<Map<String, dynamic>> users) async {
-    final db = await this.db;
-    for (var user in users) {
-      await db.insert('t_users_sync', user, conflictAlgorithm: ConflictAlgorithm.replace);
-    }
-  }
+    // Ensure the directory exists
+    await Directory(dirname(userDatabasePath)).create(recursive: true);
 
-  // Similarly, create methods to update other synced tables...
-  // updateSyncedLedgerBooks(), updateSyncedCategories(), etc.
-
-// TODO: make the databse to be craete to a folder path that has the username on it
-  initDb() async {
-    String path = join(await getDatabasesPath(), 'pokemoney.db');
     var theDb = await openDatabase(
-      path, version: 1, onCreate: _onCreate,
-      onUpgrade: _onUpgrade, // Provide the onUpgrade method
+      userDatabasePath,
+      version: 1,
+      onCreate: _onCreate,
     );
 
     insertInitialCategories(theDb);
-    print('Database path: $path');
+    print('Database path: $userDatabasePath');
 
     return theDb;
   }

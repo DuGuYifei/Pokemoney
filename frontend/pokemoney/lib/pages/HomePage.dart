@@ -37,7 +37,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final transactionProvider = context.watch<TransactionProvider>();
     final ledgerBookProvider = context.watch<LedgerBookProvider>();
-    final fundProvider = context.watch<FundProvider>();
 
     double totalIncome = transactionProvider.getTotalIncome();
     double totalExpense = transactionProvider.getTotalExpense();
@@ -61,7 +60,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Builds the summary section which contains of rows and in the first row there is a column with two text widgets, the second row contains an svg picture, the last row contains of a column with two text widgets
+  // Builds the summary section which contains of rows   and in the first row there is a column with two text widgets, the second row contains an svg picture, the last row contains of a column with two text widgets
   Widget _buildSummary(double totalIncome, double totalExpense, double totalBalance) {
     return Padding(
       padding: const EdgeInsets.all(16.0),

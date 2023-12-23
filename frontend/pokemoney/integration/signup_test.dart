@@ -24,7 +24,7 @@ void main() {
   // Use an in-memory database for tests
   databaseFactory = databaseFactoryFfi;
 
-  DBHelper().useInMemoryDatabase = true;
+  //DBHelper().useInMemoryDatabase = true;
 
 // Create a mock instance
   var mockAuthProvider = MockAuthProvider();

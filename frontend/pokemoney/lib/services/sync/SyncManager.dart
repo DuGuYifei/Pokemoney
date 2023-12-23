@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pokemoney/services/sync/GraphQLClientService.dart';
 import 'package:pokemoney/services/sync/SyncResponseParser.dart'; // Parser for GraphQL responses
 import 'package:pokemoney/services/DatabaseService.dart';
+import 'package:pokemoney/constants/ApiConstants.dart';
 
 class SyncManager {
   final DatabaseService dbService;
@@ -22,6 +23,8 @@ class SyncManager {
 
       // Process the sync response
       await _processSyncResponse(syncResponse);
+
+      await dbService.clearUnsyncedData();
 
       // Hide loading indicator
       Navigator.of(context, rootNavigator: true).pop();
@@ -150,19 +153,9 @@ class SyncManager {
           'relevantEntity'); // TODO: user need to add the description of any releted entity, this will come from the transaction form
 
       // Check the value of 'type' and convert it to an integer for 'typeId'
-      switch (modifiedMap['type']) {
-        case 'expense':
-          modifiedMap['typeId'] = 2;
-          modifiedMap['relevantEntity'] = "expense";
-          break;
-        case 'income':
-          modifiedMap['typeId'] = 1;
-          modifiedMap['relevantEntity'] = "income";
-          break;
-        default:
-          modifiedMap['typeId'] = 4;
-          modifiedMap['relevantEntity'] = "other";
-      }
+
+      modifiedMap['typeId'] = typeStringToTypeID[modifiedMap['type']];
+      modifiedMap['relevantEntity'] = modifiedMap['type'];
 
       if (modifiedMap.containsKey('billingDate') && modifiedMap['billingDate'] is String) {
         // Parse the ISO 8601 string to DateTime

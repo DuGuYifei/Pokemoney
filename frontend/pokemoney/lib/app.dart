@@ -127,7 +127,7 @@ class _AppState extends State<App> {
             icon: Icon(Icons.credit_card),
           ),
           BottomNavigationBarItem(
-            label: 'Bills',
+            label: 'Books',
             icon: Icon(FontAwesomeIcons.fileInvoiceDollar),
           ),
           BottomNavigationBarItem(

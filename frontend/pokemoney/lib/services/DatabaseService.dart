@@ -67,11 +67,6 @@ class DatabaseService {
     return dbClient.query('t_subcategories_unsync');
   }
 
-  Future<void> clearUnsyncedData() async {
-    final db = await _dbHelper.db;
-    // Implement logic to clear unsynced tables
-  }
-
   // Methods for interacting with the sync tables
   Future<void> updateSyncData(/* Parameters */) async {
     final db = await _dbHelper.db;
@@ -88,6 +83,7 @@ class DatabaseService {
   Future<void> updateSyncLedgerBooks(Map<String, dynamic> ledgerBook) async {
     final db = await _dbHelper.db;
     await db.insert('t_ledger_books_sync', ledgerBook, conflictAlgorithm: ConflictAlgorithm.replace);
+
   }
 
   // Methods for interacting with the sync tables for fund
@@ -112,6 +108,21 @@ class DatabaseService {
   Future<void> updateSyncSubCategories(Map<String, dynamic> subcategory) async {
     final db = await _dbHelper.db;
     await db.insert('t_subcategories_sync', subcategory, conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  Future<void> clearUnsyncedData() async {
+    final db = await _dbHelper.db;
+    
+    // Start a batch to perform multiple operations atomically
+    var batch = db.batch();
+
+    // Delete all data from unsynced tables
+    batch.delete('t_transactions_unsync');
+    batch.delete('t_ledger_books_unsync');
+    batch.delete('t_funds_unsync');
+
+    // Commit the batch
+    await batch.commit(noResult: true); // noResult: true is used when you don't need the result back
   }
 
   // Additional utility methods as needed, e.g., insert, delete, update, etc.
