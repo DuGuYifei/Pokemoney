@@ -2,9 +2,8 @@ DROP TABLE IF EXISTS user_dim;
 CREATE TABLE user_dim
 (
     `user_id`            BIGINT      NOT NULL COMMENT '',
-    `is_ban`             TINYINT(1)  NOT NULL COMMENT '',
-    `register_date`      DATETIME    NOT NULL COMMENT '',
-    `last_login_date`    DATETIME    NOT NULL COMMENT ''
+    `is_ban`             BOOLEAN     NOT NULL COMMENT '',
+    `register_date`      DATETIME    NOT NULL COMMENT ''
 )
     UNIQUE KEY (user_id)
     DISTRIBUTED BY HASH(user_id) BUCKETS 10
@@ -16,8 +15,8 @@ CREATE TABLE user_dim
 DROP TABLE IF EXISTS user_analysis_dim;
 CREATE TABLE user_analysis_dim
 (
-    `user_analysis_id`   INTEGER      NOT NULL COMMENT '',
-    `is_ban`             TINYINT(1)   NOT NULL COMMENT ''
+    `user_analysis_id`   VARCHAR(128)       NOT NULL COMMENT '',
+    `is_ban`             BOOLEAN            NOT NULL COMMENT ''
 )
     UNIQUE KEY (user_analysis_id)
     DISTRIBUTED BY HASH(user_analysis_id) BUCKETS 10
@@ -61,7 +60,7 @@ CREATE TABLE ledger_dim
     `budget`             DECIMAL(18, 2)     NOT NULL COMMENT '',
     `create_at`          DATETIME           NOT NULL COMMENT '',
     `update_at`          DATETIME           NOT NULL COMMENT '',
-    `del_flag`           TINYINT(1)         NOT NULL COMMENT ''
+    `del_flag`           INTEGER            NOT NULL COMMENT ''
 )
     UNIQUE KEY (ledger_id)
     DISTRIBUTED BY HASH(ledger_id) BUCKETS 10
@@ -79,7 +78,7 @@ CREATE TABLE fund_dim
     `balance`            DECIMAL(18, 2)     NOT NULL COMMENT '',
     `create_at`          DATETIME           NOT NULL COMMENT '',
     `update_at`          DATETIME           NOT NULL COMMENT '',
-    `del_flag`           TINYINT(1)         NOT NULL COMMENT ''
+    `del_flag`           INTEGER            NOT NULL COMMENT ''
 )
     UNIQUE KEY (fund_id)
     DISTRIBUTED BY HASH(fund_id) BUCKETS 10
@@ -97,9 +96,9 @@ CREATE TABLE time_dimension (
     `day`                INTEGER            NOT NULL COMMENT '',
     `quarter`            INTEGER            NOT NULL COMMENT '',
     `day_of_week`        INTEGER            NOT NULL COMMENT '',
-    `is_weekday`         TINYINT(1)         NOT NULL COMMENT '',
-    `is_weekend`         TINYINT(1)         NOT NULL COMMENT '',
-    `is_holiday`         TINYINT(1)         NOT NULL COMMENT '',
+    `is_weekday`         BOOLEAN            NOT NULL COMMENT '',
+    `is_weekend`         BOOLEAN            NOT NULL COMMENT '',
+    `is_holiday`         BOOLEAN            NOT NULL COMMENT '',
     `holiday_name`       VARCHAR(100)                COMMENT ''
 )
     UNIQUE KEY (time_id)
@@ -136,7 +135,7 @@ CREATE TABLE transactions
     `happen_time_id`     INTEGER            NOT NULL COMMENT '',
     `update_at`          DATETIME           NOT NULL COMMENT '',
     `update_time_id`     INTEGER            NOT NULL COMMENT '',
-    `del_flag`           TINYINT(1)         NOT NULL COMMENT ''
+    `del_flag`           INTEGER            NOT NULL COMMENT ''
 )
     UNIQUE KEY (id)
     DISTRIBUTED BY HASH(id) BUCKETS 10
