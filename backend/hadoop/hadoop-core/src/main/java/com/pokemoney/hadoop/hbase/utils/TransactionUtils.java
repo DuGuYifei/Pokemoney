@@ -31,6 +31,6 @@ public class TransactionUtils {
      * @return the table name
      */
     public static String GetTableNameFromSnowflakeId(Long snowflakeId) {
-        return GetTableNameFromTimestamp(snowflakeId >> 22 + Constants.TW_EPOCH);
+        return GetTableNameFromTimestamp((snowflakeId >> 22) + Constants.TW_EPOCH);
     }
 }

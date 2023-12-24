@@ -17,6 +17,7 @@
         <module>hadoop-core</module>
         <module>hadoop-service-api</module>
         <module>hadoop-service</module>
+        <module>spark-service</module>
     </modules>
 
     <properties>

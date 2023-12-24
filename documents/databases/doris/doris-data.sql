@@ -1,0 +1,27 @@
+INSERT INTO category_dim VALUES (1, 'catering_and_cuisine');
+INSERT INTO category_dim VALUES (2, 'apparel_and_grooming');
+INSERT INTO category_dim VALUES (3, 'rent_and_utilities');
+INSERT INTO category_dim VALUES (4, 'transportation');
+INSERT INTO category_dim VALUES (5, 'grocery');
+INSERT INTO category_dim VALUES (6, 'travel_and_hotel');
+INSERT INTO category_dim VALUES (7, 'entertainment');
+INSERT INTO category_dim VALUES (8, 'hospital_and_care');
+INSERT INTO category_dim VALUES (9, 'education');
+INSERT INTO category_dim VALUES (10, 'pet');
+INSERT INTO category_dim VALUES (11, 'business_and_invest');
+INSERT INTO category_dim VALUES (12, 'charity');
+INSERT INTO category_dim VALUES (13, 'digital_appliances');
+INSERT INTO category_dim VALUES (14, 'salary');
+INSERT INTO category_dim VALUES (15, 'bonus');
+INSERT INTO category_dim VALUES (16, 'allowance');
+INSERT INTO category_dim VALUES (17, 'money_transfer');
+INSERT INTO category_dim VALUES (18, 'gift');
+INSERT INTO category_dim VALUES (98, 'other_expense');
+INSERT INTO category_dim VALUES (99, 'other_income');
+
+INSERT INTO type_dim VALUES (1, 'income');
+INSERT INTO type_dim VALUES (2, 'expense');
+INSERT INTO type_dim VALUES (3, 'receivable');
+INSERT INTO type_dim VALUES (4, 'payable');
+INSERT INTO type_dim VALUES (5, 'receivable_backs');
+INSERT INTO type_dim VALUES (6, 'payable_backs');
