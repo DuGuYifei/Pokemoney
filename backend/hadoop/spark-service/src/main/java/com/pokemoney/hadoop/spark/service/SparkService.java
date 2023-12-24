@@ -15,8 +15,14 @@ import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -26,10 +32,9 @@ import java.util.Date;
 @Service
 public class SparkService {
     /**
-     * The HBase configuration.
+     * Connection string
      */
-    private final Configuration hbaseConfig;
-
+    private static final String connectionString = "jdbc:phoenix:43.131.33.18:2181";
     /**
      * The fund mapper
      */
@@ -59,14 +64,12 @@ public class SparkService {
     /**
      * The constructor.
      *
-     * @param hbaseConfig                    The HBase configuration.
      * @param dorisFundMapper                The fund mapper.
      * @param dorisLedgerMapper              The ledger mapper.
      * @param dorisTransactionMapper         The transaction mapper.
      * @param dorisTransactionAnalysisMapper The transaction analysis mapper.
      */
-    public SparkService(Configuration hbaseConfig, DorisFundMapper dorisFundMapper, DorisLedgerMapper dorisLedgerMapper, DorisTransactionMapper dorisTransactionMapper, DorisTransactionAnalysisMapper dorisTransactionAnalysisMapper) {
-        this.hbaseConfig = hbaseConfig;
+    public SparkService(DorisFundMapper dorisFundMapper, DorisLedgerMapper dorisLedgerMapper, DorisTransactionMapper dorisTransactionMapper, DorisTransactionAnalysisMapper dorisTransactionAnalysisMapper) {
         this.dorisFundMapper = dorisFundMapper;
         this.dorisLedgerMapper = dorisLedgerMapper;
         this.dorisTransactionMapper = dorisTransactionMapper;
@@ -78,33 +81,26 @@ public class SparkService {
      */
     public void upsertAllFunds() {
         try {
-            Connection connection = ConnectionFactory.createConnection(hbaseConfig);
-            Table table = connection.getTable(TableName.valueOf("t_funds"));
-
-            Scan scan = new Scan();
-            scan.addFamily(Bytes.toBytes("fund_info"));
-            scan.addFamily(Bytes.toBytes("update_info"));
-
-            ResultScanner scanner = table.getScanner(scan);
-
-            for (Result result : scanner) {
-                Long fundId = Bytes.toLong(result.getValue(Bytes.toBytes("fund_info"), Bytes.toBytes("id")));
-                Long ownerId = Bytes.toLong(result.getValue(Bytes.toBytes("fund_info"), Bytes.toBytes("owner")));
-                String name = Bytes.toString(result.getValue(Bytes.toBytes("fund_info"), Bytes.toBytes("name")));
-                Double balance = Bytes.toDouble(result.getValue(Bytes.toBytes("fund_info"), Bytes.toBytes("balance")));
-                Long createAt = Bytes.toLong(result.getValue(Bytes.toBytes("fund_info"), Bytes.toBytes("create_at")));
-                Long updateAt = Bytes.toLong(result.getValue(Bytes.toBytes("update_info"), Bytes.toBytes("update_at")));
-                Integer delFlag = Bytes.toInt(result.getValue(Bytes.toBytes("update_info"), Bytes.toBytes("del_flag")));
-
-                FundDimModel fundDimModel = new FundDimModel(fundId, ownerId, name, balance, createAt, updateAt, delFlag);
-                dorisFundMapper.insertFundDim(fundDimModel);
+            try(java.sql.Connection con = DriverManager.getConnection(SparkService.connectionString)) {
+                Statement stmt = con.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM T_FUNDS");
+                while (rs.next()) {
+                    Long id = rs.getLong("FUND_ID");
+                    String name = rs.getString("NAME");
+                    Double balance = rs.getDouble("BALANCE");
+                    Long ownerId = rs.getLong("OWNER");
+                    Long createAt = rs.getLong("CREATE_AT");
+                    Date createAtDate = new Date(createAt);
+                    Long updateAt = rs.getLong("UPDATE_AT");
+                    Date updateAtDate = new Date(updateAt);
+                    Integer delFlag = rs.getInt("DEL_FLAG");
+                    System.out.println("id" + id + " name" + name + " balance" + balance + " ownerId" + ownerId + " createAt" + createAt + " updateAt" + updateAt + " delFlag" + delFlag);
+                    FundDimModel fundDimModel = new FundDimModel(id, ownerId, name, balance, createAtDate, updateAtDate, delFlag);
+                    dorisFundMapper.insertFundDim(fundDimModel);
+                }
             }
-
-            scanner.close();
-            table.close();
-            connection.close();
-        } catch (Exception e) {
-            log.error("Failed to handle fund.", e);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -113,83 +109,75 @@ public class SparkService {
      */
     public void upsertAllLedgers() {
         try {
-            Connection connection = ConnectionFactory.createConnection(hbaseConfig);
-            Table table = connection.getTable(TableName.valueOf("t_ledgers"));
-
-            Scan scan = new Scan();
-            scan.addFamily(Bytes.toBytes("ledger_info"));
-            scan.addFamily(Bytes.toBytes("update_info"));
-
-            ResultScanner scanner = table.getScanner(scan);
-
-            for (Result result : scanner) {
-                Long ledgerId = Bytes.toLong(result.getValue(Bytes.toBytes("ledger_info"), Bytes.toBytes("id")));
-                Long ownerId = Bytes.toLong(result.getValue(Bytes.toBytes("ledger_info"), Bytes.toBytes("owner")));
-                String name = Bytes.toString(result.getValue(Bytes.toBytes("ledger_info"), Bytes.toBytes("name")));
-                Double budget = Bytes.toDouble(result.getValue(Bytes.toBytes("ledger_info"), Bytes.toBytes("budget")));
-                Long createAt = Bytes.toLong(result.getValue(Bytes.toBytes("ledger_info"), Bytes.toBytes("create_at")));
-                Long updateAt = Bytes.toLong(result.getValue(Bytes.toBytes("update_info"), Bytes.toBytes("update_at")));
-                Integer delFlag = Bytes.toInt(result.getValue(Bytes.toBytes("update_info"), Bytes.toBytes("del_flag")));
-
-                LedgerDimModel ledgerDimModel = new LedgerDimModel(ledgerId, ownerId, name, budget, createAt, updateAt, delFlag);
-                dorisLedgerMapper.insertLedger(ledgerDimModel);
+            try(java.sql.Connection con = DriverManager.getConnection(SparkService.connectionString)) {
+                Statement stmt = con.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM T_LEDGERS");
+                while (rs.next()) {
+                    Long id = rs.getLong("LEDGER_ID");
+                    Long ownerId = rs.getLong("OWNER");
+                    String name = rs.getString("NAME");
+                    Double budget = rs.getDouble("BUDGET");
+                    Long createAt = rs.getLong("CREATE_AT");
+                    Date createAtDate = new Date(createAt);
+                    Long updateAt = rs.getLong("UPDATE_AT");
+                    Date updateAtDate = new Date(updateAt);
+                    Integer delFlag = rs.getInt("DEL_FLAG");
+                    System.out.println("id" + id + " ownerId" + ownerId + " name" + name + " budget" + budget + " createAt" + createAt + " updateAt" + updateAt + " delFlag" + delFlag);
+                    LedgerDimModel ledgerDimModel = new LedgerDimModel(id, ownerId, name, budget, createAtDate, updateAtDate, delFlag);
+                    dorisLedgerMapper.insertLedger(ledgerDimModel);
+                }
             }
-
-            scanner.close();
-            table.close();
-            connection.close();
-        } catch (Exception e) {
-            log.error("Failed to handle ledger.", e);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
     /**
      * Upsert all transactions in current month table.
      */
-    public void upsertAllTransactionsCurrentMonth() {
+    public void upsertAllTransactionsPrevMonth() {
         long currentTimeMillis = System.currentTimeMillis();
         Date currentDate = new Date(currentTimeMillis);
         DateFormat dateFormat = new SimpleDateFormat("yyyyMM");
-        String tableName = "t_transactions_" + dateFormat.format(currentDate);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentDate);
+        calendar.add(Calendar.MONTH, -1);
+        Date prevMonthDate = calendar.getTime();
+        String tableName = "T_TRANSACTIONS_" + dateFormat.format(prevMonthDate);
         try {
-            Connection connection = ConnectionFactory.createConnection(hbaseConfig);
-            Table table = connection.getTable(TableName.valueOf(tableName));
+            try(java.sql.Connection con = DriverManager.getConnection(SparkService.connectionString)) {
+                Statement stmt = con.createStatement();
+                ResultSet rs = stmt.executeQuery("SELECT * FROM " + tableName);
+                while (rs.next()) {
+                    Long id = rs.getLong("TRANSACTION_ID");
+                    BigDecimal money = rs.getBigDecimal("MONEY");
+                    Integer typeId = rs.getInt("TYPE_ID");
+                    Long fundId = rs.getLong("FUND_ID");
+                    Integer categoryId = rs.getInt("CATEGORY_ID");
+                    Long ledgerId = rs.getLong("LEDGER_ID");
+                    long happenAt = rs.getLong("HAPPEN_AT");
+                    Long updateBy = rs.getLong("UPDATE_BY");
+                    long updateAt = rs.getLong("UPDATE_AT");
+                    Integer delFlag = rs.getInt("DEL_FLAG");
+                    System.out.println("id" + id + " money" + money + " typeId" + typeId + " fundId" + fundId + " categoryId" + categoryId + " ledgerId" + ledgerId + " happenAt" + happenAt + " updateBy" + updateBy + " updateAt" + updateAt + " delFlag" + delFlag);
 
-            Scan scan = new Scan();
-            scan.addFamily(Bytes.toBytes("transaction_info"));
-            scan.addFamily(Bytes.toBytes("update_info"));
+                    Date happenAtDate = new Date(happenAt);
+                    String happenAtYearMonthDay = yearMonthDayFormat.format(happenAtDate);
+                    Integer happenTimeId = Integer.parseInt(happenAtYearMonthDay);
+                    Integer happenTimeAnalysisId = Integer.parseInt(happenAtYearMonthDay.substring(0, 6));
+                    Date updateAtDate = new Date(updateAt);
+                    String updateAtYearMonthDay = yearMonthDayFormat.format(updateAtDate);
+                    Integer updateTimeId = Integer.parseInt(updateAtYearMonthDay);
+                    Integer updateTimeAnalysisId = Integer.parseInt(updateAtYearMonthDay.substring(0, 6));
+                    System.out.println("happenAtYearMonthDay" + happenAtYearMonthDay + " happenTimeId" + happenTimeId + " happenTimeAnalysisId" + happenTimeAnalysisId + " updateAtYearMonthDay" + updateAtYearMonthDay + " updateTimeId" + updateTimeId + " updateTimeAnalysisId" + updateTimeAnalysisId);
+                    System.out.println("insert into transaction_fact (id, money, fund_id, ledger_id, type_id, category_id, happen_at, happen_time_id, happen_time_analysis_id, update_by, update_at, update_time_id, update_time_analysis_id, del_flag) values (" + id + ", " + money + ", " + fundId + ", " + ledgerId + ", " + typeId + ", " + categoryId + ", " + happenAt + ", " + happenTimeId + ", " + happenTimeAnalysisId + ", " + updateBy + ", " + updateAt + ", " + updateTimeId + ", " + updateTimeAnalysisId + ", " + delFlag + ")");
+                    TransactionFactModel transactionFactModel = new TransactionFactModel(id, money, fundId, ledgerId, typeId, categoryId, happenAtDate, happenTimeId, happenTimeAnalysisId, updateBy, updateAtDate, updateTimeId, updateTimeAnalysisId, delFlag);
+                    dorisTransactionMapper.insertTransaction(transactionFactModel);
 
-            ResultScanner scanner = table.getScanner(scan);
-
-            for (Result result : scanner) {
-                Long id = Bytes.toLong(result.getValue(Bytes.toBytes("transaction_info"), Bytes.toBytes("transaction_id")));
-                Double money = Bytes.toDouble(result.getValue(Bytes.toBytes("transaction_info"), Bytes.toBytes("money")));
-                Integer typeId = Bytes.toInt(result.getValue(Bytes.toBytes("transaction_info"), Bytes.toBytes("type_id")));
-                Long fundId = Bytes.toLong(result.getValue(Bytes.toBytes("transaction_info"), Bytes.toBytes("fund_id")));
-                Integer categoryId = Bytes.toInt(result.getValue(Bytes.toBytes("transaction_info"), Bytes.toBytes("category_id")));
-                Long ledgerId = Bytes.toLong(result.getValue(Bytes.toBytes("transaction_info"), Bytes.toBytes("ledger_id")));
-                long happenAt = Bytes.toLong(result.getValue(Bytes.toBytes("transaction_info"), Bytes.toBytes("happen_at")));
-                Long updateBy = Bytes.toLong(result.getValue(Bytes.toBytes("update_info"), Bytes.toBytes("update_by")));
-                long updateAt = Bytes.toLong(result.getValue(Bytes.toBytes("update_info"), Bytes.toBytes("update_at")));
-                Integer delFlag = Bytes.toInt(result.getValue(Bytes.toBytes("update_info"), Bytes.toBytes("del_flag")));
-
-                Date happenAtDate = new Date(happenAt);
-                String happenAtYearMonthDay = yearMonthDayFormat.format(happenAtDate);
-                Integer happenTimeId = Integer.parseInt(happenAtYearMonthDay);
-                Integer happenTimeAnalysisId = Integer.parseInt(happenAtYearMonthDay.substring(0, 6));
-                String updateAtYearMonthDay = yearMonthDayFormat.format(new Date(updateAt));
-                Integer updateTimeId = Integer.parseInt(updateAtYearMonthDay);
-                Integer updateTimeAnalysisId = Integer.parseInt(updateAtYearMonthDay.substring(0, 6));
-                TransactionFactModel transactionFactModel = new TransactionFactModel(id, money, fundId, ledgerId, typeId, categoryId, happenAt, happenTimeId, happenTimeAnalysisId, updateBy, updateAt, updateTimeId, updateTimeAnalysisId, delFlag);
-                dorisTransactionMapper.insertTransaction(transactionFactModel);
-
-                TransactionAnalysisModel transactionAnalysisModel = new TransactionAnalysisModel(id, money, categoryId, typeId, happenTimeAnalysisId);
-                dorisTransactionAnalysisMapper.insertTransactionAnalysis(transactionAnalysisModel);
+                    TransactionAnalysisModel transactionAnalysisModel = new TransactionAnalysisModel(id, money, categoryId, typeId, happenTimeAnalysisId);
+                    dorisTransactionAnalysisMapper.insertTransactionAnalysis(transactionAnalysisModel);
+                }
             }
-
-            scanner.close();
-            table.close();
-            connection.close();
         } catch (Exception e) {
             log.error("Failed to handle transaction.", e);
         }

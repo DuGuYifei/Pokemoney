@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
 /**
  * The transaction fact model.
  */
@@ -12,16 +15,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TransactionFactModel {
     private Long id;
-    private Double money;
+    private BigDecimal money;
     private Long fundId;
     private Long ledgerId;
     private Integer typeId;
     private Integer categoryId;
-    private Long happenAt;
+    private Date happenAt;
     private Integer happenTimeId;
     private Integer happenTimeAnalysisId;
     private Long updateBy;
-    private Long updateAt;
+    private Date updateAt;
     private Integer updateTimeId;
     private Integer updateTimeAnalysisId;
     private Integer delFlag;

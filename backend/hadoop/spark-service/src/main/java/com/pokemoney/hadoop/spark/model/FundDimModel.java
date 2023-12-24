@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 /**
  * The fund dimension model.
  */
@@ -15,7 +17,7 @@ public class FundDimModel {
     private Long ownerId;
     private String name;
     private Double balance;
-    private Long createAt;
-    private Long updateAt;
+    private Date createAt;
+    private Date updateAt;
     private Integer delFlag;
 }

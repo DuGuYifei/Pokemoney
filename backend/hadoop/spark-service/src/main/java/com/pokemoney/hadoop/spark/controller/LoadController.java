@@ -1,7 +1,7 @@
 package com.pokemoney.hadoop.spark.controller;
 
 import com.pokemoney.hadoop.spark.service.SparkService;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,7 +29,7 @@ public class LoadController {
     /**
      * Load fund data. Auth by user:root, password:111
      */
-    @PostMapping("/fund")
+    @GetMapping("/fund")
     public void loadFund() {
         sparkService.upsertAllFunds();
     }
@@ -37,7 +37,7 @@ public class LoadController {
     /**
      * Load ledger data. Auth by user:root, password:111
      */
-    @PostMapping("/ledger")
+    @GetMapping("/ledger")
     public void loadLedger() {
         sparkService.upsertAllLedgers();
     }
@@ -45,8 +45,8 @@ public class LoadController {
     /**
      * Load transaction data. Auth by user:root, password:111
      */
-    @PostMapping("/transaction")
+    @GetMapping("/transaction")
     public void loadTransaction() {
-        sparkService.upsertAllTransactionsCurrentMonth();
+        sparkService.upsertAllTransactionsPrevMonth();
     }
 }
