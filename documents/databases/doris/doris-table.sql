@@ -87,8 +87,8 @@ CREATE TABLE fund_dim
         "replication_num" = "1"
     );
 
-DROP TABLE IF EXISTS time_dimension;
-CREATE TABLE time_dimension (
+DROP TABLE IF EXISTS time_dim;
+CREATE TABLE time_dim (
     `time_id`            INTEGER            NOT NULL COMMENT '',
     `date`               DATEV2             NOT NULL COMMENT '',
     `year`               INTEGER            NOT NULL COMMENT '',
@@ -108,8 +108,8 @@ CREATE TABLE time_dimension (
         "replication_num" = "1"
     );
 
-DROP TABLE IF EXISTS time_analysis_dimension;
-CREATE TABLE time_analysis_dimension (
+DROP TABLE IF EXISTS time_analysis_dim;
+CREATE TABLE time_analysis_dim (
     `time_analysis_id`   INTEGER            NOT NULL COMMENT '',
     `year`               INTEGER            NOT NULL COMMENT '',
     `month`              INTEGER            NOT NULL COMMENT '',
@@ -122,20 +122,23 @@ CREATE TABLE time_analysis_dimension (
         "replication_num" = "1"
     );
 
-DROP TABLE IF EXISTS transactions;
-CREATE TABLE transactions
+DROP TABLE IF EXISTS transaction_fact;
+CREATE TABLE transaction_fact
 (
-    `id`                 BIGINT             NOT NULL COMMENT '',
-    `money`              DECIMAL(18, 2)     NOT NULL COMMENT '',
-    `fund_id`            BIGINT             NOT NULL COMMENT '',
-    `ledger_id`          BIGINT             NOT NULL COMMENT '',
-    `type_id`            INTEGER            NOT NULL COMMENT '',
-    `category_id`        INTEGER            NOT NULL COMMENT '',
-    `happen_at`          DATETIME           NOT NULL COMMENT '',
-    `happen_time_id`     INTEGER            NOT NULL COMMENT '',
-    `update_at`          DATETIME           NOT NULL COMMENT '',
-    `update_time_id`     INTEGER            NOT NULL COMMENT '',
-    `del_flag`           INTEGER            NOT NULL COMMENT ''
+    `id`                        BIGINT             NOT NULL COMMENT '',
+    `money`                     DECIMAL(18, 2)     NOT NULL COMMENT '',
+    `fund_id`                   BIGINT             NOT NULL COMMENT '',
+    `ledger_id`                 BIGINT             NOT NULL COMMENT '',
+    `type_id`                   INTEGER            NOT NULL COMMENT '',
+    `category_id`               INTEGER            NOT NULL COMMENT '',
+    `happen_at`                 DATETIME           NOT NULL COMMENT '',
+    `happen_time_id`            INTEGER            NOT NULL COMMENT '',
+    `happen_time_analysis_id`   INTEGER            NOT NULL COMMENT '',
+    `update_by`                 BIGINT             NOT NULL COMMENT '',
+    `update_at`                 DATETIME           NOT NULL COMMENT '',
+    `update_time_id`            INTEGER            NOT NULL COMMENT '',
+    `update_time_analysis_id`   INTEGER            NOT NULL COMMENT '',
+    `del_flag`                  INTEGER            NOT NULL COMMENT ''
 )
     UNIQUE KEY (id)
     DISTRIBUTED BY HASH(id) BUCKETS 10
@@ -144,8 +147,8 @@ CREATE TABLE transactions
         "replication_num" = "1"
     );
 
-DROP TABLE IF EXISTS simple_analysis;
-CREATE TABLE simple_analysis
+DROP TABLE IF EXISTS transaction_example_fact;
+CREATE TABLE transaction_example_fact
 (
     `id`                 INTEGER                    NOT NULL                    COMMENT '',
     `sum_money`          DECIMAL(18, 2)  SUM        NOT NULL    DEFAULT "0.0"   COMMENT '' ,

@@ -1,4 +1,4 @@
-package com.pokemoney.hadoop.service.provider;
+package com.pokemoney.hadoop.service;
 
 import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.mybatis.spring.annotation.MapperScan;

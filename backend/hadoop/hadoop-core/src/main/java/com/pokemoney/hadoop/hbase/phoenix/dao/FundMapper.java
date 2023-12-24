@@ -59,7 +59,7 @@ public interface FundMapper {
      * @param upsertFundDto the fund dto {@link UpsertFundDto}
      * @return the number of rows affected by the insert
      */
-    @Insert("UPSERT INTO " + Constants.FUND_TABLE + " (region_id, user_id, fund_id, fund_info.name, fund_info.balance, fund_info.owner, fund_info.editors, fund_info.create_at, update_info.update_at, update_info.del_flag) VALUES (#{regionId}, #{userId}, #{fundId}, #{name}, #{balance}, #{owner}, #{editors, jdbcType=ARRAY,typeHandler=com.pokemoney.hadoop.hbase.phoenix.handler.LongListToArrayTypeHandler}, #{createAt}, #{updateAt}, #{delFlag})")
+    @Insert("UPSERT INTO " + Constants.FUND_TABLE + " (region_id, user_id, fund_id, fund_info.id, fund_info.name, fund_info.balance, fund_info.owner, fund_info.editors, fund_info.create_at, update_info.update_at, update_info.del_flag) VALUES (#{regionId}, #{userId}, #{fundId}, #{fundId}, #{name}, #{balance}, #{owner}, #{editors, jdbcType=ARRAY,typeHandler=com.pokemoney.hadoop.hbase.phoenix.handler.LongListToArrayTypeHandler}, #{createAt}, #{updateAt}, #{delFlag})")
     int insertFund(UpsertFundDto upsertFundDto);
 
     /**
