@@ -117,7 +117,7 @@ class Transaction {
       invoiceNumber: json['transactionId'],
       billingDate: DateTime.fromMicrosecondsSinceEpoch(int.parse((json['happenAt']))),
       amount: json['money'],
-      type: json['typeId'], // TODO: change the type to typeId
+      type: json['typeId'],
       updatedBy: int.parse(json['updateBy']),
       relevantEntity: json['relevantEntity'],
       comment: json['comment'],

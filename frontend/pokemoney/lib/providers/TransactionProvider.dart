@@ -107,7 +107,6 @@ class TransactionProvider with ChangeNotifier {
     // Determine if the transaction is an income
     bool isIncome = incomeTypes.contains(transaction.type);
 
-
     // Update the fund's balance
     await _fundProvider?.updateFundBalance(transaction.fundId, transaction.amount, isIncome);
     notifyListeners();
@@ -130,7 +129,6 @@ class TransactionProvider with ChangeNotifier {
 
     // Determine if the transaction is an income
     bool isIncome = incomeTypes.contains(transaction.type);
-
 
     // Update the fund's balance
     await _fundProvider?.updateFundBalance(transaction.fundId, transaction.amount, !isIncome);
@@ -204,16 +202,18 @@ class TransactionProvider with ChangeNotifier {
   }
 
 // Method to calculate the total income
-double getTotalIncome() {
-  return _transactions
-      .where((transaction) => transactionTypeCodes[transaction.type] == transactionTypeCodes['income'].toString())
-      .fold(0, (total, transaction) => total + transaction.amount);
-}
+  double getTotalIncome() {
+    return _transactions
+        .where((transaction) =>
+            transactionTypeCodes[transaction.type] == transactionTypeCodes['income'].toString())
+        .fold(0, (total, transaction) => total + transaction.amount);
+  }
 
 // Method to calculate the total expense
-double getTotalExpense() {
-  return _transactions
-      .where((transaction) => transactionTypeCodes[transaction.type] == transactionTypeCodes['expense'].toString())
-      .fold(0, (total, transaction) => total + transaction.amount);
-}
+  double getTotalExpense() {
+    return _transactions
+        .where((transaction) =>
+            transactionTypeCodes[transaction.type] == transactionTypeCodes['expense'].toString())
+        .fold(0, (total, transaction) => total + transaction.amount);
+  }
 }

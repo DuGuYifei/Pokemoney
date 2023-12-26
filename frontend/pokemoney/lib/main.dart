@@ -7,6 +7,7 @@ import 'package:pokemoney/providers/SubCategoryProvider.dart';
 import 'package:pokemoney/providers/TransactionProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:pokemoney/providers/AuthProvider.dart';
+import 'package:pokemoney/providers/EditorProvider.dart';
 import 'package:pokemoney/services/AuthService.dart';
 import 'package:pokemoney/services/SecureStorage.dart';
 import 'package:pokemoney/constants/ApiConstants.dart';
@@ -41,6 +42,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider<SubCategoryProvider>(
           create: (_) => SubCategoryProvider(),
+        ),
+        ChangeNotifierProvider<EditorProvider>(
+          create: (_) => EditorProvider(),
         ),
       ],
       child: MaterialApp(

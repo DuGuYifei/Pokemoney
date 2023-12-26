@@ -172,8 +172,8 @@ class DBHelper {
   void _onCreate(Database db, int version) async {
     await db.execute('''
       CREATE TABLE t_editors(
-        id INTEGER PRIMARY KEY, 
-        userName TEXT NOT NULL,
+        userId INTEGER PRIMARY KEY, 
+        name TEXT NOT NULL,
         email TEXT NOT NULL)
     ''');
 

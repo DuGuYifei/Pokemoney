@@ -5,6 +5,7 @@ import 'package:pokemoney/services/AuthService.dart';
 import 'package:pokemoney/services/SecureStorage.dart';
 import 'package:pokemoney/services/database_helper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:pokemoney/services/EditorService.dart';
 
 class AuthProvider with ChangeNotifier {
   final AuthService _authService;
@@ -105,6 +106,11 @@ class AuthProvider with ChangeNotifier {
     await prefs.setInt('id', user.id!);
     await prefs.setString('username', user.username);
     await prefs.setString('email', user.email);
+
+    //added the user to the editor table
+    Editor editor = Editor(userId: user.id!, email: user.email, name: user.username);
+    await EditorService().upsertEditor(editor);
+
     notifyListeners();
   }
 

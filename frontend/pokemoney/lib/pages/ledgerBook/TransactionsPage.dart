@@ -352,8 +352,7 @@ class TransactionListItem extends StatelessWidget {
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Invoice Number: ${transaction.invoiceNumber}'
-                '\nDate: ${DateFormat('yMMMd').format(transaction.billingDate)}'
+            Text('\nDate: ${DateFormat('yMMMd').format(transaction.billingDate)}'
                 '\nType: ${transactionTypeCodes.entries.firstWhere((entry) => entry.value == transaction.type, orElse: () => const MapEntry('Unknown', 0)).key}'
                 '\nFund: ${fund != null ? fund.name : ' fund is null'}'
                 '\nCategory: ${subCategory != null ? subCategory.name : ' subCategory is null'}'),

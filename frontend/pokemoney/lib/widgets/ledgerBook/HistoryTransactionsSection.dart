@@ -5,6 +5,7 @@ import 'package:pokemoney/constants/barrel.dart';
 import 'package:intl/intl.dart';
 import 'package:pokemoney/pages/ledgerBook/TransactionsPage.dart';
 import 'package:pokemoney/providers/TransactionProvider.dart';
+import 'package:pokemoney/providers/EditorProvider.dart';
 import 'package:provider/provider.dart';
 
 class HistoryTransactionsSection extends StatelessWidget {
@@ -19,6 +20,58 @@ class HistoryTransactionsSection extends StatelessWidget {
     this.limit = 8,
   });
 
+  Future<List<DataRow>> _buildDataRows(BuildContext context, List<Transaction> transactions) async {
+    final transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
+    final editorProvider = Provider.of<EditorProvider>(context, listen: false);
+
+    List<DataRow> rows = [];
+    for (var transaction in transactions) {
+      final formattedDate = DateFormat('yyyy-MM-dd').format(transaction.billingDate);
+      final category = transactionProvider.getCategoryForTransaction(transaction);
+      String editorName = await editorProvider.getEditorNameById(transaction.updatedBy!);
+      // String lastFourDigits = transaction.invoiceNumber
+      //     .toString()
+      //     .padLeft(4, '0')
+      //     .substring(transaction.invoiceNumber.toString().length - 4);
+
+      DataRow row = DataRow(cells: [
+        DataCell(Text(editorName)),
+        DataCell(Text(category?.name.toUpperCase() ?? 'Unknown')),
+        DataCell(Text(formattedDate)),
+        DataCell(
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
+            decoration: BoxDecoration(
+              color: (transaction.type == transactionTypeCodes['income'] ||
+                      transaction.type == transactionTypeCodes["payable"] ||
+                      transaction.type == transactionTypeCodes["receivable_backs"])
+                  ? Colors.green[100]
+                  : Colors.red[100],
+              borderRadius: BorderRadius.circular(4.0),
+              border: Border.all(
+                color: (transaction.type == transactionTypeCodes['income'] ||
+                        transaction.type == transactionTypeCodes["payable"] ||
+                        transaction.type == transactionTypeCodes["receivable_backs"])
+                    ? Colors.green
+                    : Colors.red,
+                width: 1.0,
+              ),
+            ),
+            child: Text(
+              '\$${transaction.amount.toStringAsFixed(2)}',
+              style: TextStyle(
+                color: transaction.type == transactionTypeCodes['income'] ? Colors.green : Colors.red,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ]);
+      rows.add(row);
+    }
+    return rows;
+  }
+
   @override
   Widget build(BuildContext context) {
 // Sort the transactions by billingDate
@@ -29,6 +82,9 @@ class HistoryTransactionsSection extends StatelessWidget {
     final visibleTransactions =
         sortedTransactions.length > limit ? sortedTransactions.sublist(0, limit) : sortedTransactions;
     final transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
+
+    final editorProvider = Provider.of<EditorProvider>(context, listen: false);
+    editorProvider.cacheEditorNames();
 
     return Container(
       padding: const EdgeInsets.all(16.0),
@@ -47,58 +103,28 @@ class HistoryTransactionsSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'History transactions',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18.0,
-            ),
-          ),
-          const SizedBox(height: 16.0),
-          DataTable(
-            columnSpacing: 10,
-            columns: const [
-              DataColumn(label: Text('BY')),
-              DataColumn(label: Text('CATEGORY')),
-              DataColumn(label: Text('DATE')),
-              DataColumn(label: Text('AMOUNT')),
-            ],
-            rows: visibleTransactions.map((transaction) {
-              final formattedDate = DateFormat('yyyy-MM-dd').format(transaction.billingDate);
-              final category = transactionProvider.getCategoryForTransaction(transaction);
-              String lastFourDigits = transaction.invoiceNumber
-                  .toString()
-                  .padLeft(4, '0')
-                  .substring(transaction.invoiceNumber.toString().length - 4);
-
-              return DataRow(cells: [
-                DataCell(Text('${transaction.updatedBy}' ?? 'Unknown')),
-                DataCell(Text(category?.name.toUpperCase() ?? 'Unknown')),
-                DataCell(Text(formattedDate)),
-                DataCell(
-                  Container(
-                    padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
-                    decoration: BoxDecoration(
-                      color: transaction.type == transactionTypeCodes['income']
-                          ? Colors.green[100]
-                          : Colors.red[100],
-                      borderRadius: BorderRadius.circular(4.0),
-                      border: Border.all(
-                        color: transaction.type == transactionTypeCodes['income'] ? Colors.green : Colors.red,
-                        width: 1.0,
-                      ),
-                    ),
-                    child: Text(
-                      '\$${transaction.amount.toStringAsFixed(2)}',
-                      style: TextStyle(
-                        color: transaction.type == transactionTypeCodes['income'] ? Colors.green : Colors.red,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ]);
-            }).toList(),
+          FutureBuilder<List<DataRow>>(
+            future: _buildDataRows(context, visibleTransactions),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else if (snapshot.hasData) {
+                return DataTable(
+                  columnSpacing: 10,
+                  columns: const [
+                    DataColumn(label: Text('BY')),
+                    DataColumn(label: Text('CATEGORY')),
+                    DataColumn(label: Text('DATE')),
+                    DataColumn(label: Text('AMOUNT')),
+                  ],
+                  rows: snapshot.data!,
+                );
+              } else {
+                return Text('No data available');
+              }
+            },
           ),
           TextButton(
             onPressed: () {

@@ -5,3 +5,4 @@ export 'Fund.dart';
 export 'Transaction.dart';
 export 'Category.dart';
 export 'SubCategory.dart';
+export 'Editor.dart';

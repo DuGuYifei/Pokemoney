@@ -1,7 +1,10 @@
 import 'package:pokemoney/model/barrel.dart';
+import 'package:pokemoney/services/EditorService.dart';
 
 class SyncResponseParser {
   // This method parses the GraphQL sync response
+  static final EditorService _editorService = EditorService();
+
   static SyncData parseSyncResponse(Map<String, dynamic> response) {
     // Assuming the response is a map containing data for each entity
     // Extract data for each entity and convert it into models or a format
@@ -14,6 +17,9 @@ class SyncResponseParser {
     List<Transaction> transactions = _parseTransactions(response['syncAll']['transactions']);
     //List<Category> categories = _parseCategories(response['syncAll']['categories']);
     List<SubCategory> subcategories = _parseSubCategories(response['syncAll']['subcategories']);
+
+    // Assuming EditorService is accessible for handling editors
+    _parseAndHandleEditors(response['syncAll']['ledgers']);
 
     return SyncData(user, funds, ledgerBooks, transactions, subcategories); // Other entities
   }
@@ -45,6 +51,20 @@ class SyncResponseParser {
   static List<SubCategory> _parseSubCategories(dynamic data) {
     return List<SubCategory>.from(data.map((item) => SubCategory.fromJson(item)));
   }
+
+  static void _parseAndHandleEditors(dynamic ledgerData) {
+    List<Editor> editors = [];
+    for (var ledger in ledgerData) {
+      if (ledger['editors'] != null) {
+        for (var editorData in ledger['editors']) {
+          Editor editor = Editor.fromMap(editorData);
+
+          // Use EditorService to upsert the editor
+          _editorService.upsertEditor(editor);
+        }
+      }
+    }
+  }
 }
 
 // You might want to create a model to hold all the parsed data together
@@ -54,7 +74,6 @@ class SyncData {
   final List<LedgerBook> ledgerBooks;
   final List<Transaction> transactions;
   final List<SubCategory> subcategories;
-  // ... other entities
 
   SyncData(this.user, this.funds, this.ledgerBooks, this.transactions, this.subcategories);
 }

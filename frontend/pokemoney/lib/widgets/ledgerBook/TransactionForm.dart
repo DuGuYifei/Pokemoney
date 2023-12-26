@@ -288,7 +288,7 @@ class _TransactionFormState extends State<TransactionForm> {
         final pokemoney.Transaction newTransaction = pokemoney.Transaction(
           ledgerBookId: widget.ledgerBook.id!,
           fundId: _selectedFundId,
-          invoiceNumber: _invoiceNumberController.text,
+          invoiceNumber: "1",
           billingDate: _selectedDate,
           amount: double.parse(_amountController.text),
           type: _selectedTransactionTypeCode,
@@ -360,7 +360,6 @@ class _TransactionFormState extends State<TransactionForm> {
     //fetchAndUpdateFunds(); // Call this to update items
     return ListView(
       children: [
-        _buildTextField(_invoiceNumberController, 'Invoice Number', 'Please enter the invoice number'),
         _buildDateField(context),
         _buildTextField(_amountController, 'Amount', 'Please enter the amount',
             keyboardType: TextInputType.number),

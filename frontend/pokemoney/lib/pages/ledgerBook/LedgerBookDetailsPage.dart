@@ -17,7 +17,6 @@ class LedgerBookDetailsPage extends StatefulWidget {
 }
 
 class _LedgerBookDetailsPageState extends State<LedgerBookDetailsPage> {
-  
   @override
   void initState() {
     super.initState();
@@ -26,7 +25,9 @@ class _LedgerBookDetailsPageState extends State<LedgerBookDetailsPage> {
     ledgerBookProvider.fetchLedgerBookDetails(widget.ledgerBook.id!);
     transactionProvider.fetchTransactionsForLedgerBook(widget.ledgerBook.id!);
   }
-  
+
+  _onSyncButtonPressed() async {}
+
   @override
   Widget build(BuildContext context) {
     // Watching providers
