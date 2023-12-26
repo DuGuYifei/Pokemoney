@@ -7,7 +7,7 @@ class Transaction {
   final String invoiceNumber; // TODO : to remove the invoice number
   final DateTime billingDate;
   final double amount;
-  final String type;
+  final int type;
   final String? relevantEntity; // New nullable field
   final String? comment; // New nullable field
   final int? updatedBy;
@@ -38,7 +38,7 @@ class Transaction {
     String? invoiceNumber,
     DateTime? billingDate,
     double? amount,
-    String? type,
+    int? type,
     int? updatedBy,
     String? relevantEntity, // Include new nullable field
     String? comment, // Include new nullable field
@@ -80,7 +80,7 @@ class Transaction {
       invoiceNumber: map['invoiceNumber'] as String,
       billingDate: DateTime.parse(map['billingDate'] as String),
       amount: (map['amount'] as num?)?.toDouble() ?? 0.0,
-      type: map['type'] as String,
+      type: map['type'],
       updatedBy: map['updatedBy'] as int?,
       relevantEntity: map['relevantEntity'] as String?,
       comment: map['comment'] as String?,
@@ -117,7 +117,7 @@ class Transaction {
       invoiceNumber: json['transactionId'],
       billingDate: DateTime.fromMicrosecondsSinceEpoch(int.parse((json['happenAt']))),
       amount: json['money'],
-      type: json['typeId'].toString(), // TODO: change the type to typeId
+      type: json['typeId'], // TODO: change the type to typeId
       updatedBy: int.parse(json['updateBy']),
       relevantEntity: json['relevantEntity'],
       comment: json['comment'],

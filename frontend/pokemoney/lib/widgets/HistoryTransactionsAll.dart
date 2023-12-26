@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pokemoney/constants/ApiConstants.dart';
 import 'package:pokemoney/model/barrel.dart';
 import 'package:intl/intl.dart';
 import 'package:pokemoney/providers/TransactionProvider.dart';
@@ -83,17 +84,23 @@ class HistoryTransactionsAll extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
                           decoration: BoxDecoration(
-                            color: transaction.type == 'Income' ? Colors.green[100] : Colors.red[100],
+                            color: transaction.type == transactionTypeCodes['income']
+                                ? Colors.green[100]
+                                : Colors.red[100],
                             borderRadius: BorderRadius.circular(4.0),
                             border: Border.all(
-                              color: transaction.type == 'Income' ? Colors.green : Colors.red,
+                              color: transaction.type == transactionTypeCodes['income']
+                                  ? Colors.green
+                                  : Colors.red,
                               width: 1.0,
                             ),
                           ),
                           child: Text(
                             '\$${transaction.amount.toStringAsFixed(2)}',
                             style: TextStyle(
-                              color: transaction.type == 'Income' ? Colors.green : Colors.red,
+                              color: transaction.type == transactionTypeCodes['income']
+                                  ? Colors.green
+                                  : Colors.red,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

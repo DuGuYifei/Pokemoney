@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pokemoney/constants/ApiConstants.dart';
 import 'package:pokemoney/model/barrel.dart';
 import 'package:pokemoney/constants/barrel.dart';
 import 'package:intl/intl.dart';
@@ -27,7 +28,6 @@ class HistoryTransactionsSection extends StatelessWidget {
     // If there are more transactions than the limit, only take up to the limit
     final visibleTransactions =
         sortedTransactions.length > limit ? sortedTransactions.sublist(0, limit) : sortedTransactions;
-
     final transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
 
     return Container(
@@ -66,25 +66,32 @@ class HistoryTransactionsSection extends StatelessWidget {
             rows: visibleTransactions.map((transaction) {
               final formattedDate = DateFormat('yyyy-MM-dd').format(transaction.billingDate);
               final category = transactionProvider.getCategoryForTransaction(transaction);
+              String lastFourDigits = transaction.invoiceNumber
+                  .toString()
+                  .padLeft(4, '0')
+                  .substring(transaction.invoiceNumber.toString().length - 4);
+
               return DataRow(cells: [
-                DataCell(Text(transaction.invoiceNumber)),
+                DataCell(Text(lastFourDigits)),
                 DataCell(Text(category?.name.toUpperCase() ?? 'Unknown')),
                 DataCell(Text(formattedDate)),
                 DataCell(
                   Container(
                     padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
                     decoration: BoxDecoration(
-                      color: transaction.type == 'Income' ? Colors.green[100] : Colors.red[100],
+                      color: transaction.type == transactionTypeCodes['income']
+                          ? Colors.green[100]
+                          : Colors.red[100],
                       borderRadius: BorderRadius.circular(4.0),
                       border: Border.all(
-                        color: transaction.type == 'Income' ? Colors.green : Colors.red,
+                        color: transaction.type == transactionTypeCodes['income'] ? Colors.green : Colors.red,
                         width: 1.0,
                       ),
                     ),
                     child: Text(
                       '\$${transaction.amount.toStringAsFixed(2)}',
                       style: TextStyle(
-                        color: transaction.type == 'Income' ? Colors.green : Colors.red,
+                        color: transaction.type == transactionTypeCodes['income'] ? Colors.green : Colors.red,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

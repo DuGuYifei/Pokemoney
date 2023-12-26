@@ -26,10 +26,9 @@ LATER
 - delete the data from the unsync table - DONE
 - The deletion or the edition of the transactions, and scenario of moving the data from sync to unsync - DONE
 - The database directory DONE
+- deal with the duplication of the subcatgories after syncing DONE
 
 - show the updateby (and change the invoice in the place of the data table to the updateby)
 - decode the editors from string of json to map 
 - invitation
 - deleting the invoice number
-- deal with the duplication of the subcatgories after syncing
-- 

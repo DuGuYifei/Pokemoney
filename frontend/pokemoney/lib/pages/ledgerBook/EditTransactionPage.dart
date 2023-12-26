@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:pokemoney/constants/ApiConstants.dart';
 import 'package:provider/provider.dart';
 import 'package:pokemoney/providers/TransactionProvider.dart'; // Make sure to import your provider
 import 'package:pokemoney/model/barrel.dart' as pokemoney; // Make sure to import your Transaction model
@@ -25,7 +26,7 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
   final TextEditingController _customTypeController = TextEditingController();
   late TextEditingController _commentController;
 
-  late String _selectedType;
+  late int _selectedTransactionTypeCode;
   late int _selectedCategoryId;
   late int _selectedFundId;
   late DateTime selectedDate;
@@ -41,7 +42,7 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
     _amountController = TextEditingController(text: widget.transaction.amount.toString());
     _dateController =
         TextEditingController(text: DateFormat('yyyy-MM-dd').format(widget.transaction.billingDate));
-    _selectedType = widget.transaction.type;
+    _selectedTransactionTypeCode = widget.transaction.type;
     _selectedFundId = widget.transaction.fundId;
     _selectedCategoryId = widget.transaction.categoryId; // default or initial value
     _commentController = TextEditingController(text: widget.transaction.comment);
@@ -103,7 +104,7 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
     pokemoney.Transaction updatedTransaction = widget.transaction.copyWith(
       invoiceNumber: _invoiceNumberController.text,
       amount: double.parse(_amountController.text),
-      type: _selectedType,
+      type: _selectedTransactionTypeCode,
       billingDate: DateTime.parse(_dateController.text),
       categoryId: _selectedCategoryId,
       fundId: _selectedFundId,
@@ -184,18 +185,16 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
                         _buildDateField(context),
                         _buildTextField(_amountController, 'Amount', 'Please enter the amount',
                             keyboardType: TextInputType.number),
-                        _buildDropdownField<String>(
-                            _selectedType,
-                            'Type',
-                            ['Expense', 'Income', 'Other'].map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(value),
-                              );
-                            }).toList(),
-                            (value) => setState(() => _selectedType = value!)),
-                        if (_selectedType == 'Other')
-                          _buildTextField(_customTypeController, 'Custom Type', 'Please enter a type'),
+                        _buildDropdownFieldMap<int>(
+                          _selectedTransactionTypeCode,
+                          'Type',
+                          transactionTypeCodes,
+                          (int? newValue) {
+                            setState(() {
+                              _selectedTransactionTypeCode = newValue!;
+                            });
+                          },
+                        ),
                         _buildDropdownField<int>(_selectedFundId, 'Fund', _fundItems,
                             (value) => setState(() => _selectedFundId = value!)),
                         _buildTextField(_commentController, 'comment', 'Please enter the amount',
@@ -223,6 +222,24 @@ class _EditTransactionPageState extends State<EditTransactionPage> {
 
   Widget _buildDropdownField<T>(
       T currentValue, String label, List<DropdownMenuItem<T>> items, ValueChanged<T?> onChanged) {
+    return DropdownButtonFormField<T>(
+      value: currentValue,
+      items: items,
+      onChanged: onChanged,
+      decoration: InputDecoration(labelText: label),
+      validator: (value) => value == null ? 'Please select a $label' : null,
+    );
+  }
+
+  Widget _buildDropdownFieldMap<T>(
+      T currentValue, String label, Map<String, T> itemsMap, ValueChanged<T?> onChanged) {
+    List<DropdownMenuItem<T>> items = itemsMap.entries.map((entry) {
+      return DropdownMenuItem<T>(
+        value: entry.value,
+        child: Text(entry.key),
+      );
+    }).toList();
+
     return DropdownButtonFormField<T>(
       value: currentValue,
       items: items,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:pokemoney/constants/ApiConstants.dart';
 import 'package:pokemoney/model/barrel.dart';
 import 'package:pokemoney/pages/ledgerBook/EditTransactionPage.dart';
 import 'package:pokemoney/providers/TransactionProvider.dart';
@@ -322,32 +323,28 @@ class TransactionListItem extends StatelessWidget {
       child: ListTile(
         leading: subCategory != null
             ? ClipRRect(
-                borderRadius: BorderRadius.circular(10), // Adjust the radius as needed
+                borderRadius: BorderRadius.circular(10),
                 child: SvgPicture.asset(
-                  subCategory.iconPath!,
+                  subCategory.iconPath ?? 'assets/category_icons/custom_icon.svg',
                   width: 50,
                   height: 50,
                 ),
               )
-            : const SizedBox(
-                width: 45,
-                height: 45,
-                child: CircularProgressIndicator(), // Show a progress indicator while category is null
-              ),
+            : null,
         title: Container(
           padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 8.0),
           decoration: BoxDecoration(
-            color: transaction.type == 'Income' ? Colors.green[100] : Colors.red[100],
+            color: transaction.type == transactionTypeCodes['income'] ? Colors.green[100] : Colors.red[100],
             borderRadius: BorderRadius.circular(4.0),
             border: Border.all(
-              color: transaction.type == 'Income' ? Colors.green : Colors.red,
+              color: transaction.type == transactionTypeCodes['income'] ? Colors.green : Colors.red,
               width: 1.0,
             ),
           ),
           child: Text(
             '\$${transaction.amount.toStringAsFixed(2)}',
             style: TextStyle(
-              color: transaction.type == 'Income' ? Colors.green : Colors.red,
+              color: transaction.type == transactionTypeCodes['income'] ? Colors.green : Colors.red,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -357,8 +354,9 @@ class TransactionListItem extends StatelessWidget {
           children: [
             Text('Invoice Number: ${transaction.invoiceNumber}'
                 '\nDate: ${DateFormat('yMMMd').format(transaction.billingDate)}'
-                '\nType: ${transaction.type}'
-                '\nFund: ${fund != null ? fund.name : ' fund is null'}'),
+                '\nType: ${transactionTypeCodes.entries.firstWhere((entry) => entry.value == transaction.type, orElse: () => const MapEntry('Unknown', 0)).key}'
+                '\nFund: ${fund != null ? fund.name : ' fund is null'}'
+                '\nCategory: ${subCategory != null ? subCategory.name : ' subCategory is null'}'),
             if (transaction.comment != null) Text('Comment: ${transaction.comment}')
           ],
         ),

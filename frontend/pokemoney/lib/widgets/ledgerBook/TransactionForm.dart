@@ -27,9 +27,10 @@ class _TransactionFormState extends State<TransactionForm> {
   final TextEditingController _customTypeController = TextEditingController();
   final TextEditingController _commentController = TextEditingController();
 
-  late String _selectedType;
+  late int _selectedType;
   late int _selectedSubCategoryId;
   late int _selectedFundId;
+  late int _selectedTransactionTypeCode;
   DateTime _selectedDate = DateTime.now();
   //List<DropdownMenuItem<int>> _categoryItems = [];
   List<DropdownMenuItem<int>> _subCategoryItems = [];
@@ -38,10 +39,10 @@ class _TransactionFormState extends State<TransactionForm> {
   @override
   void initState() {
     super.initState();
-    _selectedType = 'expense'; // Default transaction type
     _dateController.text = DateFormat.yMd().format(_selectedDate);
     _selectedFundId = -1; // Initial value indicating fund not yet selected
     _selectedSubCategoryId = -1; // Initial value indicating subcategory not yet selected
+    _selectedTransactionTypeCode = 1; // Initial value indicating transaction type not yet selected
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _updateSubCategoriesAndFundPostFrame();
     });
@@ -290,7 +291,7 @@ class _TransactionFormState extends State<TransactionForm> {
           invoiceNumber: _invoiceNumberController.text,
           billingDate: _selectedDate,
           amount: double.parse(_amountController.text),
-          type: _selectedType == 'Other' ? _customTypeController.text : _selectedType,
+          type: _selectedTransactionTypeCode,
           categoryId: subCategory.categoryId,
           subCategoryId: _selectedSubCategoryId,
           comment: _commentController.text,
@@ -363,16 +364,16 @@ class _TransactionFormState extends State<TransactionForm> {
         _buildDateField(context),
         _buildTextField(_amountController, 'Amount', 'Please enter the amount',
             keyboardType: TextInputType.number),
-        _buildDropdownField<String>(
-            _selectedType,
-            'Type',
-            listType.map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-            (value) => setState(() => _selectedType = value!)),
+        _buildDropdownFieldMap<int>(
+          _selectedTransactionTypeCode,
+          'Type',
+          transactionTypeCodes,
+          (int? newValue) {
+            setState(() {
+              _selectedTransactionTypeCode = newValue!;
+            });
+          },
+        ),
         _buildDropdownField<int>(
           _selectedSubCategoryId,
           'Category',
@@ -438,6 +439,24 @@ class _TransactionFormState extends State<TransactionForm> {
   // Builds a generic dropdown field
   Widget _buildDropdownField<T>(
       T currentValue, String label, List<DropdownMenuItem<T>> items, ValueChanged<T?> onChanged) {
+    return DropdownButtonFormField<T>(
+      value: currentValue,
+      items: items,
+      onChanged: onChanged,
+      decoration: InputDecoration(labelText: label),
+      validator: (value) => value == null ? 'Please select a $label' : null,
+    );
+  }
+
+  Widget _buildDropdownFieldMap<T>(
+      T currentValue, String label, Map<String, T> itemsMap, ValueChanged<T?> onChanged) {
+    List<DropdownMenuItem<T>> items = itemsMap.entries.map((entry) {
+      return DropdownMenuItem<T>(
+        value: entry.value,
+        child: Text(entry.key),
+      );
+    }).toList();
+
     return DropdownButtonFormField<T>(
       value: currentValue,
       items: items,

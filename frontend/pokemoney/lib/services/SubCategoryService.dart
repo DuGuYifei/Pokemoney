@@ -15,7 +15,7 @@ class SubCategoryService {
     var result = await dbClient.query("t_subcategories_unsync");
     return result.map((map) => SubCategory.fromMap(map)).toList();
   }
-  
+
   Future<List<SubCategory>> getAllSubCategoriesFromSyncAndUnsync() async {
     var dbClient = await _dbHelper.db;
 
@@ -29,7 +29,7 @@ class SubCategoryService {
 
     // Combine both lists, ensuring unique entries (based on ID or other criteria)
     var combinedSubCategories = {...unsyncedSubCategories, ...syncedSubCategories}.toList();
-    
+
     return combinedSubCategories;
   }
 
@@ -47,20 +47,24 @@ class SubCategoryService {
       whereArgs: [subCategoryId],
     );
 
+    if (maps.isEmpty) {
+      maps = await dbClient.query(
+        "t_subcategories_sync",
+        columns: ['id', 'categoryId', 'name', 'iconPath', 'updateAt', 'delFlag'],
+        where: 'id = ?',
+        whereArgs: [subCategoryId],
+      );
+    }
+
     if (maps.isNotEmpty) {
       return SubCategory.fromMap(maps.first.cast<String, dynamic>());
     }
-
     throw Exception('SubCategory with id $subCategoryId not found');
   }
 
   Future<int> updateSubCategory(SubCategory subCategory) async {
     var dbClient = await _dbHelper.db;
-    return await dbClient.update(
-      "t_subcategories_unsync", 
-      subCategory.toMap(), 
-      where: "id = ?", 
-      whereArgs: [subCategory.id]
-    );
+    return await dbClient
+        .update("t_subcategories_unsync", subCategory.toMap(), where: "id = ?", whereArgs: [subCategory.id]);
   }
 }

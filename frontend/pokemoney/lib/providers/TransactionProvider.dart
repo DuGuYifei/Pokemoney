@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:pokemoney/constants/ApiConstants.dart';
 import 'package:pokemoney/providers/FundProvider.dart';
 import 'package:pokemoney/services/TransactionService.dart';
 import 'package:pokemoney/providers/LedgerBookProvider.dart';
@@ -57,7 +58,7 @@ class TransactionProvider with ChangeNotifier {
     _filteredTransactions = await _transactionService.getTransactionsByLedgerBookId(ledgerBookId);
 
     for (var transaction in _transactions) {
-      await _fetchCategoryAndFund(transaction); 
+      await _fetchCategoryAndFund(transaction);
     }
     notifyListeners();
   }
@@ -70,8 +71,16 @@ class TransactionProvider with ChangeNotifier {
     if (_ledgerBookProvider != null) {
       await _ledgerBookProvider!.fetchLedgerBookDetails(transaction.ledgerBookId);
     }
-    // Determine if the transaction is an income or expense
-    bool isIncome = transaction.type.toLowerCase() == 'income';
+
+    // List of type codes that are considered as income
+    List<int> incomeTypes = [
+      transactionTypeCodes['income']!,
+      transactionTypeCodes['payable_backs']!,
+      transactionTypeCodes['receivable']!,
+    ];
+
+    // Determine if the transaction is an income
+    bool isIncome = incomeTypes.contains(transaction.type);
 
     // Update the fund's balance
     await _fundProvider?.updateFundBalance(transaction.fundId, transaction.amount, isIncome);
@@ -87,8 +96,17 @@ class TransactionProvider with ChangeNotifier {
     if (_ledgerBookProvider != null) {
       await _ledgerBookProvider!.fetchLedgerBookDetails(transaction.ledgerBookId);
     }
-    // Determine if the transaction is an income or expense
-    bool isIncome = transaction.type.toLowerCase() == 'income';
+
+    // List of type codes that are considered as income
+    List<int> incomeTypes = [
+      transactionTypeCodes['income']!,
+      transactionTypeCodes['payable_backs']!,
+      transactionTypeCodes['receivable']!,
+    ];
+
+    // Determine if the transaction is an income
+    bool isIncome = incomeTypes.contains(transaction.type);
+
 
     // Update the fund's balance
     await _fundProvider?.updateFundBalance(transaction.fundId, transaction.amount, isIncome);
@@ -103,8 +121,16 @@ class TransactionProvider with ChangeNotifier {
       await _ledgerBookProvider!.fetchLedgerBookDetails(transaction.ledgerBookId);
     }
 
-    // Determine if the transaction is an income or expense
-    bool isIncome = transaction.type.toLowerCase() == 'income';
+    // List of type codes that are considered as income
+    List<int> incomeTypes = [
+      transactionTypeCodes['income']!,
+      transactionTypeCodes['payable_backs']!,
+      transactionTypeCodes['receivable']!,
+    ];
+
+    // Determine if the transaction is an income
+    bool isIncome = incomeTypes.contains(transaction.type);
+
 
     // Update the fund's balance
     await _fundProvider?.updateFundBalance(transaction.fundId, transaction.amount, !isIncome);
@@ -177,17 +203,17 @@ class TransactionProvider with ChangeNotifier {
     return _fundCache[transaction.fundId];
   }
 
-  // Method to calculate the total income
-  double getTotalIncome() {
-    return _transactions
-        .where((transaction) => transaction.type.toLowerCase() == 'income')
-        .fold(0, (total, transaction) => total + transaction.amount);
-  }
+// Method to calculate the total income
+double getTotalIncome() {
+  return _transactions
+      .where((transaction) => transactionTypeCodes[transaction.type] == transactionTypeCodes['income'].toString())
+      .fold(0, (total, transaction) => total + transaction.amount);
+}
 
-  // Method to calculate the total expense
-  double getTotalExpense() {
-    return _transactions
-        .where((transaction) => transaction.type.toLowerCase() == 'expense')
-        .fold(0, (total, transaction) => total + transaction.amount);
-  }
+// Method to calculate the total expense
+double getTotalExpense() {
+  return _transactions
+      .where((transaction) => transactionTypeCodes[transaction.type] == transactionTypeCodes['expense'].toString())
+      .fold(0, (total, transaction) => total + transaction.amount);
+}
 }

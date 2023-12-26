@@ -158,7 +158,7 @@ class TransactionService {
     var unsyncResult = await dbClient.rawQuery('''
       SELECT SUM(
           CASE 
-              WHEN type IN ('income', 'payable', 'receivable_backs') THEN amount 
+              WHEN type IN (1, 4, 5) THEN amount 
               ELSE -amount 
           END
       ) as total
@@ -170,7 +170,7 @@ class TransactionService {
     var syncResult = await dbClient.rawQuery('''
       SELECT SUM(
           CASE 
-              WHEN type IN ('income', 'payable', 'receivable_backs') THEN amount 
+              WHEN type IN (1, 4, 5) THEN amount 
               ELSE -amount 
           END
       ) as total

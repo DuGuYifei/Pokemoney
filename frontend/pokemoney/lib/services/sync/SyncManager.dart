@@ -143,6 +143,7 @@ class SyncManager {
       modifiedMap['money'] = modifiedMap.remove('amount');
       modifiedMap['subcategoryId'] = modifiedMap.remove('subCategoryId')?.toString();
       modifiedMap['fundId'] = modifiedMap.remove('fundId')?.toString();
+      modifiedMap['typeId'] = modifiedMap.remove('type');
       // modifiedMap['happenAt'] =
       //     DateTime.parse(modifiedMap.remove("billDate")).millisecondsSinceEpoch.toString();
       modifiedMap['updateAt'] = modifiedMap
@@ -153,9 +154,7 @@ class SyncManager {
           'relevantEntity'); // TODO: user need to add the description of any releted entity, this will come from the transaction form
 
       // Check the value of 'type' and convert it to an integer for 'typeId'
-
-      modifiedMap['typeId'] = typeStringToTypeID[modifiedMap['type']];
-      modifiedMap['relevantEntity'] = modifiedMap['type'];
+      modifiedMap['relevantEntity'] = modifiedMap['typeId'].toString();
 
       if (modifiedMap.containsKey('billingDate') && modifiedMap['billingDate'] is String) {
         // Parse the ISO 8601 string to DateTime
