@@ -120,6 +120,7 @@ class DatabaseService {
     batch.delete('t_transactions_unsync');
     batch.delete('t_ledger_books_unsync');
     batch.delete('t_funds_unsync');
+    batch.delete('t_subcategories_unsync');
 
     // Commit the batch
     await batch.commit(noResult: true); // noResult: true is used when you don't need the result back

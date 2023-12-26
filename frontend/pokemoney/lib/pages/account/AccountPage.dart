@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pokemoney/RouteGenerator.dart';
 import 'package:provider/provider.dart';
 import 'package:pokemoney/providers/AuthProvider.dart';
 import 'package:pokemoney/pages/register/LoginPage.dart';
@@ -13,12 +14,13 @@ class AccountPage extends StatelessWidget {
 
     return Scaffold(
       body: Center(
-        child: authProvider.isLoggedIn ? _buildUserDetails(authProvider) : _buildLoginPrompt(context),
+        child:
+            authProvider.isLoggedIn ? _buildUserDetails(authProvider, context) : _buildLoginPrompt(context),
       ),
     );
   }
 
-  Widget _buildUserDetails(AuthProvider authProvider) {
+  Widget _buildUserDetails(AuthProvider authProvider, BuildContext context) {
     final user = authProvider.currentUser;
 
     return Column(
@@ -37,6 +39,7 @@ class AccountPage extends StatelessWidget {
           ),
           onPressed: () {
             authProvider.logout();
+            Navigator.of(context).pushNamed(RouteGenerator.loginPage);
           },
           label: const Text('Log Out'),
         ),
