@@ -58,7 +58,7 @@ class HistoryTransactionsSection extends StatelessWidget {
           DataTable(
             columnSpacing: 10,
             columns: const [
-              DataColumn(label: Text('INVOICE')),
+              DataColumn(label: Text('BY')),
               DataColumn(label: Text('CATEGORY')),
               DataColumn(label: Text('DATE')),
               DataColumn(label: Text('AMOUNT')),
@@ -72,7 +72,7 @@ class HistoryTransactionsSection extends StatelessWidget {
                   .substring(transaction.invoiceNumber.toString().length - 4);
 
               return DataRow(cells: [
-                DataCell(Text(lastFourDigits)),
+                DataCell(Text('${transaction.updatedBy}' ?? 'Unknown')),
                 DataCell(Text(category?.name.toUpperCase() ?? 'Unknown')),
                 DataCell(Text(formattedDate)),
                 DataCell(

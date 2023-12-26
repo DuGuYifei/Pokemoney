@@ -170,7 +170,14 @@ class DBHelper {
   }
 
   void _onCreate(Database db, int version) async {
-    // Create the 't_users' table // TODO : change it to be editors
+    await db.execute('''
+      CREATE TABLE t_editors(
+        id INTEGER PRIMARY KEY, 
+        userName TEXT NOT NULL,
+        email TEXT NOT NULL)
+    ''');
+
+    // Create the 't_users' table
     await db.execute('''
       CREATE TABLE t_users_unsync(
         id INTEGER PRIMARY KEY, 
