@@ -28,21 +28,20 @@ spring:
     url: jdbc:phoenix:43.131.33.18:2181
     driver-class-name: org.apache.phoenix.jdbc.PhoenixDriver
   kafka:
+    bootstrap-servers: 43.131.33.18:9092
     producer:
       bootstrap-servers: 43.131.33.18:9092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
-      retries: 2
     consumer:
       bootstrap-servers: 43.131.33.18:9092
-      group-id: hadoop-service
-      key-deserializer: org.apache.kafka.common.serialization.StringSerializer
-      value-deserializer: org.apache.kafka.common.serialization.StringSerializer
-      max-poll-records: 100
       enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
     listener:
-      poll-timeout: 300000
-      concurrency: 4
+      missing-topics-fatal: false
+      concurrency: 2
+      ack-mode: MANUAL
 
 
 zookeeper:

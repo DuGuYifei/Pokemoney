@@ -33,7 +33,8 @@ public class NotificationDto {
      * @return notification DTO
      */
     public static NotificationDto getNotificationsFromNotificationModel(UserModel.NotificationModel notificationModel) {
-        return JsonUtils.GSON.fromJson(notificationModel.getNotificationsJson(), NotificationDto.class);
+        NotificationDto notificationDto = JsonUtils.GSON.fromJson(notificationModel.getNotificationsJson(), NotificationDto.class);
+        return notificationDto != null ? notificationDto : new NotificationDto(new ArrayList<>(), new ArrayList<>());
     }
 
     /**

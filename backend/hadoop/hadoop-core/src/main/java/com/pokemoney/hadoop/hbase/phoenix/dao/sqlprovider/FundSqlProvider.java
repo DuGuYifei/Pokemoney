@@ -128,16 +128,13 @@ public class FundSqlProvider {
         if (upsertFundDto.getEditors() != null && !upsertFundDto.getEditors().isEmpty()) {
             sql.append(", fund_info.editors");
         }
-        if (upsertFundDto.getCreateAt() != null) {
-            sql.append(", fund_info.create_at");
-        }
         if (upsertFundDto.getUpdateAt() != null) {
             sql.append(", update_info.update_at");
         }
         if (upsertFundDto.getDelFlag() != null) {
             sql.append(", update_info.del_flag");
         }
-        sql.append(") VALUES (#{updateFundDto.regionId}, #{updateFundDto.userId}, #{updateFundDto.fundId}");
+        sql.append(") VALUES (#{regionId}, #{userId}, #{fundId}");
         if (upsertFundDto.getName() != null) {
             sql.append(", #{name}");
         }
@@ -149,9 +146,6 @@ public class FundSqlProvider {
         }
         if (upsertFundDto.getEditors() != null && !upsertFundDto.getEditors().isEmpty()) {
             sql.append(", #{editors, jdbcType=ARRAY,typeHandler=com.pokemoney.hadoop.hbase.phoenix.handler.LongListToArrayTypeHandler}");
-        }
-        if (upsertFundDto.getCreateAt() != null) {
-            sql.append(", #{createAt}");
         }
         if (upsertFundDto.getUpdateAt() != null) {
             sql.append(", #{updateAt}");

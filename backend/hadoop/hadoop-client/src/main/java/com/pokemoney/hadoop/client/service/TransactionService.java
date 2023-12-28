@@ -145,6 +145,8 @@ public class TransactionService {
                     continue;
                 }
             } else {
+                System.out.println("newLedgerIdToSnowflakeIdMap: " + newLedgerIdToSnowflakeIdMap);
+                System.out.println("ledgerIdOfSyncTransaction: " + ledgerIdOfSyncTransaction);
                 ledgerIdOfSyncTransaction = newLedgerIdToSnowflakeIdMap.get(ledgerIdOfSyncTransaction);
                 ledgerInListIndex = ledgerIds.indexOf(ledgerIdOfSyncTransaction);
             }
@@ -156,6 +158,7 @@ public class TransactionService {
                 fundModel = fundMapper.getFundByRowKey(fundRegionId, fundOwnerId, fundIdOfSyncTransaction, null);
                 fundIdToModelMap.put(fundIdOfSyncTransaction, fundModel);
             }
+            System.out.println("ledgerIdOfSyncTransaction: " + ledgerIdOfSyncTransaction);
             LedgerModel ledgerModel = ledgerIdToModelMap.get(ledgerIdOfSyncTransaction);
             if (ledgerModel == null) {
                 String[] ledgerRowKeySplit = userDto.getLedgerInfo().getLedgers().get(ledgerInListIndex).split(com.pokemoney.hadoop.hbase.Constants.ROW_KEY_DELIMITER);
@@ -245,6 +248,10 @@ public class TransactionService {
             }
         }
         preprocessedSyncTransactions.setCurOperationId(operationId);
+        System.out.println("preprocessedSyncTransactions: " + preprocessedSyncTransactions.getNoPermissionUpdateTransactionInputDtoList());
+        System.out.println("preprocessedSyncTransactions: " + preprocessedSyncTransactions.getUpdateTransactionDtoList());
+        System.out.println("preprocessedSyncTransactions: " + preprocessedSyncTransactions.getInsertTransactionDtoList());
+        System.out.println("preprocessedSyncTransactions: " + preprocessedSyncTransactions.getTransactionOperationDtoList());
         return preprocessedSyncTransactions;
     }
 
@@ -382,8 +389,11 @@ public class TransactionService {
                 for (OperationDto updateOperationDto : transactionOperationDtoList) {
                     TransactionDto selectedUpdateTransactionDto = selectTransactionDtoByRowKeyAndTableName(updateOperationDto.getTargetRowKey(), updateOperationDto.getTargetTable());
                     transactionDtoList.add(selectedUpdateTransactionDto);
+                    System.out.println("selectedUpdateTransactionDto: " + selectedUpdateTransactionDto);
                     List<Long> ledgerEditorIds = ledgerIdToModelMap.get(selectedUpdateTransactionDto.getLedgerId()).getLedgerInfo().getEditors();
+                    System.out.println("ledgerEditorIds: " + ledgerEditorIds);
                     List<Long> fundEditorIds = fundIdToModelMap.get(selectedUpdateTransactionDto.getFundId()).getFundInfo().getEditors();
+                    System.out.println("fundEditorIds: " + fundEditorIds);
                     if (ledgerEditorIds.size() > 1 || fundEditorIds.size() > 1) {
                         broadcastOperationToEditors(userId, updateOperationDto, ledgerEditorIds);
                         broadcastOperationToEditors(userId, updateOperationDto, fundEditorIds);
@@ -408,6 +418,8 @@ public class TransactionService {
      * @param editorIds                 editor ids
      */
     private void broadcastOperationToEditors(Long userId, OperationDto selfUpdateOperationDto, List<Long> editorIds){
+        System.out.println("broadcastOperationToEditors: " + editorIds);
+        System.out.println("broadcastOperationToEditors: " + userId);
         for (Long editorId : editorIds) {
             if (editorId.equals(userId)) {
                 continue;

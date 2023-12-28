@@ -10,6 +10,7 @@ import com.pokemoney.leaf.service.api.LeafGetRequestDto;
 import com.pokemoney.leaf.service.api.LeafResponseDto;
 import com.pokemoney.leaf.service.api.LeafTriService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.phoenix.shaded.org.apache.curator.framework.CuratorFramework;
 import org.apache.phoenix.shaded.org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,7 @@ public class OperationMessageConsumer {
     /**
      * Leaf triple service
      */
+    @DubboReference(version = "1.0.0", protocol = "tri", group = "leaf", timeout = 10000)
     private final LeafTriService leafTriService;
 
     /**

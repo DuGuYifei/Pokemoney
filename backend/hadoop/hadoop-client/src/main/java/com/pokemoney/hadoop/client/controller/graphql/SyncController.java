@@ -317,6 +317,7 @@ public class SyncController {
                     throw new GenericGraphQlInternalException("Something went wrong. You can try again and it will be faster this time!");
                 }
                 System.out.println("subcategories: " + userDto.getAppInfo().getSubcategories());
+                System.out.println("returnSyncTransactions: " + returnSyncTransactions);
                 // check null to a list
                 return new SyncResponseDto(
                         userDto.checkNullList(),

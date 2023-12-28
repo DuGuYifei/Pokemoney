@@ -52,6 +52,7 @@ public class KafkaService {
                 .build();
         String jsonOperationMsg = JsonUtils.GSON.toJson(operationKafkaMessageDto);
         try {
+            System.out.println("Sending message: " + jsonOperationMsg);
             sendSyncMessage(TopicConstants.OPERATION_INSERT_TOPIC, jsonOperationMsg);
         } catch (ExecutionException | InterruptedException e) {
             log.error("Send sync message error, topic: {}, data: {}", TopicConstants.OPERATION_INSERT_TOPIC, jsonOperationMsg, e);
