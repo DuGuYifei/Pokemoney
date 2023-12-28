@@ -1,0 +1,1 @@
+./nacos/bin/startup.sh -m standalone

@@ -17,7 +17,7 @@ public class TransactionUtils {
      */
     public static String GetTableNameFromTimestamp(Long millis) {
         Date date = new Date(millis);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy_MM");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMM");
         if (date.getTime() < Constants.TW_EPOCH) {
             return Constants.TRANSACTION_TABLE_PREFIX + "bf202312";
         }
@@ -31,6 +31,6 @@ public class TransactionUtils {
      * @return the table name
      */
     public static String GetTableNameFromSnowflakeId(Long snowflakeId) {
-        return GetTableNameFromTimestamp(snowflakeId >> 22 + Constants.TW_EPOCH);
+        return GetTableNameFromTimestamp((snowflakeId >> 22) + Constants.TW_EPOCH);
     }
 }

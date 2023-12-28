@@ -50,7 +50,7 @@ public interface TransactionMapper {
      * @param upsertTransactionDto insert transaction dto {@link UpsertTransactionDto}
      * @return the number of rows affected
      */
-    @Insert("UPSERT INTO #{tableName} (region_id, user_id, ledger_id_rk, reverse_transaction_id, transaction_info.transaction_id, transaction_info.money, transaction_info.type_id, transaction_info.relevant_entity, transaction_info.comment, transaction_info.fund_id, transaction_info.category_id, transaction_info.subcategory_id, transaction_info.ledger_id, transaction_info.happen_at, update_info.update_by, update_info.update_at, update_info.del_flag) VALUES (#{regionId}, #{userId}, #{ledgerId}, #{reverseTransactionId}, #{transactionId}, #{money}, #{typeId}, #{relevantEntity}, #{comment}, #{fundId}, #{categoryId}, #{subcategoryId}, #{ledgerId}, #{happenAt}, {#updateBy}, #{updateAt}, #{delFlag})")
+    @InsertProvider(type = TransactionSqlProvider.class, method = "buildSqlInsertTransaction")
     int insertTransaction(UpsertTransactionDto upsertTransactionDto);
 
     /**

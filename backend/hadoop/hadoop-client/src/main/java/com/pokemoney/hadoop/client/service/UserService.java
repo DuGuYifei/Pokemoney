@@ -15,6 +15,7 @@ import com.pokemoney.hadoop.hbase.utils.RowKeyUtils;
 import com.pokemoney.leaf.service.api.LeafGetRequestDto;
 import com.pokemoney.leaf.service.api.LeafResponseDto;
 import com.pokemoney.leaf.service.api.LeafTriService;
+import com.pokemoney.user.service.api.GetUserInfoResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Service;
@@ -144,7 +145,7 @@ public class UserService {
      * @throws GenericNotFoundError      user not found
      * @throws GenericInternalServerError invite fail
      */
-    public void notifyNewLedgerEditor(Long userId, Long editorId, String editorName, AddEditorInputDto editorInputDto) throws GenericNotFoundError, GenericInternalServerError {
+    public void notifyNewLedgerEditor(Long userId, Long editorId, String editorName, AddEditorInputDto editorInputDto, GetUserInfoResponseDto invitorInfo) throws GenericNotFoundError, GenericInternalServerError {
         UserModel editorModel = getUserByUserId(editorId);
         if (editorModel == null) {
             log.error("editor not found, userId: {}", editorId);
@@ -154,9 +155,9 @@ public class UserService {
         LeafResponseDto leafResponseDto = leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(com.pokemoney.hadoop.hbase.Constants.LEAF_HBASE_INVITATION).build());
         Long invitationId = Long.parseLong(leafResponseDto.getId());
         EditorDto editorDto = new EditorDto(
-                editorId,
-                editorInputDto.getInvitedEmail(),
-                editorName
+                invitorInfo.getUserId(),
+                invitorInfo.getEmail(),
+                invitorInfo.getUsername()
         );
         notificationDto.addNewLedgerInvitation(new LedgerInvitationDto(invitationId, editorDto, editorInputDto.getTargetId()));
         String notificationJson = notificationDto.generateJsonString();

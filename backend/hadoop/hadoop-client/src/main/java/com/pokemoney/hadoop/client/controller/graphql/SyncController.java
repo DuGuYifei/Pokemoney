@@ -130,6 +130,10 @@ public class SyncController {
             @ContextValue("auth") String auth
     ) throws GenericGraphQlForbiddenException, GenericGraphQlInternalException {
         long userId = user.getUserId();
+        System.out.println("fund: " + fund);
+        System.out.println("ledger: " + ledger);
+        System.out.println("transaction: " + transaction);
+        System.out.println("subcategory: " + subcategory);
         // verify auth
         VerifyUserJwtWithServiceNameResponseDto verifiedUserInfo = authService.verifyUser(userId, auth);
         String lockPath = com.pokemoney.hadoop.zookeeper.Constants.ExclusiveOperationMutexPathPrefix + "/" + userId;
@@ -168,9 +172,8 @@ public class SyncController {
                 }
                 if (dividedOperationLists.getFundOperationList().isEmpty()) {
                     System.out.println("fundOperationList is empty");
-                } else {
-                    System.out.println("fundOperationList is not empty");
                 }
+                returnMaxOperationId = Long.max(maxOperationId, dividedOperationLists.getMaxOperationId());
                 System.out.println("dividedOperationLists: " + dividedOperationLists);
                 UserDto userDto = UserDto.fromUserModel(userModel);
                 System.out.println("userDto: " + userDto);
@@ -211,6 +214,7 @@ public class SyncController {
                     System.out.println("get processedSyncFunds futures");
                     returnSyncFunds = processedSyncFunds.getProcessedSyncFunds();
                     System.out.println("get processedSyncFunds futures done");
+                    System.out.println("returnSyncFunds: " + returnSyncFunds);
                     returnMaxOperationId = Long.max(processedSyncFunds.getMaxOperationId(), returnMaxOperationId);
                     System.out.println("returnMaxOperationId: " + returnMaxOperationId);
                 } catch (Exception e) {
@@ -223,6 +227,7 @@ public class SyncController {
                     System.out.println("get processedSyncLedgers futures");
                     returnSyncLedgers = processedSyncLedgers.getProcessedSyncLedgers();
                     System.out.println("get processedSyncLedgers futures done");
+                    System.out.println("returnSyncLedgers: " + returnSyncLedgers);
                     returnMaxOperationId = Long.max(processedSyncLedgers.getMaxOperationId(), returnMaxOperationId);
                     System.out.println("returnMaxOperationId: " + returnMaxOperationId);
                     // insert ledger operations
@@ -230,6 +235,7 @@ public class SyncController {
                     log.error("syncAll error when get ledger from future. userId: {}", userId, e);
                     throw new GenericGraphQlInternalException("Something went wrong. You can try again and it will be faster this time!");
                 }
+                System.out.println("new userDto: " + userDto);
                 // sync transaction
                 Future<ProcessedSyncTransactions> transactionFuture = dtpSyncExecutor1.submit(() -> transactionService.syncTransaction(
                         transactionService.preprocessSyncTransaction(
@@ -311,6 +317,7 @@ public class SyncController {
                     throw new GenericGraphQlInternalException("Something went wrong. You can try again and it will be faster this time!");
                 }
                 System.out.println("subcategories: " + userDto.getAppInfo().getSubcategories());
+                System.out.println("returnSyncTransactions: " + returnSyncTransactions);
                 // check null to a list
                 return new SyncResponseDto(
                         userDto.checkNullList(),
