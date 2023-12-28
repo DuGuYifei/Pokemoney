@@ -11,9 +11,12 @@ import com.pokemoney.hadoop.client.service.LedgerService;
 import com.pokemoney.hadoop.client.service.UserService;
 import com.pokemoney.hadoop.hbase.Constants;
 import com.pokemoney.hadoop.hbase.dto.editor.AddEditorInputDto;
+import com.pokemoney.hadoop.hbase.dto.editor.EditorDto;
 import com.pokemoney.hadoop.hbase.dto.editor.RemoveEditorInputDto;
+import com.pokemoney.hadoop.hbase.dto.fund.FundDto;
 import com.pokemoney.hadoop.hbase.dto.fund.UpsertFundDto;
 import com.pokemoney.hadoop.hbase.dto.invitation.*;
+import com.pokemoney.hadoop.hbase.dto.ledger.LedgerDto;
 import com.pokemoney.hadoop.hbase.dto.ledger.UpsertLedgerDto;
 import com.pokemoney.hadoop.hbase.dto.user.NotificationDto;
 import com.pokemoney.hadoop.hbase.dto.user.UpsertUserDto;
@@ -258,7 +261,9 @@ public class InvitationController {
         }
         // check if the user is already an editor of this ledger
         GetUserInfoResponseDto editorInfo;
+        GetUserInfoResponseDto invitorInfo;
         try {
+            invitorInfo = userTriService.getUserInfo(GetUserInfoRequestDto.newBuilder().setUserId(editor.getInvitorId()).build());
             editorInfo = userTriService.getUserInfoByEmail(GetUserInfoByEmailRequestDto.newBuilder().setEmail(editor.getInvitedEmail()).build());
             List<Long> editors = ledgerModel.getLedgerInfo().getEditors();
             for (Long editorId : editors) {
@@ -269,7 +274,7 @@ public class InvitationController {
                 }
             }
             // notify the editor
-            userService.notifyNewLedgerEditor(userId, editorInfo.getUserId(), editorInfo.getUsername(), editor);
+            userService.notifyNewLedgerEditor(userId, editorInfo.getUserId(), editorInfo.getUsername(), editor, invitorInfo);
         } catch(RpcException e) {
             if (e.getCause() instanceof ExecutionException executionException) {
                 if (executionException.getCause() instanceof StatusRpcException statusRpcException) {
@@ -365,13 +370,15 @@ public class InvitationController {
      * reply fund or ledger invitation
      *
      * @param replyInvitationRequestDto {@link ReplyInvitationRequestDto}
-     * @return ResponseDto with data {@link AcceptFundInvitationResponseDto}
+     * @return ResponseDto with data {@link AcceptFundLedgerInvitationResponseDto}
      * @throws GenericForbiddenError generic forbidden error
      * @throws GenericInternalServerError generic internal server error
      * @throws GenericNotFoundError generic not found error
      */
     @PostMapping("/reply")
-    public ResponseEntity<ResponseDto<AcceptFundInvitationResponseDto>> replyFundInvitation(@RequestBody ReplyInvitationRequestDto replyInvitationRequestDto, HttpServletRequest request) throws GenericForbiddenError, GenericInternalServerError, GenericNotFoundError {
+    public ResponseEntity<ResponseDto<AcceptFundLedgerInvitationResponseDto>> replyFundInvitation(@RequestBody ReplyInvitationRequestDto replyInvitationRequestDto, HttpServletRequest request) throws GenericForbiddenError, GenericInternalServerError, GenericNotFoundError {
+        System.out.println("removeLedgerEditor");
+
         Long userId = replyInvitationRequestDto.getUserId();
         VerifyUserJwtWithServiceNameResponseDto verifiedUserInfo = preHandle(userId, request);
         // remove the invitation
@@ -383,10 +390,13 @@ public class InvitationController {
         NotificationDto notificationDto = NotificationDto.getNotificationsFromNotificationModel(userModel.getNotifications());
         List<FundInvitationDto> fundInvitationDtoList = notificationDto.getFundInvitation();
         List<LedgerInvitationDto> ledgerInvitationDtoList = notificationDto.getLedgerInvitation();
+        System.out.println("ledgerInvitationDtoList: " + ledgerInvitationDtoList);
         if ((fundInvitationDtoList == null || fundInvitationDtoList.isEmpty()) && (ledgerInvitationDtoList == null || ledgerInvitationDtoList.isEmpty())) {
             log.error("Invitation not found, invitation id: {}", replyInvitationRequestDto.getInvitationId());
-            throw new GenericNotFoundError("Fund invitation not found");
+            throw new GenericNotFoundError("Invitation not found");
         }
+        LedgerDto ledgerDto = null;
+        FundDto fundDto = null;
         FundInvitationDto fundInvitationDto = null;
         if (fundInvitationDtoList != null) {
             for (FundInvitationDto fd : fundInvitationDtoList) {
@@ -407,7 +417,7 @@ public class InvitationController {
                 String fundRowKey = RowKeyUtils.getFundRowKey(RowKeyUtils.getRegionId(inviteBy).toString(), inviteBy.toString(), fundInvitationDto.getFundId().toString());
                 if (userFundInfoDto.getFunds().contains(fundRowKey)) {
                     log.warn("You are already an editor of this fund, fund id: {}, user id: {}", fundInvitationDto.getFundId(), userId);
-                    return ResponseEntity.ok(ResponseDto.<AcceptFundInvitationResponseDto>builder().status(2).message("You are already an editor of this fund").build());
+                    return ResponseEntity.ok(ResponseDto.<AcceptFundLedgerInvitationResponseDto>builder().status(2).message("You are already an editor of this fund").build());
                 }
                 userFundInfoDto.getFunds().add(fundRowKey);
                 userFundInfoDto.setDelFunds(null);
@@ -432,9 +442,24 @@ public class InvitationController {
                     List<Long> editors = fundModel.getFundInfo().getEditors();
                     if (editors.contains(userId)) {
                         log.warn("You are already an editor of this fund, fund id: {}, user id: {}", fundInvitationDto.getFundId(), userId);
-                        return ResponseEntity.ok(ResponseDto.<AcceptFundInvitationResponseDto>builder().status(2).message("You are already an editor of this fund").build());
+                        return ResponseEntity.ok(ResponseDto.<AcceptFundLedgerInvitationResponseDto>builder().status(2).message("You are already an editor of this fund").build());
                     }
                     editors.add(userId);
+                    List<EditorDto> editorDtos = new ArrayList<>();
+                    for (Long editorId : editors) {
+                        GetUserInfoResponseDto editorInfo = userTriService.getUserInfo(GetUserInfoRequestDto.newBuilder().setUserId(editorId).build());
+                        editorDtos.add(new EditorDto(editorInfo.getUserId(), editorInfo.getEmail(), editorInfo.getUsername()));
+                    }
+                    fundDto = new FundDto(
+                            fundModel.getFundId(),
+                            fundModel.getFundInfo().getName(),
+                            fundModel.getFundInfo().getBalance(),
+                            fundModel.getFundInfo().getOwner(),
+                            editorDtos,
+                            fundModel.getFundInfo().getCreateAt(),
+                            fundModel.getUpdateInfo().getUpdateAt(),
+                            fundModel.getUpdateInfo().getDelFlag()
+                    );
                     UpsertFundDto upsertFundDto = new UpsertFundDto(
                             fundModel.getRegionId(),
                             fundModel.getUserId(),
@@ -477,7 +502,7 @@ public class InvitationController {
             LedgerInvitationDto ledgerInvitationDto = null;
             if (ledgerInvitationDtoList != null) {
                 for (LedgerInvitationDto ld : ledgerInvitationDtoList) {
-                    if (ld.getId().equals(replyInvitationRequestDto.getInvitationId())) {
+                    if (ld.getId().longValue() == replyInvitationRequestDto.getInvitationId().longValue()) {
                         ledgerInvitationDto = ld;
                         // delete this invitation
                         ledgerInvitationDtoList.remove(LedgerInvitationDto.builder().id(replyInvitationRequestDto.getInvitationId()).build());
@@ -494,7 +519,7 @@ public class InvitationController {
                     String ledgerRowKey = RowKeyUtils.getLedgerRowKey(RowKeyUtils.getRegionId(inviteBy).toString(), inviteBy.toString(), ledgerInvitationDto.getLedgerId().toString());
                     if (userLedgerBookInfoDto.getLedgers().contains(ledgerRowKey)) {
                         log.warn("You are already an editor of this ledger, ledger id: {}, user id: {}", ledgerInvitationDto.getLedgerId(), userId);
-                        return ResponseEntity.ok(ResponseDto.<AcceptFundInvitationResponseDto>builder().status(2).message("You are already an editor of this ledger").build());
+                        return ResponseEntity.ok(ResponseDto.<AcceptFundLedgerInvitationResponseDto>builder().status(2).message("You are already an editor of this ledger").build());
                     }
                     userLedgerBookInfoDto.getLedgers().add(ledgerRowKey);
                     userLedgerBookInfoDto.setDelLedgers(null);
@@ -519,9 +544,24 @@ public class InvitationController {
                         List<Long> editors = ledgerModel.getLedgerInfo().getEditors();
                         if (editors.contains(userId)) {
                             log.warn("You are already an editor of this ledger, ledger id: {}, user id: {}", ledgerInvitationDto.getLedgerId(), userId);
-                            return ResponseEntity.ok(ResponseDto.<AcceptFundInvitationResponseDto>builder().status(2).message("You are already an editor of this ledger").build());
+                            return ResponseEntity.ok(ResponseDto.<AcceptFundLedgerInvitationResponseDto>builder().status(2).message("You are already an editor of this ledger").build());
                         }
                         editors.add(userId);
+                        List<EditorDto> editorDtos = new ArrayList<>();
+                        for (Long editorId : editors) {
+                            GetUserInfoResponseDto editorInfo = userTriService.getUserInfo(GetUserInfoRequestDto.newBuilder().setUserId(editorId).build());
+                            editorDtos.add(new EditorDto(editorInfo.getUserId(), editorInfo.getEmail(), editorInfo.getUsername()));
+                        }
+                        ledgerDto = new LedgerDto(
+                                ledgerModel.getLedgerId(),
+                                ledgerModel.getLedgerInfo().getName(),
+                                ledgerModel.getLedgerInfo().getBudget(),
+                                ledgerModel.getLedgerInfo().getOwner(),
+                                editorDtos,
+                                ledgerModel.getLedgerInfo().getCreateAt(),
+                                ledgerModel.getUpdateInfo().getUpdateAt(),
+                                ledgerModel.getUpdateInfo().getDelFlag()
+                        );
                         UpsertLedgerDto upsertLedgerDto = new UpsertLedgerDto(
                                 ledgerModel.getRegionId(),
                                 ledgerModel.getUserId(),
@@ -562,6 +602,12 @@ public class InvitationController {
                 throw new GenericNotFoundError("Invitation not found. Maybe it has been answered in your other device.");
             }
         }
-        return ResponseEntity.ok(ResponseDto.<AcceptFundInvitationResponseDto>builder().status(1).message("success").build());
+        return ResponseEntity.ok(
+                ResponseDto.<AcceptFundLedgerInvitationResponseDto>builder().status(1).message("success")
+                        .data(AcceptFundLedgerInvitationResponseDto.builder()
+                                .fund(fundDto)
+                                .ledger(ledgerDto)
+                                .build())
+                        .build());
     }
 }

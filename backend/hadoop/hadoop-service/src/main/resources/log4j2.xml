@@ -46,6 +46,17 @@
     </Appenders>
 
     <Loggers>
+        <!--kafka-->
+        <Logger name="org.apache.kafka" level="info" additivity="false">
+            <AppenderRef ref="consoleAppender"/>
+            <AppenderRef ref="infoFileAppender" level="info"/>
+            <AppenderRef ref="errorJsonAppender" level="error"/>
+        </Logger>
+        <Logger name="org.springframework.kafka" level="info" additivity="false">
+            <AppenderRef ref="consoleAppender"/>
+            <AppenderRef ref="infoFileAppender" level="info"/>
+            <AppenderRef ref="errorJsonAppender" level="error"/>
+        </Logger>
         <!-- root -->
         <Root level="info">
             <AppenderRef ref="consoleAppender"/>

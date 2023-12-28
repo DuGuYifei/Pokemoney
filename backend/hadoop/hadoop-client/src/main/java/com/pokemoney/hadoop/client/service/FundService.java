@@ -358,6 +358,16 @@ public class FundService {
         int affectedRows = 0;
         Long operationId = Long.parseLong(leafTriService.getSnowflakeId(LeafGetRequestDto.newBuilder().setKey(com.pokemoney.hadoop.hbase.Constants.LEAF_HBASE_OPERATION).build()).getId());
         for (FundModel fundModel : fundModels) {
+            UpsertFundDto upsertFundDto = UpsertFundDto.builder()
+                    .regionId(fundModel.getRegionId())
+                    .userId(fundModel.getFundInfo().getOwner())
+                    .fundId(fundModel.getFundId())
+                    .name(fundModel.getFundInfo().getName())
+                    .balance(fundModel.getFundInfo().getBalance())
+                    .updateAt(fundModel.getUpdateInfo().getUpdateAt())
+                    .delFlag(fundModel.getUpdateInfo().getDelFlag())
+                    .build();
+            fundMapper.updateFundByRowKey(upsertFundDto);
             OperationDto operationDto = new OperationDto(
                     fundModel.getRegionId(),
                     userId,
