@@ -20,12 +20,12 @@ public class Constants {
     public static String SERVICE_NAME = "user-service";
 
     /**
-     * The key of leaf-service in eureka-service.
+     * The key of leaf-service in register-service.
      */
     public static final String LEAF_IN_EUREKA_KEY = "leaf-service";
 
     /**
-     * The key of redis-service in eureka-service.
+     * The key of redis-service in register-service.
      */
     public static final String REDIS_IN_EUREKA_KEY = "redis-service";
 
